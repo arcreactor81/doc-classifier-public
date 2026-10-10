@@ -1,0 +1,9 @@
+/* ActionSlot (SPEC §7.1): a fixed position for a changing action; the action block itself is styled in base.css. */
+.action-slot { display: block; min-width: 0; }
+.action-slot:empty { display: none; }
+/* M1: the ignite ring that view/action.ts ignite() runs once on the primary button's ::before; transparent at rest.
+   (.btn--primary's own halo is its ::after, base.css.) */
+.btn--primary::before {
+  content: ""; position: absolute; inset: -2px; border-radius: inherit; pointer-events: none; opacity: 0;
+  box-shadow: 0 0 0 1.5px var(--light), 0 0 18px 4px var(--light-glow), 0 0 44px 12px var(--light-glow-soft);
+}

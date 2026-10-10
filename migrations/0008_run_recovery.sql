@@ -1,0 +1,7 @@
+CREATE TABLE run_recoveries (  id TEXT PRIMARY KEY, run_id TEXT NOT NULL REFERENCES runs(id), generation INTEGER NOT NULL,  actor TEXT NOT NULL, created_at TEXT NOT NULL, original_halt_json TEXT NOT NULL,  UNIQUE(run_id,generation) );
+CREATE TABLE run_recovery_documents (  recovery_id TEXT NOT NULL REFERENCES run_recoveries(id), fingerprint TEXT NOT NULL,  old_workflow_id TEXT, new_workflow_id TEXT NOT NULL UNIQUE,  state TEXT NOT NULL CHECK(state IN('pending','dispatching','started')) DEFAULT 'pending',  PRIMARY KEY(recovery_id,fingerprint) );
+
+CREATE TRIGGER run_recoveries_immutable_update BEFORE UPDATE ON run_recoveries BEGIN SELECT RAISE(ABORT,'Recovery plans are immutable'); END;
+CREATE TRIGGER run_recoveries_immutable_delete BEFORE DELETE ON run_recoveries BEGIN SELECT RAISE(ABORT,'Recovery plans are immutable'); END;
+CREATE TRIGGER run_recovery_documents_identity BEFORE UPDATE ON run_recovery_documents WHEN NEW.recovery_id IS NOT OLD.recovery_id OR NEW.fingerprint IS NOT OLD.fingerprint OR NEW.old_workflow_id IS NOT OLD.old_workflow_id OR NEW.new_workflow_id IS NOT OLD.new_workflow_id OR NOT ((OLD.state='pending' AND NEW.state='dispatching') OR (OLD.state='dispatching' AND NEW.state='started')) BEGIN SELECT RAISE(ABORT,'Recovery execution identities are immutable and state advances only'); END;
+CREATE TRIGGER run_recovery_documents_immutable_delete BEFORE DELETE ON run_recovery_documents BEGIN SELECT RAISE(ABORT,'Recovery execution history is immutable'); END;

@@ -1,0 +1,32 @@
+/* RadioCards (SPEC §7.1). Radio borders use --line-strong (SPEC §8.2); the chosen card is accent-soft. */
+.cards { display: grid; gap: var(--sp-3); min-width: 0; }
+.cards__legend { font-size: var(--fs-17); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-heading); margin-bottom: var(--sp-3); }
+.cards__group { font-size: var(--fs-13); color: var(--ink-2); margin-top: var(--sp-2); }
+.rcard {
+  position: relative; display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: var(--sp-3); align-items: start;
+  padding: var(--sp-4) var(--sp-5); border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); cursor: pointer;
+  transition: background-color var(--dur-hover) var(--ease-out), border-color var(--dur-hover) var(--ease-out);
+}
+.rcard:hover { background: var(--surface-2); }
+.rcard:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.rcard.is-disabled { cursor: not-allowed; background: var(--surface-2); border-color: var(--surface-2); }
+.rcard input {
+  appearance: none; -webkit-appearance: none; margin: 2px 0 0; width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--line-strong); background: var(--surface); display: grid; place-items: center; cursor: inherit;
+}
+.rcard input::after {
+  content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); transform: scale(0);
+  transition: transform var(--dur-hover) var(--ease-out);
+}
+.rcard input:checked { border-color: var(--accent); }
+.rcard input:checked::after { transform: scale(1); }
+.rcard input:disabled { border-color: var(--line-strong); background: var(--surface-2); }
+.rcard__body { display: grid; gap: 2px; min-width: 0; }
+.rcard__title { font-weight: var(--fw-semibold); color: var(--ink); }
+.rcard__detail { font-size: var(--fs-14); color: var(--ink-2); }
+.rcard.is-disabled .rcard__title { color: var(--ink-2); }
+.rcard__reason { font-size: var(--fs-13); color: var(--ink-2); margin-top: var(--sp-2); }
+@media (forced-colors: active) {
+  .rcard input { appearance: auto; -webkit-appearance: auto; }
+  .rcard input::after { display: none; }
+}

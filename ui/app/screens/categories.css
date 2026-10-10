@@ -1,0 +1,52 @@
+/* The three category screens (categories.ts, category-editor.ts, category-review.ts), as the artifact's Categories,
+   editor and review views. The shared blocks (.panel, .cats, .cat, .diff, .h-page, .lede, .status, .step-eyebrow,
+   .field, .ti, .ta, .grid-2, .stack-v, .check, .mark, .btn) are site.css's; only what is these screens' own is here. */
+
+/* ---------- Categories: the head with its button on the right, then one panel ---------- */
+.cats-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; }
+.cats-head__text { min-width: 0; flex: 1 1 420px; }
+.cats-head > .action-slot, .cats-head > [data-testid="categories-primary"] { flex: none; }
+.cats-panel { margin-top: 28px; }
+.cats-status { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.cats-status__note { color: var(--faint); font-size: 14px; }
+.cats-legend { margin-top: 18px; font-size: 14px; color: var(--faint); }
+.cats-legend b { color: var(--mute); font-weight: 500; }
+.cats-empty { color: var(--mute); }
+.cats-note { margin-top: 18px; color: var(--mute); font-size: 15px; max-width: 60ch; }
+.cats-h2 { font-family: var(--f-disp); font-weight: 700; font-variation-settings: 'wdth' 85; font-size: 22px; letter-spacing: -.01em; }
+.cats-muted { color: var(--mute); font-size: 15px; margin-top: 6px; }
+.draft-list { list-style: none; margin: 12px 0 0; padding: 0; }
+.draft-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; padding: 6px 0; border-top: 1px solid var(--line); }
+.draft-row:first-child { border-top: 0; }
+.draft-row .glyph { width: 16px; height: 16px; }
+
+/* ---------- Editor and review: eyebrow, page heading, lede, then a column of panels ---------- */
+.cats-pagehead > .eyebrow { margin-bottom: 8px; }
+.cats-pagehead > .h-page { margin-top: 10px; }
+.cats-body { margin-top: 28px; }
+.category-card { display: grid; gap: 16px; }
+.category-editor .field label, .category-editor .field .lab { font-weight: 400; font-size: 14px; color: var(--mute); }
+.cats-folder { min-height: 46px; display: flex; align-items: center; color: var(--faint); overflow-wrap: anywhere; }
+.cats-hint { font-size: 13px; color: var(--faint); max-width: 60ch; }
+.cats-remove { display: flex; justify-content: flex-end; }
+.category-none { margin: 0; display: grid; gap: 16px; }
+.category-none > .cats-legend-title { float: left; width: 100%; padding: 0; font-family: var(--f-disp); font-weight: 700; font-variation-settings: 'wdth' 85; font-size: 20px; }
+.category-none > .cats-legend-title + * { clear: both; }
+.category-suggestions { display: grid; gap: 4px; }
+.cats-suggest-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.cats-evidence { display: grid; gap: 12px; justify-items: start; }
+.cats-actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px; }
+.cats-certainty { display: grid; gap: 8px; }
+.cats-certainty > p:first-child { color: var(--ink); }
+
+/* ---------- Review: one panel per category, its changes in place ---------- */
+.change { min-width: 0; }
+.change[data-change="added"], .change[data-change="changed"], .change[data-change="removed"] { border-color: var(--line-2); }
+.change__name { font-family: var(--f-disp); font-weight: 750; font-variation-settings: 'wdth' 82; font-size: 22px; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.change__status { font-family: var(--f-body); font-size: 13px; font-weight: 400; letter-spacing: 0; color: var(--faint); }
+.change__fields { display: grid; gap: 10px; margin: 12px 0 0; }
+.change__fields dt { font-size: 13px; color: var(--faint); }
+.change__fields dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+.change__lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+/* site.css's .diff highlighter, but wrapping: a long added sentence breaks over lines like the text around it. */
+.diff ins, .diff del { box-decoration-break: clone; -webkit-box-decoration-break: clone; }

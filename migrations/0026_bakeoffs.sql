@@ -1,0 +1,12 @@
+CREATE TABLE bakeoffs (id TEXT PRIMARY KEY, actor TEXT NOT NULL, created_at TEXT NOT NULL, request_hash TEXT NOT NULL, plan_json TEXT NOT NULL);
+CREATE INDEX bakeoffs_actor ON bakeoffs(actor, created_at);
+CREATE TABLE bakeoff_documents (bakeoff_id TEXT NOT NULL REFERENCES bakeoffs(id), ordinal INTEGER NOT NULL CHECK(ordinal > 0), fingerprint TEXT NOT NULL, upload_hash TEXT NOT NULL, document_json TEXT NOT NULL, PRIMARY KEY(bakeoff_id, fingerprint), UNIQUE(bakeoff_id, ordinal));
+CREATE TABLE bakeoff_arms (bakeoff_id TEXT NOT NULL REFERENCES bakeoffs(id), arm TEXT NOT NULL CHECK(arm IN ('baseline','candidate')), quote_id TEXT UNIQUE REFERENCES quotes(id), quote_request_hash TEXT, PRIMARY KEY(bakeoff_id, arm), CHECK((quote_id IS NULL) = (quote_request_hash IS NULL)));
+ALTER TABLE runs ADD COLUMN bakeoff_json TEXT;
+CREATE TRIGGER bakeoffs_immutable_update BEFORE UPDATE ON bakeoffs BEGIN SELECT RAISE(ABORT,'Comparison plans are immutable'); END;
+CREATE TRIGGER bakeoffs_immutable_delete BEFORE DELETE ON bakeoffs BEGIN SELECT RAISE(ABORT,'Comparison plans are immutable'); END;
+CREATE TRIGGER bakeoff_documents_immutable_update BEFORE UPDATE ON bakeoff_documents BEGIN SELECT RAISE(ABORT,'Comparison manifests are immutable'); END;
+CREATE TRIGGER bakeoff_documents_immutable_delete BEFORE DELETE ON bakeoff_documents BEGIN SELECT RAISE(ABORT,'Comparison manifests are immutable'); END;
+CREATE TRIGGER bakeoff_arms_identity BEFORE UPDATE ON bakeoff_arms WHEN NEW.bakeoff_id IS NOT OLD.bakeoff_id OR NEW.arm IS NOT OLD.arm OR OLD.quote_id IS NOT NULL BEGIN SELECT RAISE(ABORT,'Comparison arm confirmations are immutable'); END;
+CREATE TRIGGER bakeoff_arms_immutable_delete BEFORE DELETE ON bakeoff_arms BEGIN SELECT RAISE(ABORT,'Comparison arms are immutable'); END;
+CREATE TRIGGER bakeoff_run_provenance BEFORE UPDATE OF bakeoff_json ON runs WHEN NEW.bakeoff_json IS NOT OLD.bakeoff_json BEGIN SELECT RAISE(ABORT,'Comparison provenance is immutable'); END;

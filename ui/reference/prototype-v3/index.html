@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document sorting · Light Architecture prototype v3</title>
+<script>
+  // Theme and motion before first paint: ?theme= and ?motion= win, then the last choice made here.
+  (function () {
+    var q = new URLSearchParams(location.search), r = document.documentElement, t = q.get('theme'), m = q.get('motion'), a = q.get('amber');
+    try { t = t || localStorage.getItem('la-theme'); m = m || localStorage.getItem('la-motion'); a = a || localStorage.getItem('la-amber'); } catch (e) {}
+    r.dataset.theme = t === 'light' ? 'light' : 'dark';
+    r.classList.add('is-booting');
+    if (m === 'reduce' || m === 'full') r.dataset.motion = m;
+    if (a === 'proposed' || a === 'red') r.dataset.amber = a;
+  })();
+</script>
+<link rel="stylesheet" href="la.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="blur6" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter>
+    <symbol id="g-check" viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></symbol>
+    <symbol id="g-person" viewBox="0 0 16 16"><circle cx="8" cy="5.4" r="2.6"/><path d="M3 13.6c.8-2.6 2.7-4 5-4s4.2 1.4 5 4"/></symbol>
+    <symbol id="g-slash" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.6"/><path d="M4.1 11.9l7.8-7.8"/></symbol>
+    <symbol id="g-arrow" viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></symbol>
+    <symbol id="g-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"/><path d="M10.5 10.5L14 14"/></symbol>
+    <symbol id="g-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.4M8 13.1v1.4M1.5 8h1.4M13.1 8h1.4M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/></symbol>
+    <symbol id="g-moon" viewBox="0 0 16 16"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8a5.6 5.6 0 1 0 6.8 6.8z"/></symbol>
+    <symbol id="g-folder" viewBox="0 0 16 16"><path d="M2 4.6A1.6 1.6 0 0 1 3.6 3h2.9l1.6 1.6h4.3A1.6 1.6 0 0 1 14 6.2v5.2A1.6 1.6 0 0 1 12.4 13H3.6A1.6 1.6 0 0 1 2 11.4z"/></symbol>
+    <symbol id="g-lock" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="2.2"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7"/></symbol>
+    <symbol id="g-two" viewBox="0 0 16 16"><circle cx="6" cy="8" r="4.2"/><circle cx="10" cy="8" r="4.2"/></symbol>
+    <symbol id="g-shield" viewBox="0 0 16 16"><path d="M8 1.8l5 2v4.1c0 3-2.1 5.1-5 6.3-2.9-1.2-5-3.3-5-6.3V3.8z"/><path d="M5.8 8.1l1.6 1.6 3-3.1"/></symbol>
+    <symbol id="g-chev" viewBox="0 0 16 16"><path d="M6 3.5L10.5 8 6 12.5"/></symbol>
+    <symbol id="g-trail" viewBox="0 0 16 16"><path d="M2 12.5h5.2a3.3 3.3 0 0 0 3.3-3.3V4"/><circle cx="10.5" cy="3.6" r="1.4"/></symbol>
+    <symbol id="g-trail-off" viewBox="0 0 16 16"><path d="M2 12.5h5.2a3.3 3.3 0 0 0 3.3-3.3V4"/><path d="M2.5 2.5l11 11"/></symbol>
+    <symbol id="g-alert" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 4.8v3.8M8 11.2v.1"/></symbol>
+    <symbol id="g-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 4.8V8l2.2 1.6"/></symbol>
+    <symbol id="g-doc" viewBox="0 0 16 16"><path d="M4 1.8h5l3 3v9.4H4z"/><path d="M9 1.8v3h3M6 8.5h4M6 11h4"/></symbol>
+    <symbol id="g-pause" viewBox="0 0 16 16"><path d="M5.5 3.5v9M10.5 3.5v9"/></symbol>
+  </defs>
+</svg>
+<!-- the one ambient light: a single sweep along the lattice when Home opens; nothing else moves on its own -->
+<div class="ambient" aria-hidden="true"><i></i></div>
+
+<div class="app">
+<!-- ===================================================== PROTOTYPE CONTROLS (not part of the app) -->
+<details class="proto" id="proto">
+  <summary><span class="proto__tag">Prototype controls</span><span class="proto__hint">Not part of the app. Every movement is started by one of these events or by your own click.</span></summary>
+  <div class="proto__body">
+    <div class="proto__grp" role="group" aria-label="Go to a screen">
+      <span class="proto__lbl">Screen</span>
+      <a href="#home" data-preset="home">Home</a>
+      <a href="#read" data-preset="read">Read files</a>
+      <a href="#confirm" data-preset="confirm">Confirm</a>
+      <a href="#live-sending" data-preset="live-sending">Sending</a>
+      <a href="#live-stalled" data-preset="live-stalled">Sending stopped</a>
+      <a href="#live" data-preset="live">Sorting</a>
+      <a href="#live-waiting" data-preset="live-waiting">Waiting</a>
+      <a href="#live-checkfail" data-preset="live-checkfail">Can’t reach service</a>
+      <a href="#results" data-preset="results">Results</a>
+      <a href="#review" data-preset="review">Review folders</a>
+    </div>
+    <div class="proto__grp" role="group" aria-label="Theme">
+      <span class="proto__lbl">Theme</span>
+      <button type="button" data-set-theme="dark">Dark</button>
+      <button type="button" data-set-theme="light">Light</button>
+    </div>
+    <div class="proto__grp" role="group" aria-label="Motion">
+      <span class="proto__lbl">Motion</span>
+      <button type="button" data-set-motion="full">Full</button>
+      <button type="button" data-set-motion="reduce">Reduced</button>
+    </div>
+    <div class="proto__grp" role="group" aria-label="Status checks, simulated: the page asking the service every 5 seconds">
+      <span class="proto__lbl">Status checks</span>
+      <button type="button" data-set-checks="on" title="Stands in for the page asking the service every 5 s; each answer that shows work moving keeps the light live">Every 5 s (simulated)</button>
+      <button type="button" data-set-checks="off" title="No answers arrive: 15 s later the pulse ends and the light says Not updated since">Stopped</button>
+    </div>
+    <div class="proto__grp" role="group" aria-label="Quiet period: how long answers may show no new outcome before the light says Waiting">
+      <span class="proto__lbl">Quiet period</span>
+      <button type="button" data-set-quiet="90000" title="After 90 s with no new outcome the light stops pulsing and says Waiting">90 s</button>
+      <button type="button" data-set-quiet="180000" title="After 3 min with no new outcome the light stops pulsing and says Waiting">3 min</button>
+    </div>
+    <div class="proto__grp" role="group" aria-label="Outcome colours">
+      <span class="proto__lbl">Amber</span>
+      <button type="button" data-set-amber="current">Current</button>
+      <button type="button" data-set-amber="proposed" title="Needs review moves towards yellow; the light theme's Could not process fill takes the darker red">Proposed A</button>
+      <button type="button" data-set-amber="red" title="Needs review unchanged; only the light theme's Could not process fill takes the darker red">Proposed B: red only</button>
+    </div>
+    <div class="proto__grp" role="group" aria-label="Simulate an event">
+      <span class="proto__lbl">Simulate</span>
+      <button type="button" data-sim="one">+1</button>
+      <button type="button" data-sim="ten">+10</button>
+      <button type="button" data-sim="stall">Stall</button>
+      <button type="button" data-sim="fail">Failure</button>
+      <button type="button" data-sim="docfail">A document fails</button>
+      <button type="button" data-sim="recover">Recover</button>
+      <button type="button" data-sim="next">Next step</button>
+    </div>
+  </div>
+</details>
+
+<!-- ===================================================== TOP BAR -->
+<header class="topbar">
+  <div class="topbar__in">
+    <a class="brand" href="#home" data-go="home">
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true"><rect class="m-frame" x="2.5" y="2.5" width="27" height="27" rx="9"/><path class="m-trail" d="M8.5 21h8a4 4 0 0 0 4-4V10"/><circle class="m-dot" cx="20.5" cy="9.6" r="2.4"/></svg>
+      <span>Document sorting</span>
+    </a>
+    <nav class="tabs" aria-label="Main">
+      <a class="tab" href="#home" data-tab="home" data-go="home">Home</a>
+      <a class="tab" href="#live" data-tab="runs" data-go="live">Runs</a>
+      <a class="tab" href="#" data-tab="categories" data-soon>Categories</a>
+      <a class="tab" href="#" data-tab="help" data-soon>How it works</a>
+      <span class="tabs__bar" aria-hidden="true"></span>
+    </nav>
+    <div class="topbar__end">
+      <span class="setup"><svg class="g"><use href="#g-check"/></svg><span>Setup complete</span></span>
+      <button class="icon-btn" type="button" data-theme-toggle aria-pressed="true" aria-label="Dark theme" title="Switch between dark and light">
+        <svg class="g g-on"><use href="#g-moon"/></svg><svg class="g g-off"><use href="#g-sun"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="frame" data-shell="home">
+  <!-- ===================================================== JOURNEY SPINE -->
+  <aside class="spine-col">
+    <nav class="spine" aria-label="Progress">
+      <div class="spine__run">
+        <p class="overline" data-run-kind>This run</p>
+        <p class="spine__name" data-run-name>Run 9</p>
+        <p class="spine__when" data-run-when>25 Sep · 13:58</p>
+        <p class="run-state" data-run-state hidden><span class="ind" data-ind aria-hidden="true"><span class="ind__halo"></span><span class="ind__hold"></span><span class="ind__ring"></span><span class="ind__beat"></span><span class="ind__dot"></span></span><span class="run-state__t" data-run-state-t></span></p>
+      </div>
+      <div class="spine__compact">
+        <p data-spine-compact><b>Step 5 of 10</b> · Sort</p>
+        <div class="segs" aria-hidden="true" data-segs></div>
+      </div>
+      <ol class="spine__list" data-spine-list></ol>
+      <div class="spine__rail" aria-hidden="true"><div class="spine__fill"></div><div class="spine__head"></div></div>
+    </nav>
+  </aside>
+
+  <main class="stage" id="main" tabindex="-1">
+
+  <!-- ===================================================== (a) HOME -->
+  <section class="screen" data-screen="home" aria-labelledby="h-home">
+    <div class="hero">
+      <div class="hero__copy" data-enter>
+        <p class="overline">Sort documents with two readers and you</p>
+        <h1 id="h-home" tabindex="-1">Sort a whole folder into <em>your own</em> categories.</h1>
+        <p class="lede">Two independent systems read every document. It is filed only when both agree and are sure enough. Everything else comes to you.</p>
+        <div class="action">
+          <div class="action__row">
+            <button class="btn btn--primary btn--xl" type="button" data-primary data-start-new>Start a new run <svg class="g"><use href="#g-arrow"/></svg></button>
+            <a class="btn btn--quiet" href="#" data-soon>How it works</a>
+          </div>
+          <p class="slot" data-slot></p>
+        </div>
+        <ul class="promises">
+          <li><span class="pg"><svg class="g"><use href="#g-lock"/></svg></span>Your original files stay on this computer. Only their text is sent.</li>
+          <li><span class="pg"><svg class="g"><use href="#g-two"/></svg></span>A document is filed only when both systems agree.</li>
+          <li><span class="pg"><svg class="g"><use href="#g-shield"/></svg></span>Nothing about your categories changes without you.</li>
+        </ul>
+      </div>
+      <div class="hero__arena" data-enter>
+        <div class="arena" data-arena role="img" aria-label="The ten steps of a run, drawn as a loop. Run 9 is at step 5, Sort. Run 8 is at step 8, Review folders.">
+          <div class="arena__plane">
+            <svg viewBox="0 0 640 380" aria-hidden="true" focusable="false">
+              <path id="loop" class="arena__band" d="M170 40H470A150 150 0 0 1 470 340H170A150 150 0 0 1 170 40Z"/>
+              <path class="arena__rim" d="M170 23H470A167 167 0 0 1 470 357H170A167 167 0 0 1 170 23Z"/>
+              <path class="arena__rim" d="M170 57H470A133 133 0 0 1 470 323H170A133 133 0 0 1 170 57Z"/>
+              <path class="arena__lane" d="M170 40H470A150 150 0 0 1 470 340H170A150 150 0 0 1 170 40Z"/>
+              <path class="arena__glow" data-arena-trail d="M170 40H470A150 150 0 0 1 470 340H170A150 150 0 0 1 170 40Z" pathLength="1000"/>
+              <path class="arena__trail" data-arena-trail d="M170 40H470A150 150 0 0 1 470 340H170A150 150 0 0 1 170 40Z" pathLength="1000"/>
+              <g data-arena-stations></g>
+            </svg>
+          </div>
+          <div class="arena__labels" data-arena-labels aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+    <section class="runs" data-enter aria-labelledby="h-runs">
+      <div class="section-head"><h2 class="h2" id="h-runs">Your runs</h2><a class="link-arrow" href="#" data-soon>All runs <svg class="g"><use href="#g-arrow"/></svg></a></div>
+      <ol class="run-cards">
+        <li class="run-card pane">
+          <div class="run-card__top"><span class="run-card__name">Run 9</span><time class="faint small">25 Sep · 13:58</time></div>
+          <!-- the run's state, in the words of its own light: still here (no pulse), red on failure; the action stays on the run -->
+          <div class="run-card__now">
+            <p class="card-state is-live" data-card-state><span class="ind ind--still is-live" aria-hidden="true"><span class="ind__halo"></span><span class="ind__hold"></span><span class="ind__dot"></span></span><span class="card-state__t" data-card-state-t>Working</span></p>
+            <p data-card-now>Sorting: 73 of 114 have an outcome.</p>
+          </div>
+          <div class="mini" aria-hidden="true" data-card-mini><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="run-card__step" data-card-step>Step 5 of 10 · Sort</p>
+          <a class="link-arrow" href="#live" data-open-run="9">Open Run 9 <svg class="g"><use href="#g-arrow"/></svg></a>
+        </li>
+        <li class="run-card pane">
+          <div class="run-card__top"><span class="run-card__name">Run 8</span><time class="faint small">23 Sep · 09:41</time></div>
+          <p class="run-card__now">Folders made. Next: look through them and move anything in the wrong place.</p>
+          <div class="mini" aria-hidden="true"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i></i><i></i></div>
+          <p class="run-card__step">Step 8 of 10 · Review folders</p>
+          <a class="link-arrow" href="#review" data-open-run="8">Open Run 8 <svg class="g"><use href="#g-arrow"/></svg></a>
+        </li>
+        <li class="run-card pane">
+          <div class="run-card__top"><span class="run-card__name">Run 7</span><time class="faint small">19 Sep · 16:05</time></div>
+          <p class="run-card__now">Finished. Compared with your answers: 78 of 80 automatic filings match.</p>
+          <div class="mini" aria-hidden="true"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i></div>
+          <p class="run-card__step">All 10 steps done</p>
+          <a class="link-arrow" href="#results" data-open-run="7">Open Run 7 <svg class="g"><use href="#g-arrow"/></svg></a>
+        </li>
+      </ol>
+    </section>
+  </section>
+
+  <!-- ===================================================== READ FILES (the loading moment) -->
+  <section class="screen" data-screen="read" aria-labelledby="h-read" hidden>
+    <header class="stage-head" data-enter>
+      <p class="overline" data-step-label></p>
+      <h1 id="h-read" tabindex="-1" data-read-h1>Read the files on this computer</h1>
+      <p class="now"><span class="now__k">Now</span><span class="now__t" data-read-now></span><a class="next" href="#" data-next data-want="" hidden><span data-next-label></span><svg class="g"><use href="#g-arrow"/></svg></a></p>
+    </header>
+    <section class="pane pane--stage loader surf" data-enter data-read-pane data-flip aria-labelledby="h-reading">
+      <div data-read-choose>
+        <div class="choose">
+          <p class="overline" id="h-reading">Your files</p>
+          <p class="h2">The app reads the files here, in this browser. Nothing is sent until you select Start run.</p>
+          <p class="muted">Your browser will ask whether this page may view the folder. Choose <b>View files</b>.</p>
+          <div class="action">
+            <button class="btn btn--primary btn--xl" type="button" data-primary data-choose-folder><svg class="g"><use href="#g-folder"/></svg> Choose folder</button>
+            <p class="slot" data-slot></p>
+          </div>
+        </div>
+      </div>
+      <div data-read-work hidden>
+        <div class="loader__top">
+          <p class="status" data-status><span class="ind ind--lg" data-ind aria-hidden="true"><span class="ind__halo"></span><span class="ind__hold"></span><span class="ind__ring"></span><span class="ind__beat"></span><span class="ind__dot"></span></span><span class="status__state" data-status-state>Reading</span><span class="status__why" data-status-why>on this computer</span></p>
+          <p class="src"><svg class="g"><use href="#g-folder"/></svg><span><b class="tnum">114</b> files found in ‘Archive 2026’</span></p>
+        </div>
+        <div class="fail" data-fail hidden>
+          <p class="fail__msg"><svg class="g"><use href="#g-alert"/></svg><span data-fail-t></span></p>
+          <div class="action action--inline">
+            <button class="btn btn--primary" type="button" data-primary data-fail-act></button>
+            <p class="slot" data-slot data-fail-slot></p>
+          </div>
+        </div>
+        <div data-read-body data-flip>
+          <div class="count"><span class="count__n num" data-read-n>38</span><span class="count__of">of <b class="tnum">114</b> read</span></div>
+          <div class="lightbar" data-bar="read" role="progressbar" aria-label="Files read" aria-valuemin="0" aria-valuemax="114" aria-valuenow="38" aria-valuetext="38 of 114 files read">
+            <div class="lightbar__rail"></div>
+            <div class="lightbar__fill"></div>
+            <div class="lightbar__headwrap"><div class="lightbar__flare"></div><div class="lightbar__head"></div></div>
+          </div>
+          <!-- the latest file is the first row of Just read below; the foot says only what could not be read -->
+          <div class="loader__foot">
+            <p class="lost" data-read-lost><svg class="g"><use href="#g-slash"/></svg><span><b class="tnum" data-read-failed>1</b> could not be read</span></p>
+          </div>
+          <div class="action" style="margin-top:28px">
+            <button class="btn btn--primary btn--xl" type="button" data-primary data-review-start hidden>Review and start <svg class="g"><use href="#g-arrow"/></svg></button>
+            <p class="slot" data-slot data-read-slot>Nothing to do now. Keep this page open.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="grid-2" data-flip>
+      <section class="pane" data-enter aria-labelledby="h-justread">
+        <h2 class="h2" id="h-justread">Just read</h2>
+        <div class="list-clip"><ul class="filelist" data-read-list></ul></div>
+      </section>
+      <section class="pane" data-enter aria-labelledby="h-safe">
+        <h2 class="h2" id="h-safe">What happens to your files</h2>
+        <ul class="plain-list">
+          <li><span class="pg"><svg class="g"><use href="#g-lock"/></svg></span><span><b>Read here, in this browser.</b> The originals are not changed or copied anywhere.</span></li>
+          <li><span class="pg"><svg class="g"><use href="#g-clock"/></svg></span><span><b>Nothing is sent yet.</b> You confirm what will be sent on the next step.</span></li>
+          <li><span class="pg"><svg class="g"><use href="#g-doc"/></svg></span><span><b>Scanned PDFs have no text.</b> They are listed as could not be read; nothing about their content is sent.</span></li>
+        </ul>
+      </section>
+    </div>
+  </section>
+
+  <!-- ===================================================== (b) CONFIRM -->
+  <section class="screen" data-screen="confirm" aria-labelledby="h-confirm" hidden>
+    <header class="stage-head" data-enter>
+      <p class="overline" data-step-label></p>
+      <h1 id="h-confirm" tabindex="-1">Check, then start the run</h1>
+      <p class="now"><span class="now__k">Now</span><span class="now__t">Choose how to run it and set a spending limit. Nothing has been sent yet.</span><a class="next" href="#" data-next><span>Start run</span><svg class="g"><use href="#g-arrow"/></svg></a></p>
+    </header>
+    <div class="confirm">
+      <div class="confirm__main">
+        <section class="pane pane--stage boundary" data-enter aria-label="What is sent and what stays">
+          <div class="boundary__side">
+            <p class="overline">Stays on this computer</p>
+            <p class="h2">The original files</p>
+            <p>All 114 files, untouched. They never leave this computer.</p>
+          </div>
+          <div class="boundary__line" aria-hidden="true">
+            <svg viewBox="0 0 120 150">
+              <path class="b-wall" d="M60 6V144"/>
+              <rect class="b-gate" x="46" y="58" width="28" height="34" rx="10"/>
+              <path class="b-file" d="M14 52h16l8 8v30H14z"/>
+              <path class="b-strand" d="M38 75H106"/>
+              <circle cx="106" cy="75" r="3" fill="var(--light-hot)"/>
+            </svg>
+          </div>
+          <div class="boundary__side">
+            <p class="overline">Sent for sorting</p>
+            <p class="h2">Only the text</p>
+            <p>The text and headings of 112 documents, and the names of all 114.</p>
+          </div>
+        </section>
+
+        <fieldset class="pane" data-enter>
+          <legend class="h2 legend">How to run it</legend>
+          <div class="cards-2">
+            <label class="radio-card">
+              <input type="radio" name="mode" value="interactive" data-mode>
+              <span><span class="radio-card__t">Interactive</span><span class="radio-card__d">Each document is sorted as soon as it arrives. You can watch it here.</span></span>
+            </label>
+            <label class="radio-card is-disabled">
+              <input type="radio" name="mode" value="batch" disabled aria-describedby="batch-why">
+              <span><span class="radio-card__t">Batch</span><span class="radio-card__d">Sends everything at once and sorts it later.</span><span class="why" id="batch-why">Paused while it is being checked. Recent Batch runs did not finish.</span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <section class="pane field" data-enter aria-labelledby="h-limit">
+          <h2 class="h2" id="h-limit"><label for="limit">Spending limit</label></h2>
+          <p class="muted" id="limit-help">Stop this run if spending reaches this amount.</p>
+          <div class="limit-row">
+            <span class="money"><span aria-hidden="true">$</span><input id="limit" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-describedby="limit-help limit-err" data-limit></span>
+            <p class="muted small">Rough cost: no estimate yet. It appears after your first finished run.</p>
+          </div>
+          <p class="field-err" id="limit-err" data-limit-err aria-live="polite"></p>
+          <details class="disc">
+            <summary><svg class="g"><use href="#g-chev"/></svg>More spending options</summary>
+            <div>
+              <p>Separate limits for each of the two systems, or no limit at all.</p>
+              <label class="check-row"><span class="tickbox"><input class="tick" type="checkbox" data-nolimit><svg class="tick-g" viewBox="0 0 22 22" aria-hidden="true"><path d="M6 11.5l3.2 3.2L16 7.8"/></svg></span><span>No limit for this run. I understand spending will not stop on its own.</span></label>
+            </div>
+          </details>
+        </section>
+      </div>
+
+      <aside class="confirm__side">
+        <section class="pane summary" data-enter aria-labelledby="h-thisrun">
+          <p class="overline" id="h-thisrun">This run</p>
+          <dl>
+            <div><dt>Documents</dt><dd>112 to sort<small>114 files; <span class="fail-count">2 could not be read</span></small></dd></div>
+            <div class="flashable" data-sum="mode"><dt>How to run it</dt><dd class="is-unset" data-sum-mode>Not chosen yet</dd></div>
+            <div class="flashable" data-sum="limit"><dt>Spending limit</dt><dd class="is-unset" data-sum-limit>Not set</dd></div>
+            <div><dt>Categories</dt><dd>5 categories (version 4)<small>Filing certainty 90% (starting value)</small></dd></div>
+          </dl>
+          <div class="action">
+            <button class="btn btn--primary btn--xl" type="button" data-primary data-start-run disabled aria-describedby="start-reasons">Start run <svg class="g"><use href="#g-arrow"/></svg></button>
+            <ul class="reasons slot" id="start-reasons" data-reasons></ul>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===================================================== (c) LIVE RUN -->
+  <section class="screen" data-screen="live" aria-labelledby="h-live" hidden>
+    <header class="stage-head" data-enter>
+      <p class="overline" data-step-label></p>
+      <div class="stage-head__row">
+        <h1 id="h-live" tabindex="-1" data-live-h1>Sorting 114 documents</h1>
+        <button class="toggle" type="button" aria-pressed="true" data-live-toggle><span class="toggle__sw" aria-hidden="true"></span>Live updates</button>
+      </div>
+      <p class="now"><span class="now__k">Now</span><span class="now__t" data-live-now></span><a class="next" href="#" data-next data-want="" hidden><span data-next-label></span><svg class="g"><use href="#g-arrow"/></svg></a></p>
+      <ul class="chips" aria-label="About this run" data-chips>
+        <li class="chip">Interactive</li>
+        <li class="chip" data-chip-spend>Spent $0.42 of $5.00</li>
+        <!-- once sorting starts, the finished send is one fact here (it was a pane with its own full bar) -->
+        <li class="chip chip--x" data-chip-sent hidden><span>All <span class="tnum">114</span> sent at <time data-sent-at>13:59</time></span></li>
+        <li class="chip chip--x">5 categories (version 4)</li>
+        <li class="chip chip--x">Filing certainty 90% (starting value)</li>
+        <li class="chip chip--x">Text in the cloud: yes</li>
+        <li class="chip chip--more"><button type="button" class="chips__more" aria-expanded="false" data-chips-more>More</button></li>
+      </ul>
+    </header>
+
+    <div class="live">
+      <!-- send: sending | stalled | done -->
+      <section class="pane pane--stage send surf" data-enter data-send data-flip aria-labelledby="h-send">
+        <div data-send-live>
+          <div class="send__top">
+            <p class="status" id="h-send" data-status><span class="ind ind--lg" data-ind aria-hidden="true"><span class="ind__halo"></span><span class="ind__hold"></span><span class="ind__ring"></span><span class="ind__beat"></span><span class="ind__dot"></span></span><span class="status__state" data-status-state>Sending</span><span class="status__why" data-status-why></span></p>
+          </div>
+          <div class="fail" data-fail hidden>
+            <p class="fail__msg"><svg class="g"><use href="#g-alert"/></svg><span data-fail-t></span></p>
+            <div class="action action--inline">
+              <button class="btn btn--primary" type="button" data-primary data-continue>Continue sending <svg class="g"><use href="#g-arrow"/></svg></button>
+              <p class="slot" data-slot data-fail-slot></p>
+            </div>
+          </div>
+          <div data-send-body data-flip>
+            <div class="count" data-send-count><span class="count__n num" data-send-n>57</span><span class="count__of">of <b class="tnum">114</b> sent</span></div>
+            <div class="lightbar" data-bar="send" role="progressbar" aria-label="Documents sent" aria-valuemin="0" aria-valuemax="114" aria-valuenow="57" aria-valuetext="57 of 114 sent">
+              <div class="lightbar__rail"></div>
+              <div class="lightbar__fill"></div>
+              <div class="lightbar__headwrap"><div class="lightbar__flare"></div><div class="lightbar__head"></div></div>
+            </div>
+            <p class="slot send__slot" data-slot data-send-slot></p>
+            <details class="disc send__more" data-stall-why hidden>
+              <summary><svg class="g"><use href="#g-chev"/></svg>More about this stop</summary>
+              <div><p data-stall-more></p>
+                <div class="action"><button class="btn btn--quiet" type="button" data-open-sheet="discard">Discard this run…</button><p class="slot" data-slot data-discard-slot></p></div></div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- sort -->
+      <section class="pane pane--stage sort surf" data-enter data-sort data-flip aria-labelledby="h-sort">
+        <div class="sort__top">
+          <p class="status" id="h-sort" data-status><span class="ind ind--lg" data-ind aria-hidden="true"><span class="ind__halo"></span><span class="ind__hold"></span><span class="ind__ring"></span><span class="ind__beat"></span><span class="ind__dot"></span></span><span class="status__state" data-status-state>Working</span><span class="status__why" data-status-why></span></p>
+        </div>
+        <!-- finished: the one action sits directly beneath the light, in the place a failure's action takes -->
+        <div class="action sort__next" data-sort-next hidden>
+          <button class="btn btn--primary btn--xl" type="button" data-primary data-see-results>See the results <svg class="g"><use href="#g-arrow"/></svg></button>
+        </div>
+        <div class="fail" data-fail hidden>
+          <p class="fail__msg"><svg class="g"><use href="#g-alert"/></svg><span data-fail-t></span></p>
+          <div class="action action--inline" data-fail-action>
+            <button class="btn btn--primary" type="button" data-primary data-fail-act></button>
+            <p class="slot" data-slot data-fail-slot></p>
+          </div>
+        </div>
+        <div class="sort__body" data-sort-body data-flip>
+          <div class="count" data-sort-count><span class="count__n num" data-decided>73</span><span class="count__of">of <b class="tnum">114</b> have an outcome</span></div>
+          <!-- the bar: each boundary is a wrapper translated by the segment before it, so one decided document moves
+               only its own segment, the one boundary after it, and the head -->
+          <div class="pipewrap">
+            <div class="pipe" role="img" data-pipe aria-label="">
+              <div class="seg seg--filed" data-seg="0"></div>
+              <div class="pipe__w" data-w="1"><div class="seg seg--review" data-seg="1"></div>
+                <div class="pipe__w" data-w="2"><div class="seg seg--failed" data-seg="2"></div>
+                  <div class="pipe__w" data-w="3"><div class="seg seg--reading" data-seg="3"></div>
+                    <div class="pipe__w" data-w="4"><i class="cut"></i></div>
+                    <i class="cut"></i><i class="pipe__notch"></i><span class="pipe__flare"></span><span class="pipe__flare pipe__flare--fail"></span>
+                  </div>
+                  <i class="cut"></i>
+                </div>
+                <i class="cut"></i>
+              </div>
+            </div>
+            <div class="pipe__headwrap"><div class="pipe__head"></div></div>
+          </div>
+          <div class="pipe-legend" aria-hidden="true">
+            <span><i style="background:var(--filed-bar)"></i>Filed</span><span><i style="background:var(--review-bar)"></i>Needs review</span><span data-legend-failed><i style="background:var(--failed-bar)"></i>Could not process</span><span data-legend-reading><i class="k-reading"></i>Being read <b class="num" data-st-reading>19</b></span><span data-legend-waiting><i style="background:var(--rail);box-shadow:inset 0 0 0 1px var(--edge-strong)"></i>Waiting its turn <b class="num" data-st-waiting>22</b></span>
+          </div>
+          <div class="sort__slot" data-sort-foot>
+            <p class="slot" data-slot data-sort-slot>Nothing to do now.</p>
+            <p class="notice" data-doc-notice hidden><svg class="g"><use href="#g-alert"/></svg><span data-doc-notice-t></span></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="tallies" data-enter data-flip data-tallies aria-label="Outcomes so far">
+        <!-- no meters here: the sorting bar above already shows the proportions -->
+        <div class="pane tally tally--filed"><p class="tally__k"><svg class="g"><use href="#g-check"/></svg>Filed</p><p class="tally__n"><span class="num" data-t-filed>52</span><small>of 114</small></p></div>
+        <div class="pane tally tally--review"><p class="tally__k"><svg class="g"><use href="#g-person"/></svg>Needs review</p><p class="tally__n"><span class="num" data-t-review>20</span><small>of 114</small></p></div>
+        <div class="pane tally tally--failed"><p class="tally__k"><svg class="g"><use href="#g-slash"/></svg>Could not process</p><p class="tally__n"><span class="num" data-t-failed>1</span><small>of 114</small></p></div>
+      </section>
+
+      <div class="live-foot" data-enter data-flip data-live-foot>
+        <section class="pane activity" aria-labelledby="h-act">
+          <div class="section-head" style="margin-bottom:0"><h2 class="h2" id="h-act">What’s happening now</h2><span class="faint small">The last 5 recorded events</span></div>
+          <div class="list-clip"><ol data-activity></ol></div>
+        </section>
+        <section class="pane spend" data-spend aria-labelledby="h-spend">
+          <h2 class="h2" id="h-spend">Spending</h2>
+          <p class="spend__n"><span class="num" data-spent>$0.42</span> <small>of $5.00</small></p>
+          <p class="muted small" data-spent-note>1 charge not reported yet.</p>
+          <details class="disc" style="margin-top:16px">
+            <summary><svg class="g"><use href="#g-chev"/></svg>How spending is counted</summary>
+            <div><p>Each system reports what it charged a little after it answers. Until every charge is reported, the amount shown is what is known so far, and the run stops if it reaches your limit.</p></div>
+          </details>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== (d) RESULTS -->
+  <section class="screen" data-screen="results" aria-labelledby="h-results" hidden>
+    <header class="stage-head" data-enter>
+      <p class="overline" data-step-label></p>
+      <h1 id="h-results" tabindex="-1">114 documents sorted</h1>
+      <p class="now"><span class="now__k">Now</span><span class="now__t">Next, make folders on this computer.</span><a class="next" href="#" data-next><span>Make folders</span><svg class="g"><use href="#g-arrow"/></svg></a></p>
+    </header>
+    <div class="results-top">
+      <section class="tallies" data-enter aria-label="Outcomes">
+        <div class="pane tally tally--filed"><p class="tally__k"><svg class="g"><use href="#g-check"/></svg>Filed</p><p class="tally__n"><span class="num">83</span><small>filed automatically</small></p><div class="meter" aria-hidden="true"><i style="transform:scaleX(.728)"></i></div></div>
+        <div class="pane tally tally--review"><p class="tally__k"><svg class="g"><use href="#g-person"/></svg>Needs review</p><p class="tally__n"><span class="num">29</span><small>4 to look at first</small></p><div class="meter" aria-hidden="true"><i style="transform:scaleX(.254)"></i></div></div>
+        <div class="pane tally tally--failed"><p class="tally__k"><svg class="g"><use href="#g-slash"/></svg>Could not process</p><p class="tally__n"><span class="num">2</span><small>scanned, no text</small></p><div class="meter" aria-hidden="true"><i style="transform:scaleX(.018)"></i></div></div>
+      </section>
+      <section class="pane make" data-enter aria-label="Next step">
+        <div class="action">
+          <button class="btn btn--primary btn--xl" type="button" data-primary data-make-folders>Make folders on this computer</button>
+          <p class="slot" data-slot>Copies your originals into one folder per category. The originals are not changed.</p>
+        </div>
+        <div class="quiet-links">
+          <a class="link-arrow" href="#" data-soon>Save a copy of the results</a>
+          <a class="link-arrow" href="#" data-soon>Try the 2 that could not be processed again, in a new run</a>
+        </div>
+      </section>
+    </div>
+    <section class="pane" data-enter aria-label="Documents">
+      <div class="toolbar">
+        <div class="show" role="radiogroup" aria-label="Show" data-show>
+          <span class="show__bar" aria-hidden="true" data-show-bar></span>
+        </div>
+        <div class="search">
+          <label for="q"><svg class="g"><use href="#g-search"/></svg><span class="sr-only">Search documents</span></label>
+          <input id="q" type="search" placeholder="Search by name, folder or reason" autocomplete="off" data-q>
+          <kbd aria-hidden="true">/</kbd>
+        </div>
+      </div>
+      <table class="results" data-table>
+        <caption class="caption" data-caption>All documents · 25 of 114 shown</caption>
+        <colgroup><col class="c-doc"><col class="c-out"><col class="c-where"><col class="c-why"><col class="c-open"></colgroup>
+        <thead><tr><th scope="col">Document</th><th scope="col">Outcome</th><th scope="col">Where it went</th><th scope="col">Why</th><th scope="col"><span class="sr-only">Evidence</span></th></tr></thead>
+        <tbody data-tbody></tbody>
+      </table>
+      <div class="more"><button class="btn btn--secondary btn--sm" type="button" data-more>Show 25 more</button><span data-more-note></span></div>
+    </section>
+  </section>
+
+  <!-- ===================================================== (e) REVIEW FOLDERS -->
+  <section class="screen" data-screen="review" aria-labelledby="h-review" hidden>
+    <header class="stage-head" data-enter>
+      <p class="overline" data-step-label></p>
+      <h1 id="h-review" tabindex="-1">Check every folder</h1>
+      <p class="now"><span class="now__k">Now</span><span class="now__t" data-review-now>You moved 14 files. Tick each folder once you’ve looked through it.</span><a class="next" href="#" data-next><span data-next-label>Save my review</span><svg class="g"><use href="#g-arrow"/></svg></a></p>
+    </header>
+    <div class="review">
+      <div class="review__main">
+        <ol class="pane substeps" data-enter aria-label="Steps">
+          <li><span class="sn"><svg class="g"><use href="#g-check"/></svg></span><span>Open ‘Sorted · <span data-rn>Run 9</span>’ on this computer</span></li>
+          <li><span class="sn"><svg class="g"><use href="#g-check"/></svg></span><span>Look through every folder, including the filed ones</span></li>
+          <li><span class="sn"><svg class="g"><use href="#g-check"/></svg></span><span>Move files that are in the wrong folder</span></li>
+          <li><span class="sn"><svg class="g"><use href="#g-check"/></svg></span><span>Come back and read your changes</span></li>
+        </ol>
+        <a class="link-arrow jump" href="#defs">Categories this run used <svg class="g"><use href="#g-arrow"/></svg></a>
+        <section class="pane" data-enter aria-labelledby="h-folders">
+          <div class="section-head"><h2 class="h2" id="h-folders">Folders</h2><button class="btn btn--quiet" type="button" data-soon>Look again</button></div>
+          <p class="muted small" style="margin:-8px 0 16px">Folders you don’t tick aren’t counted as right or wrong.</p>
+          <div data-folders></div>
+        </section>
+        <section class="pane" data-enter aria-labelledby="h-moved">
+          <div class="section-head"><h2 class="h2" id="h-moved">Documents you moved</h2><span class="faint small">14 · kept on this computer until you save</span></div>
+          <p class="muted small" style="margin-top:-8px">If a document honestly fits two categories, say so. It then counts as right in either.</p>
+          <ul class="moved-list" data-moved></ul>
+        </section>
+        <div class="action" data-enter>
+          <button class="btn btn--primary btn--xl" type="button" data-primary data-save-review disabled aria-describedby="save-slot">Save my review <svg class="g"><use href="#g-arrow"/></svg></button>
+          <p class="slot" id="save-slot" data-slot data-save-slot></p>
+        </div>
+      </div>
+      <aside class="pane review__defs" id="defs" data-enter aria-label="Categories this run used">
+        <div class="defs-head">
+          <p class="overline">Frozen for this run</p>
+          <h2 class="h2">The categories <span data-rn>Run 9</span> was sorted with</h2>
+          <p class="muted small">Version 4 · 25 Sep. Later changes don’t apply to this run.</p>
+        </div>
+        <div data-defs style="display:grid;gap:10px"></div>
+        <div class="reserved">
+          <p><b>Needs review</b>: the systems disagreed or weren’t certain enough.</p>
+          <p><b>Could not process</b>: a step failed, for example a scanned PDF with no text.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  </main>
+</div>
+</div>
+<dialog class="sheet pane" id="sheet-discard" aria-labelledby="sheet-discard-h">
+  <p class="overline">Needs your decision</p>
+  <h2 class="h2" id="sheet-discard-h">Discard <span data-rn>Run 9</span>?</h2>
+  <p class="muted">This deletes the <span data-sheet-n>13</span> uploaded texts and ends the run without results. Nothing else changes; your original files are untouched. You can start a new run afterwards.</p>
+  <div class="sheet__row">
+    <button class="btn btn--secondary" type="button" data-sheet-cancel>Keep the run</button>
+    <button class="btn btn--secondary btn--danger" type="button" data-sheet-confirm>Discard this run</button>
+  </div>
+</dialog>
+<div class="sr-only" aria-live="polite" data-announce></div>
+<script src="la.js"></script>
+</body>
+</html>

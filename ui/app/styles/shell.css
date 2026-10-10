@@ -1,0 +1,146 @@
+/*
+ * The Sorting Room shell, in the app's own markup: the fixed header and the run strip under it, the step ledger, the
+ * run head, the NOW / NEXT bar, the loader, the route bar and the press ripple (motion always runs; there is no Motion switch). The artifact's own
+ * classes (.top, .tabs, .tab, .chipbtn, .resume, .ledger, .step, .nownext, .runhead, .bottomnav…) come from site.css;
+ * this file adds only what the app's structure needs on top of them.
+ */
+
+/* ---------- Header: one fixed container holds the TopBar and the RunStrip right under it ---------- */
+.shell__top { position: fixed; left: 0; right: 0; top: 0; z-index: 40; }
+.shell__top .top { position: relative; }
+.logo { text-decoration: none; color: var(--ink); }
+.logo:hover { color: var(--ink); }
+.tab { text-decoration: none; display: inline-flex; align-items: center; }
+.top .tab:hover { background: none; }
+.tab-ink {
+  left: 0; width: var(--ink-w, 0); transform: translateX(var(--ink-x, 0)); opacity: 0;
+  transition: transform .45s cubic-bezier(.7, 0, .2, 1), width .45s cubic-bezier(.7, 0, .2, 1), opacity .2s;
+}
+.tab-ink.is-on { opacity: 1; }
+.chipbtn { text-decoration: none; }
+.setup-chip[data-setup="attention"] .ok-dot { background: var(--review); }
+.setup-chip[data-setup="unknown"] .ok-dot { background: var(--failed); }
+.setup-chip[data-setup="checking"] .ok-dot { background: var(--ink-3); animation: pulseY 1.4s infinite; }
+.chipbtn[role="switch"][aria-checked="false"] { color: var(--faint); border-style: dashed; }
+.resume { text-decoration: none; max-width: 46vw; overflow: hidden; }
+.resume .r-t, .resume .r-s { overflow: hidden; text-overflow: ellipsis; }
+.more-wrap { position: relative; }
+.pop .row-m { text-decoration: none; }
+.pop kbd { font-family: var(--f-mono); font-size: 11px; color: var(--faint); }
+.bottomnav .tab { text-decoration: none; }
+
+/* The RunStrip: a slim bar under the header once the run head scrolls away. */
+.run-strip {
+  position: absolute; left: 0; right: 0; top: 100%; min-height: var(--runstrip-h);
+  background: var(--raise-2); border-bottom: 1px solid var(--line-2); box-shadow: 0 18px 40px -24px rgb(0 0 0 / .9);
+  font-size: 13px; color: var(--mute);
+}
+.run-strip__in { max-width: var(--maxw); margin: 0 auto; padding-inline: clamp(16px, 3vw, 40px); flex-wrap: nowrap; white-space: nowrap; }
+/* Each item keeps to one line and gives way with an ellipsis; on a phone the checked time (the run head has it) is left out. */
+.run-strip__figure, .run-strip__checked { display: inline-flex; align-items: center; gap: var(--sp-2); min-width: 0; flex: 0 1 auto; }
+@media (max-width: 560px) { .run-strip__checked { display: none; } }
+
+/* Search: the line shown when nothing matches what was typed. */
+.cmdk__empty { margin: 0; padding: 6px 22px 18px; color: var(--mute); font-size: 14px; white-space: normal; }
+.cmdk__empty:empty { display: none; }
+
+/* ---------- Page and stage ---------- */
+.shell__page { padding-bottom: 96px; }
+.stage { margin: 0; padding: 0; max-width: none; }
+.stage--narrow, .stage--wide { max-width: none; }
+
+/* ---------- Run layout: the ledger beside the run (above 980px), stacked below ---------- */
+.subject { padding-top: 0; }
+@media (min-width: 981px) {
+  .shell__page.has-subject {
+    display: grid; grid-template-columns: 236px minmax(0, 1fr); column-gap: clamp(20px, 3vw, 44px); align-items: start;
+  }
+  .shell__page.has-subject > .subject { display: contents; }
+  .shell__page.has-subject .run-header { grid-column: 2; grid-row: 1; }
+  .shell__page.has-subject .narration { grid-column: 2; grid-row: 2; }
+  .shell__page.has-subject > .stage-host { grid-column: 2; grid-row: 3; min-width: 0; }
+  .shell__page.has-subject .rail { grid-column: 1; grid-row: 1 / span 3; }
+}
+
+/* ---------- The step ledger (shell/journey-rail.ts in the artifact's .ledger/.step markup) ---------- */
+.rail.ledger { margin: 0 0 18px; }
+.ledger .rail__chapters, .ledger .rail__chapter, .ledger .rail__steps { display: contents; list-style: none; }
+.ledger .rail__chapters { margin: 0; padding: 0; }
+.ledger .rail-item { display: flex; flex: none; position: relative; }
+.ledger .step { width: 100%; text-decoration: none; }
+.ledger .step.attn .n { background: var(--pink); border-color: var(--pink); color: var(--hl-ink); }
+.ledger .rail-item.step--blocked .step, .ledger .rail-item.step--upcoming .step:not(.now) { color: var(--faint); }
+.ledger span.step { cursor: default; }
+.ledger span.step:hover { background: none; color: var(--faint); }
+.ledger .step .n svg { width: 14px; height: 14px; }
+.ledger .step__tip {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 6; width: max-content; max-width: 240px; padding: 8px 12px;
+  border-radius: 10px; background: var(--raise-2); border: 1px solid var(--line-2); color: var(--mute);
+  box-shadow: 0 20px 50px -10px rgb(0 0 0 / .8); font-size: 13px; line-height: 1.4; white-space: normal;
+}
+.ledger .rail-item:not(:hover):not(:focus-within) .step__tip {
+  width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; box-shadow: none;
+}
+@media (min-width: 981px) { .ledger .step__tip { top: 50%; left: calc(100% + 8px); transform: translateY(-50%); } }
+.ledger .rail__compact { display: none; }
+.ledger .rail__setup { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; }
+.ledger .rail__setup[hidden], .ledger .rail__chapters[hidden] { display: none; }
+/* A step that just became done gets its tile stamped; the one that just became current flashes the highlighter. */
+.ledger .rail-item.is-lit.is-head .step { animation: nowIn .7s ease-out; }
+.ledger .rail-item.step--done.is-lit .n { animation: stamp .55s cubic-bezier(.3, 1.6, .5, 1); }
+.rail--instant .step, .rail--instant .n { animation: none !important; }
+
+/* ---------- Run head and NOW / NEXT ---------- */
+.run-header { padding-top: 0; }
+.run-header__top.runhead { justify-content: flex-start; }
+.run-name {
+  font-family: var(--f-disp); font-weight: 700; font-variation-settings: 'wdth' 85; font-size: 24px; letter-spacing: -.01em;
+  line-height: 1.1; min-width: 0; overflow-wrap: anywhere;
+}
+.run-header__tools { margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.run-header__chips.meta { list-style: none; padding: 0; }
+.run-header__status.meta { margin-top: 6px; }
+.live { min-height: 40px; border-color: var(--line); background: var(--raise); }
+.nownext .lbl--next { color: var(--mute); background: transparent; border: 1px solid var(--line-2); }
+.nownext .narration__now { flex: 1 1 320px; min-width: 0; font-size: 16px; color: var(--ink); }
+.nownext .narration__next { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.nownext .narration__next[hidden] { display: none; }
+.nownext .narration__link { text-decoration: none; }
+@media (max-width: 640px) { .nownext { position: static; margin: 14px 0 22px; } }
+
+/* ---------- Loader ---------- */
+.boot {
+  position: fixed; inset: 0; z-index: 500; background: var(--ground); display: flex; align-items: center; justify-content: center;
+  pointer-events: none; animation: bootFail .4s ease 6s forwards;
+}
+.boot-bar i { width: 100%; transform: scaleX(0); transform-origin: left center; transition: none; }
+
+/* ---------- Route bar ---------- */
+.routebar {
+  position: fixed; left: 0; top: 0; height: 3px; width: 100%; z-index: 400; pointer-events: none; opacity: 0;
+  transform: scaleX(0); transform-origin: left center;
+  background: linear-gradient(90deg, var(--hl), #fff); box-shadow: 0 0 14px rgb(230 255 59 / .8);
+}
+
+/* ---------- Press ripple ---------- */
+.has-rip { position: relative; overflow: hidden; }
+.rip {
+  left: var(--rip-x); top: var(--rip-y); width: var(--rip-size); height: var(--rip-size);
+}
+
+/* ---------- The app's buttons in the artifact's language ---------- */
+.btn { text-decoration: none; }
+.btn--primary { background: var(--hl); border-color: var(--hl); color: var(--hl-ink); font-weight: 600; }
+.btn--primary:hover { filter: brightness(1.06); color: var(--hl-ink); }
+.btn--secondary { background: var(--raise-2); border-color: var(--line-2); }
+.btn--quiet { background: none; border-color: transparent; color: var(--hl); padding: 0 6px; min-height: 40px; }
+.btn--quiet:hover { color: var(--ink); border-color: transparent; }
+.btn--xl { min-height: 56px; padding: 0 28px; font-size: 16px; }
+.btn--sm { min-height: 40px; padding: 0 14px; font-size: 14px; }
+
+/* The skip link waits above the fixed header until focused. */
+.skip-link { position: fixed; top: -120px; z-index: 600; }
+.skip-link:focus { top: 8px; }
+
+/* The done banner greys its text; its check stamp keeps the highlighter ink. */
+.done-banner .check-stamp, .done-banner .check-stamp span, .done-banner .check-stamp svg { color: var(--hl-ink); }

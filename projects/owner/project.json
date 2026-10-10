@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 2,
+  "id": "owner",
+  "productName": "Document classifier",
+  "copyOverrides": {
+    "screenConfirm.readerDataNote.openai": "Shared with OpenAI in exchange for free usage. OpenAI may use it to evaluate and train its models."
+  },
+  "typeFile": {
+    "types": [],
+    "none_of_these": {
+      "name": "None of these",
+      "what": "The document does not fit any defined type."
+    }
+  },
+  "structuralVocabulary": [
+    "instructions",
+    "background",
+    "definitions",
+    "notes",
+    "references",
+    "methodology",
+    "appendix"
+  ],
+  "settings": {
+    "readerEffort": "low",
+    "recoveryEffort": "low",
+    "readerMaxOutputTokens": 16384,
+    "recoveryMaxOutputTokens": 8192,
+    "recoveryMinimumHeadings": 3,
+    "minimumFiledCount": 50,
+    "pilotSize": 25,
+    "pdfPolicy": {
+      "largeFontRatio": 1.2,
+      "maxHeadingCharacters": 120,
+      "topPageFraction": 0.2,
+      "gapRatio": 1.5
+    },
+    "confidenceStatePolicy": "full-text-outline-v3",
+    "decisionNotePolicy": "full-state-structural-info-v4",
+    "readerEvidencePolicy": "whitespace-quotes-v1",
+    "readerContract": "reader-exact-evidence-v2",
+    "confidenceQuestionPolicy": "confidence-single-request-v1",
+    "tokenBytesRatio": 1,
+    "unknownSpendPolicy": "not-processed-zero-v3",
+    "promptCachePolicy": "automatic-cache-priced-v1",
+    "usageLimits": {
+      "policy": "daily-usage-v2",
+      "maxDocumentsPerRun": 60,
+      "maxRunsPerActorPerDay": 3,
+      "openaiTokenPools": [
+        {
+          "id": "large",
+          "modelIds": [
+            "gpt-5.4",
+            "gpt-5.4-2026-03-05"
+          ],
+          "limitTokens": 225000
+        },
+        {
+          "id": "small",
+          "modelIds": [
+            "gpt-5.4-mini",
+            "gpt-5.4-mini-2026-03-17",
+            "gpt-5.4-nano",
+            "gpt-5.4-nano-2026-03-17"
+          ],
+          "limitTokens": 2250000
+        }
+      ],
+      "typesafeDailyNano": "1000000000",
+      "workersAiDailyNeurons": 9000,
+      "deepseekDailyNano": "500000000"
+    }
+  },
+  "pins": {
+    "confidence": {
+      "id": "jev-1.13.0",
+      "date": "2026-09-22",
+      "reason": "Version confirmed against official TypeSafe documentation.",
+      "policy": "versioned"
+    },
+    "reader": {
+      "id": "gpt-5.4",
+      "date": "2026-10-10",
+      "reason": "Owner decision 10 October 2026 (DECISIONS 155): requested by name; each run records the model OpenAI reports and halts if it changes within the run.",
+      "policy": "owner_approved_undated"
+    },
+    "recovery": {
+      "id": "gpt-5.4-nano",
+      "date": "2026-10-10",
+      "reason": "Owner decision 10 October 2026 (DECISIONS 155): requested by name; nano keeps heading recovery in the separate small-model pool; each run records the model OpenAI reports and halts if it changes within the run.",
+      "policy": "owner_approved_undated"
+    }
+  },
+  "budget": {
+    "limitNano": null,
+    "approvedBy": null,
+    "approvedAt": null,
+    "reason": null
+  },
+  "limits": {
+    "readerRequestsPerMinute": null,
+    "readerTokensPerMinute": null,
+    "readerContextTokens": 1050000,
+    "confidenceRequestsPerMinute": 1200,
+    "confidenceStateQuestionTokens": 32000,
+    "confidenceAllQuestionTokens": 64000
+  },
+  "prices": {
+    "interactive": {
+      "recovery": {
+        "inputNanodollarsPerMillion": "200000000",
+        "cachedInputNanodollarsPerMillion": "20000000",
+        "outputNanodollarsPerMillion": "1250000000"
+      },
+      "confidence": {
+        "outputNanodollarsPerMillion": "0",
+        "inputNanodollarsPerMillion": "42000000"
+      },
+      "reader": {
+        "longContext": {
+          "aboveInputTokens": 272000,
+          "outputMultiplier": {
+            "denominator": "2",
+            "numerator": "3"
+          },
+          "inputMultiplier": {
+            "denominator": "1",
+            "numerator": "2"
+          }
+        },
+        "inputNanodollarsPerMillion": "2500000000",
+        "cachedInputNanodollarsPerMillion": "250000000",
+        "outputNanodollarsPerMillion": "15000000000"
+      }
+    },
+    "source": [
+      "https://developers.openai.com/api/docs/pricing",
+      "https://docs.typesafe.ai/models",
+      "https://developers.openai.com/api/docs/models/gpt-5.4",
+      "https://developers.openai.com/api/docs/models/gpt-5.4-nano",
+      "https://developers.openai.com/api/docs/guides/prompt-caching",
+      "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
+      "https://developers.cloudflare.com/workers-ai/platform/pricing/",
+      "https://developers.cloudflare.com/workers-ai/models/qwen3.8-27b/",
+      "https://api-docs.deepseek.com/quick_start/pricing"
+    ],
+    "verifiedAt": "2026-10-06"
+  },
+  "readerModels": {
+    "defaultId": "standard",
+    "options": [
+      {
+        "id": "standard",
+        "label": "GPT-5.4",
+        "pin": {
+          "id": "gpt-5.4",
+          "date": "2026-10-10",
+          "reason": "Owner decision 10 October 2026 (DECISIONS 155): requested by name; each run records the model OpenAI reports and halts if it changes within the run.",
+          "policy": "owner_approved_undated"
+        },
+        "rates": {
+          "longContext": {
+            "aboveInputTokens": 272000,
+            "outputMultiplier": {
+              "denominator": "2",
+              "numerator": "3"
+            },
+            "inputMultiplier": {
+              "denominator": "1",
+              "numerator": "2"
+            }
+          },
+          "inputNanodollarsPerMillion": "2500000000",
+          "cachedInputNanodollarsPerMillion": "250000000",
+          "outputNanodollarsPerMillion": "15000000000"
+        },
+        "promptCachePolicy": "automatic-cache-priced-v1",
+        "contextTokens": 1050000
+      },
+      {
+        "id": "mini",
+        "label": "GPT-5.4 mini",
+        "pin": {
+          "id": "gpt-5.4-mini",
+          "date": "2026-10-10",
+          "reason": "Owner-selected alternative reader; published prices verified 6 October 2026. Owner decision 10 October 2026 (DECISIONS 155): requested by name; each run records the model OpenAI reports and halts if it changes within the run.",
+          "policy": "owner_approved_undated"
+        },
+        "rates": {
+          "inputNanodollarsPerMillion": "750000000",
+          "cachedInputNanodollarsPerMillion": "75000000",
+          "outputNanodollarsPerMillion": "4500000000"
+        },
+        "promptCachePolicy": "automatic-cache-priced-v1",
+        "contextTokens": 400000
+      },
+      {
+        "id": "qwen",
+        "label": "Qwen 3.8 27B (Cloudflare)",
+        "pin": {
+          "id": "@cf/qwen/qwen3.8-27b",
+          "date": "2026-10-06",
+          "reason": "Owner decision 6 October 2026 (DECISIONS 136): experimental reader on the Workers AI free allocation; undated id, first reported model string frozen per run.",
+          "policy": "owner_approved_undated"
+        },
+        "rates": {
+          "inputNanodollarsPerMillion": "449999000",
+          "cachedInputNanodollarsPerMillion": "449999000",
+          "outputNanodollarsPerMillion": "3199999000"
+        },
+        "promptCachePolicy": "automatic-cache-priced-v1",
+        "contextTokens": 262144,
+        "readerEffort": "none",
+        "outputCap": {
+          "policy": "per-category-v1",
+          "baseTokens": 2048,
+          "perCategoryTokens": 320,
+          "maxTokens": 16384
+        }
+      },
+      {
+        "id": "deepseek",
+        "label": "DeepSeek Flash",
+        "pin": {
+          "id": "deepseek-flash",
+          "date": "2026-10-06",
+          "reason": "Owner decision 6 October 2026 (DECISIONS 136): experimental reader, the one paid exception (USD 0.50 a day); undated id, first reported model string frozen per run.",
+          "policy": "owner_approved_undated"
+        },
+        "rates": {
+          "inputNanodollarsPerMillion": "300000000",
+          "cachedInputNanodollarsPerMillion": "6000000",
+          "outputNanodollarsPerMillion": "1200000000"
+        },
+        "promptCachePolicy": "automatic-cache-priced-v1",
+        "contextTokens": 1048576,
+        "readerEffort": "none",
+        "outputCap": {
+          "policy": "per-category-v1",
+          "baseTokens": 2048,
+          "perCategoryTokens": 320,
+          "maxTokens": 16384
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,3 @@
+/* Timestamp (SPEC §7.1): tabular figures; the relative part is quieter. */
+.timestamp { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.timestamp__ago { color: var(--ink-3); }

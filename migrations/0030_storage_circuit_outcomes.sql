@@ -1,0 +1,3 @@
+CREATE TABLE storage_circuit_outcomes(run_id TEXT NOT NULL,fingerprint TEXT NOT NULL,set_aside INTEGER NOT NULL CHECK(set_aside IN(0,1)),operation_token TEXT NOT NULL UNIQUE,created_at TEXT NOT NULL,failures_after INTEGER NOT NULL CHECK(typeof(failures_after)='integer' AND failures_after BETWEEN 0 AND 9007199254740991),PRIMARY KEY(run_id,fingerprint),FOREIGN KEY(run_id,fingerprint) REFERENCES documents(run_id,fingerprint));
+CREATE TRIGGER storage_circuit_outcomes_immutable_update BEFORE UPDATE ON storage_circuit_outcomes BEGIN SELECT RAISE(ABORT,'Storage circuit outcomes are immutable'); END;
+CREATE TRIGGER storage_circuit_outcomes_immutable_delete BEFORE DELETE ON storage_circuit_outcomes BEGIN SELECT RAISE(ABORT,'Storage circuit outcome history is immutable'); END;

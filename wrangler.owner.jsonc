@@ -1,0 +1,197 @@
+{
+  // PLACEHOLDER: the settings for your own real deployment. Every id, hostname and list below is made up.
+  //
+  // The original of this file holds one person's Cloudflare account, resources, web address and sign-in settings, so it
+  // is not published. This copy has the same binding names and the same shape, so the checks pass and
+  // `worker-configuration.d.ts` can be generated from it. It cannot deploy anything as it stands: the all-zero ids
+  // name nothing in any account, and example.com is not your domain.
+  //
+  // To use it, replace each placeholder, in the top level and again under "env" > "validation" (Wrangler does not
+  // copy bindings into an environment):
+  //   account_id            your Cloudflare account id (`npx wrangler whoami` lists it).
+  //   routes[0].pattern     the hostname the site answers on, on a zone in your account.
+  //   database_id           the id of the D1 database you create: `npx wrangler d1 create <name>`.
+  //   bucket_name           an R2 bucket you create: `npx wrangler r2 bucket create <name>`.
+  //   workflows[0].name     any unused Workflow name; Wrangler creates it on the first deploy.
+  //   store_id              your Secrets Store id. Put OPENAI_API_KEY, JEV_API_KEY and DEEPSEEK_API_KEY in that store.
+  //   ACCESS_TEAM_DOMAIN    your Cloudflare Access team domain, <your-team>.cloudflareaccess.com.
+  //   ACCESS_AUD            the Application Audience (AUD) tag of the Access application in front of the hostname.
+  //   DEFINITION_EDITORS    a JSON array of Access user ids (the JWT `sub`), the owner first; never an email address.
+  //                         A signed-in person reads their own id as `actor` from GET /api/definitions.
+  //   TRUSTED_USERS         optional, same format: people exempt from the per-person daily caps (DECISIONS 150).
+  // Keep the names of the bindings (DB, ARTIFACTS, DOCUMENT_WORKFLOW, AI, ASSETS and the three secrets) as they are:
+  // the code reads them by these names. docs/deployment.md describes the sign-in and editor settings.
+  //
+  // After any change to the bindings or variables, regenerate the typings with the command in the first line of
+  // worker-configuration.d.ts. Write them to a scratch file (add its path at the end of the command) and copy the
+  // block of bindings across: run in place, the command drops the runtime declarations kept below that block, and the
+  // typecheck needs them. Then run `npm run check`.
+  //
+  // Deploy with `node scripts/deploy.mjs validation`: it runs the checks, applies the database migrations and deploys
+  // the `validation` environment with projects/owner/project.json, the only environment it deploys
+  // (projects/owner/README.md). That pack holds the owner's demo settings: the reader menu, the daily limits and a
+  // sentence about the owner's OpenAI data sharing. Review it for your own account first. Then open /api/health on
+  // your hostname and confirm it reads READY.
+  "account_id": "00000000000000000000000000000000",
+  "name": "doc-classifier",
+  "main": "core/server/worker.ts",
+  "compatibility_date": "2026-09-22",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "docs.example.com",
+      "custom_domain": true
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "traces": {
+      "enabled": true
+    }
+  },
+  "assets": {
+    "directory": "dist",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "doc-classifier",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "ARTIFACTS",
+      "bucket_name": "doc-classifier-artifacts"
+    }
+  ],
+  "workflows": [
+    {
+      "binding": "DOCUMENT_WORKFLOW",
+      "name": "doc-classifier-document",
+      "class_name": "DocumentWorkflow"
+    }
+  ],
+  "secrets_store_secrets": [
+    {
+      "binding": "OPENAI_API_KEY",
+      "store_id": "00000000000000000000000000000000",
+      "secret_name": "OPENAI_API_KEY"
+    },
+    {
+      "binding": "JEV_API_KEY",
+      "store_id": "00000000000000000000000000000000",
+      "secret_name": "JEV_API_KEY"
+    },
+    {
+      "binding": "DEEPSEEK_API_KEY",
+      "store_id": "00000000000000000000000000000000",
+      "secret_name": "DEEPSEEK_API_KEY"
+    }
+  ],
+  // Workers AI, for the experimental Qwen reader (DECISIONS 136). It bills your account in Neurons.
+  "ai": {
+    "binding": "AI"
+  },
+  "vars": {
+    "PROJECT_ID": "owner",
+    "MODEL_CALLS_ENABLED": "true",
+    "ACCESS_TEAM_DOMAIN": "<your-team>.cloudflareaccess.com",
+    "ACCESS_AUD": "0000000000000000000000000000000000000000000000000000000000000000",
+    "BUILD_COMMIT": "unversioned",
+    // Categories are defined and activated in the website, not in the pack.
+    "DEFINITION_MODE": "runtime",
+    // A JSON array of Cloudflare Access user IDs (the JWT `sub`), the owner first. Health reads NOT READY until one is listed.
+    "DEFINITION_EDITORS": "[\"<access-user-id>\"]",
+    // Trusted users (DECISIONS 150): Access user IDs in the same format, exempt from the per-person daily caps only. May be empty.
+    "TRUSTED_USERS": "[]"
+  },
+  "env": {
+    "validation": {
+      "name": "doc-classifier",
+      "main": "core/server/worker.ts",
+      "compatibility_date": "2026-09-22",
+      "workers_dev": false,
+      "preview_urls": false,
+      "routes": [
+        {
+          "pattern": "docs.example.com",
+          "custom_domain": true
+        }
+      ],
+      "observability": {
+        "enabled": true,
+        "traces": {
+          "enabled": true
+        }
+      },
+      "assets": {
+        "directory": "dist",
+        "binding": "ASSETS",
+        "run_worker_first": true,
+        "not_found_handling": "single-page-application"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "doc-classifier",
+          "database_id": "00000000-0000-0000-0000-000000000000",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "ARTIFACTS",
+          "bucket_name": "doc-classifier-artifacts"
+        }
+      ],
+      "workflows": [
+        {
+          "binding": "DOCUMENT_WORKFLOW",
+          "name": "doc-classifier-document",
+          "class_name": "DocumentWorkflow"
+        }
+      ],
+      "secrets_store_secrets": [
+        {
+          "binding": "OPENAI_API_KEY",
+          "store_id": "00000000000000000000000000000000",
+          "secret_name": "OPENAI_API_KEY"
+        },
+        {
+          "binding": "JEV_API_KEY",
+          "store_id": "00000000000000000000000000000000",
+          "secret_name": "JEV_API_KEY"
+        },
+        {
+          "binding": "DEEPSEEK_API_KEY",
+          "store_id": "00000000000000000000000000000000",
+          "secret_name": "DEEPSEEK_API_KEY"
+        }
+      ],
+      "ai": {
+        "binding": "AI"
+      },
+      "vars": {
+        "PROJECT_ID": "owner",
+        "MODEL_CALLS_ENABLED": "true",
+        "ACCESS_TEAM_DOMAIN": "<your-team>.cloudflareaccess.com",
+        "ACCESS_AUD": "0000000000000000000000000000000000000000000000000000000000000000",
+        "BUILD_COMMIT": "unversioned",
+        "DEFINITION_MODE": "runtime",
+        "DEFINITION_EDITORS": "[\"<access-user-id>\"]",
+        "TRUSTED_USERS": "[]"
+      },
+      "tsconfig": "tsconfig.worker.json"
+    }
+  },
+  "tsconfig": "tsconfig.worker.json",
+  "alias": {
+    "project-pack": "./projects/owner/project.json"
+  }
+}

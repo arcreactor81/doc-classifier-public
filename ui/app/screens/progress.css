@@ -1,0 +1,55 @@
+/* Progress (journey steps 4 and 5): The Sorting Room's Send and Sort step bodies. The artifact's own blocks
+   (.step-eyebrow, .h-page, .lede, .panel, .uplink, .sendgrid, .bigcount, .bar, .bar.tri, .trays-wrap, .trays-lbl,
+   .log, .spendbig, .done-banner, .check-stamp, .grid-2, .stack-v) are styles/site.css; this file adds only what
+   the real screen needs on top: the status group, bar fills from custom properties, and the tray colours. */
+.progress > .h-page { margin-top: 10px; }
+
+/* The status group: the light and what it has to say, then the one action of the state. Sorted, it is the done
+   banner (site.css .done-banner) with its check stamp. */
+.progress .live-head { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 16px; margin-top: 22px; min-width: 0; }
+.progress .live-head__text { flex: 1 1 260px; min-width: 0; display: grid; gap: 10px; justify-items: start; }
+.progress .live-head__text > * { max-width: 100%; }
+.progress .live-head__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-width: 0; }
+.progress .live-head__acts:not(:has(.action-slot:not(:empty))) { display: none; }
+.progress .live-head.done-banner .live-head__text { gap: 4px; }
+.progress .live-head.done-banner .live-head__text > span:not([class]) { color: var(--mute); font-size: 14px; }
+.progress .live-head.done-banner .status { margin-top: 6px; }
+.progress .live-head .status .status__why { color: var(--mute); font-size: 14px; }
+
+/* Send. */
+.progress .send { margin-top: 28px; }
+.progress .sendgrid i.bad.gone { background: #34312B; }
+.progress .bar > i { width: calc(var(--f, 0) * 100%); }
+.progress .bar.tri > i { width: auto; flex: 0 0 calc(var(--f, 0) * 100%); }
+.progress .bar.tri .tri-f { background: var(--hl); }
+.progress .bar.tri .tri-p { background: var(--pink); }
+.progress .bar.tri .tri-u { background: var(--stop); }
+.progress .send .hint { margin-top: 14px; }
+.progress .done-banner__text { flex: 1 1 240px; min-width: 0; }
+
+/* Sort. */
+.progress .sentline { margin-top: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding-block: 14px; }
+.progress .sentline b { font-weight: 500; }
+.progress .sentline__glyph { color: var(--hl); flex: none; }
+.progress .sentline__note { color: var(--faint); font-size: 14px; margin-left: auto; }
+.progress .sort-grid { margin-top: 16px; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+.progress .sort-body > .sort-grid:first-child { margin-top: 22px; }
+.progress .bigcount { margin-top: 0; }
+.progress .bigcount b span { color: inherit; font-size: inherit; }
+.progress .send .bigcount { margin-top: 14px; }
+.progress .trays-lbl .tray-p { color: var(--pink); }
+.progress .trays-lbl .tray-u { color: var(--stop); }
+.progress .panel > .hint { margin-top: 12px; }
+.progress .log time { white-space: nowrap; }
+.progress .log span { min-width: 0; overflow-wrap: anywhere; }
+.progress .activity .hint { margin-top: 10px; }
+
+@media (max-width: 860px) {
+  .progress .sort-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .progress .trays-lbl div { padding: 10px; font-size: 12px; flex-direction: column; gap: 2px; }
+  .progress .log li { grid-template-columns: 64px minmax(0, 1fr); gap: 10px; }
+}
+.progress .check-stamp { color: var(--hl-ink); }
+.progress .live-head.done-banner .status .status__state { color: var(--ink); font-size: 15px; }

@@ -1,0 +1,17 @@
+/* ConfirmSheet (SPEC §7.1, §8.4 M15): --raised on --scrim; it fades in and rises 8px, with no script timing. */
+.sheet {
+  width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; border: 0; border-radius: var(--r-lg);
+  background: var(--raised); color: var(--ink); box-shadow: var(--shadow-2);
+  opacity: 1; transform: none;
+  transition: opacity var(--dur-reveal) var(--ease-out), transform var(--dur-reveal) var(--ease-out),
+    overlay var(--dur-reveal) allow-discrete, display var(--dur-reveal) allow-discrete;
+}
+.sheet { box-shadow: var(--shadow-2), var(--inner-highlight); }
+@starting-style { .sheet[open] { opacity: 0; transform: translateY(8px); } }
+.sheet::backdrop { background: var(--scrim); }
+.sheet__in { padding: var(--sp-7); display: grid; gap: var(--sp-4); }
+.sheet h2 { font-size: var(--fs-24); letter-spacing: var(--tracking-display); }
+.sheet__body { display: grid; gap: var(--sp-3); }
+.sheet__body p { font-size: var(--fs-15); color: var(--ink-2); max-width: var(--measure-narrow); line-height: var(--lh-read); }
+.sheet__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sp-2); margin-top: var(--sp-2); }
+@media (max-width: 639px) { .sheet__in { padding: var(--sp-5); } }

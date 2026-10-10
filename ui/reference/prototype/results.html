@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Visual prototype · Results</title>
+<script>
+/* Theme before first paint: ?theme=, then the saved choice, then the system setting (as ui/app/public/theme-boot.js). */
+(function () {
+  var t = null;
+  try {
+    var q = new URLSearchParams(location.search).get('theme');
+    if (q === 'light' || q === 'dark') t = q;
+    else { var s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') t = s; }
+  } catch (e) {}
+  if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.dataset.theme = t;
+})();
+</script>
+<link rel="stylesheet" href="prototype.css">
+</head>
+<body>
+<a class="skip" href="#main" data-skip>Skip to content</a>
+<div class="proto-bar"><div class="wrap">
+  <strong>Prototype</strong><span>Placeholder content. Nothing here is connected to the app.</span>
+  <nav aria-label="Prototype screens">
+    <a href="index.html">Overview</a><a href="home.html">Home</a><a href="confirm.html">Confirm</a><a href="progress.html">Progress</a><a href="progress-stalled.html">Sending stopped</a><a href="results.html" aria-current="page">Results</a><a href="review.html">Review</a><a href="system.html">System</a>
+  </nav>
+</div></div>
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="home.html"><span class="brand__mark" aria-hidden="true"></span>Document classification</a>
+  <nav class="nav" aria-label="Main"><a href="home.html">Home</a><a href="home.html#all-runs">Runs</a><a href="review.html">Categories</a><a href="index.html">How it works</a></nav>
+  <div class="topbar__end">
+    <a class="setup-word" href="system.html"><span class="g g--check" aria-hidden="true"></span><span class="setup-word__text">Setup complete</span></a>
+    <button class="icon-btn" type="button" data-theme-toggle aria-pressed="false" title="Change colour theme"><span class="g g--theme" aria-hidden="true"></span><span class="vh">Change colour theme</span></button>
+  </div>
+</div></header>
+<div class="run-strip" hidden><div class="wrap"><b>Run 7</b><span class="sep">·</span><span>Step 6 of 10 · Results</span><span class="sep">·</span><span>114 of 114 decided</span><span class="sep">·</span><span>Checked 09:58:02</span></div></div>
+
+<div class="wrap">
+<section class="run-header" aria-label="Run 7">
+  <div class="run-header__top">
+    <p class="run-name">Run 7 · 23 Sep 09:41</p>
+    <div class="run-header__tools">
+      <details class="disclosure facts"><summary>Details <span class="g g--chev" aria-hidden="true"></span></summary>
+        <div class="disclosure__body technical" data-technical>
+          <dl><dt>Run id</dt><dd class="mono">00000000-0000-4000-8000-000000000007</dd><dt>Status</dt><dd>complete</dd><dt>Category version</dt><dd>4 · revision placeholder-rev-4</dd><dt>Filing certainty</dt><dd>0.900 · untested</dd><dt>Spend</dt><dd>$0.66 known · all charges reported</dd></dl>
+        </div>
+      </details>
+    </div>
+  </div>
+  <ul class="chips" aria-label="Run facts">
+    <li class="chip">Interactive</li>
+    <li class="chip">Categories version 4 · 4</li>
+    <li class="chip chip--dashed">Filing certainty 90% · untested</li>
+    <li class="chip">Spent $0.66 of $5.00</li>
+    <li class="chip">Text in the cloud: yes</li>
+  </ul>
+  <nav class="rail" aria-label="Progress">
+    <ol class="rail__chapters">
+      <li class="rail__chapter"><span class="rail__overline">Your files</span><ol class="rail__steps">
+        <li class="step step--done"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Choose folder</span><span class="vh">, done</span></a></li>
+        <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Read files</span><span class="vh">, done</span></a></li>
+      </ol></li>
+      <li class="rail__chapter"><span class="rail__overline">Start</span><ol class="rail__steps">
+        <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Confirm</span><span class="vh">, done</span></a></li>
+        <li class="step step--done is-lit"><a class="step__in" href="progress.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Send</span><span class="vh">, done</span></a></li>
+      </ol></li>
+      <li class="rail__chapter is-here"><span class="rail__overline">Sorting</span><ol class="rail__steps">
+        <li class="step step--done is-lit"><a class="step__in" href="progress.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Sort</span><span class="vh">, done</span></a></li>
+        <li class="step step--current is-lit is-head"><a class="step__in" href="results.html" aria-current="step"><span class="step__node">6</span><span class="step__label">Results</span></a></li>
+      </ol></li>
+      <li class="rail__chapter"><span class="rail__overline">Your folders</span><ol class="rail__steps">
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r7"><span class="step__node">7</span><span class="step__label">Make folders</span></span><span class="step__tip" id="r7" role="tooltip">Starts when you select Make folders on this computer.</span></li>
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r8"><span class="step__node">8</span><span class="step__label">Review folders</span></span><span class="step__tip" id="r8" role="tooltip">Available once the folders are made.</span></li>
+      </ol></li>
+      <li class="rail__chapter"><span class="rail__overline">Improve</span><ol class="rail__steps">
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r9"><span class="step__node">9</span><span class="step__label">Update categories</span></span><span class="step__tip" id="r9" role="tooltip">Available after you review the folders.</span></li>
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r10"><span class="step__node">10</span><span class="step__label">Compare</span></span><span class="step__tip" id="r10" role="tooltip">Available after you decide about the categories.</span></li>
+      </ol></li>
+    </ol>
+    <div class="rail__compact"><span class="step-badge" aria-hidden="true">6</span><span><b>Step 6 of 10</b> · Results</span><span class="pips" aria-hidden="true"><i class="pip is-done"></i><i class="pip is-done"></i><i class="pip is-here"></i><i class="pip"></i><i class="pip"></i></span></div>
+  </nav>
+  <div class="narration">
+    <span class="narration__label">Now</span>
+    <p class="narration__now">Sorted 114: 83 filed, 29 for your review, 2 could not be processed.</p>
+    <span class="narration__next"><span class="narration__label">Next</span><a href="#main-primary" data-next>Make folders on this computer <span class="g g--arrow g--sm" aria-hidden="true"></span></a></span>
+  </div>
+</section>
+</div>
+
+<main id="main" tabindex="-1" class="wrap">
+<div class="stage stage--wide">
+  <div class="stage-head">
+    <h1 tabindex="-1">Results</h1>
+    <p class="lead">Every document has an outcome. Filed documents went where both systems agreed; everything else comes to you.</p>
+  </div>
+
+  <dl class="tally">
+    <div class="tally__item"><dt><span class="g g--check g--sm" aria-hidden="true"></span>Filed</dt><dd><span class="tally__n">83</span><span class="meter meter--filed" aria-hidden="true"><i style="--f:.728"></i></span></dd></div>
+    <div class="tally__item"><dt><span class="g g--person g--sm" aria-hidden="true"></span>Review</dt><dd><span class="tally__n">29 <small>4 to look at first</small></span><span class="meter meter--review" aria-hidden="true"><i style="--f:.254"></i></span></dd></div>
+    <div class="tally__item"><dt><span class="g g--slash g--sm" aria-hidden="true"></span>Could not process</dt><dd><span class="tally__n">2</span><span class="meter meter--failed" aria-hidden="true"><i style="--f:.018"></i></span></dd></div>
+  </dl>
+
+  <div class="action block--spaced" data-action="results:make-folders:run-7">
+    <div class="action__row">
+      <a class="btn btn--primary" href="review.html" id="main-primary" data-op="results:make-folders:run-7" data-primary aria-describedby="mf-note mf-fb">Make folders on this computer</a>
+      <button class="btn" type="button">Save a copy of the results</button>
+    </div>
+    <p class="action__note" id="mf-note">Copies your originals into one folder per category on this computer. The originals are not changed.</p>
+    <div class="feedback" id="mf-fb" data-feedback="results:make-folders:run-7"><div class="feedback__status" role="status" aria-live="polite" aria-atomic="true"></div><div class="feedback__alert" role="alert"></div></div>
+  </div>
+  <div class="quiet-links small quiet-links--after">
+    <a href="confirm.html">Try the 2 that could not be processed again, in a new run</a>
+    <a href="system.html">Delete uploaded text…</a>
+  </div>
+
+  <div class="results" data-results>
+    <div class="toolbar">
+      <div class="show-wrap">
+        <p id="show-label">Show</p>
+        <div class="show" role="radiogroup" aria-labelledby="show-label" data-show>
+          <label class="show__opt"><input type="radio" name="show" id="show-all" value="all" checked><span>All <span class="count">114</span></span></label>
+          <label class="show__opt"><input type="radio" name="show" id="show-filed" value="filed"><span><i class="dot dot--filed" aria-hidden="true"></i>Filed <span class="count">83</span></span></label>
+          <label class="show__opt"><input type="radio" name="show" id="show-review" value="review"><span><i class="dot dot--review" aria-hidden="true"></i>Review <span class="count">29</span></span></label>
+          <label class="show__opt"><input type="radio" name="show" id="show-failed" value="failed"><span><i class="dot dot--failed" aria-hidden="true"></i>Could not process <span class="count">2</span></span></label>
+          <label class="show__opt"><input type="radio" name="show" id="show-first" value="first"><span>Review first <span class="count">4</span></span></label>
+          <span class="show__bar" aria-hidden="true" data-show-bar></span>
+        </div>
+      </div>
+      <div class="search">
+        <label for="q">Search documents</label>
+        <div class="search__field"><span class="g g--search" aria-hidden="true"></span><input class="input" type="search" id="q" placeholder="Name, folder or reason" autocomplete="off" data-q></div>
+      </div>
+    </div>
+
+    <table class="rtable">
+      <caption data-caption>All documents · 12 of 114 shown</caption>
+      <thead><tr><th scope="col">Document</th><th scope="col">Outcome</th><th scope="col">Where it went</th><th scope="col">Why</th><th scope="col"><span class="vh">Evidence</span></th></tr></thead>
+      <tbody>
+        <tr class="doc" data-outcome="filed"><td class="c-doc">Onboarding checklist.docx</td><td class="c-out"><span class="pill pill--filed"><span class="g g--check" aria-hidden="true"></span>Filed</span></td><td class="c-where">Procedures</td><td class="c-why">Both systems chose Procedures; 97% sure.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Onboarding checklist.docx</span></button></td></tr>
+        <tr class="doc" data-outcome="filed"><td class="c-doc">Quarterly summary Q2.pdf</td><td class="c-out"><span class="pill pill--filed"><span class="g g--check" aria-hidden="true"></span>Filed</span></td><td class="c-where">Reports</td><td class="c-why">Both systems chose Reports; 99% sure.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Quarterly summary Q2.pdf</span></button></td></tr>
+        <tr class="doc is-open" data-outcome="review" data-first><td class="c-doc">Week 3 slides.pptx</td><td class="c-out"><span class="pill pill--review"><span class="g g--person" aria-hidden="true"></span>Review</span><span class="first-tag">Review first</span></td><td class="c-where is-reserved">Needs review</td><td class="c-why">The two systems chose different categories.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="true" aria-controls="ev-3">Close<span class="vh"> evidence for Week 3 slides.pptx</span></button></td></tr>
+        <tr class="drawer-row" data-outcome="review" data-first><td colspan="5">
+          <section class="drawer" id="ev-3" role="region" aria-label="Evidence for Week 3 slides.pptx">
+            <div class="stack-sm">
+              <h3>Why it came to you</h3>
+              <p class="drawer__rule">Review first: the certainty check chose Explainers, 84% sure, but the reader said only Procedures fits. When the two systems disagree, a person decides.</p>
+            </div>
+
+            <div>
+              <h4 class="judged-h">Judged against</h4>
+              <div class="judged">
+                <div>
+                  <p class="judged__label">The certainty check chose</p>
+                  <article class="def">
+                    <h4>Explainers</h4>
+                    <dl>
+                      <dt>What belongs here</dt><dd>Material that explains a topic so the reader understands it: slide decks, handouts and overviews.</dd>
+                      <dt>What doesn't belong here</dt><dd><span class="mention">Instructions the reader follows step by step; those belong in Procedures. <span class="mention__tag"><span class="g g--arrow g--sm" aria-hidden="true"></span>names Procedures</span></span><span class="mention">Records of what happened over a period belong in Reports. <span class="mention__tag"><span class="g g--arrow g--sm" aria-hidden="true"></span>names Reports</span></span></dd>
+                    </dl>
+                  </article>
+                </div>
+                <div>
+                  <p class="judged__label">The reader chose</p>
+                  <article class="def">
+                    <h4>Procedures</h4>
+                    <dl>
+                      <dt>What belongs here</dt><dd>Step-by-step instructions for carrying out a task: how to submit, request, apply for or complete something, in order.</dd>
+                      <dt>What doesn't belong here</dt><dd><span class="mention">Material that mainly explains a topic without telling the reader what to do; that belongs in Explainers. <span class="mention__tag"><span class="g g--arrow g--sm" aria-hidden="true"></span>names Explainers</span></span><span class="mention">Blank forms to fill in belong in Forms. <span class="mention__tag"><span class="g g--arrow g--sm" aria-hidden="true"></span>names Forms</span></span></dd>
+                    </dl>
+                  </article>
+                </div>
+              </div>
+            </div>
+
+            <div class="drawer__grid">
+              <section class="panel panel--confidence" aria-labelledby="ev3-cc">
+                <div class="panel__head"><h4 id="ev3-cc">Certainty check</h4><span class="meta">One choice among all categories</span></div>
+                <div class="bars">
+                  <div class="bar is-top"><span>Explainers</span><span class="bar__track" style="--v:84; --mark:90"><i></i></span><span class="bar__v">84%</span></div>
+                  <div class="bar"><span>Procedures</span><span class="bar__track" style="--v:12; --mark:90"><i></i></span><span class="bar__v">12%</span></div>
+                  <div class="bar"><span>Reports</span><span class="bar__track" style="--v:2; --mark:90"><i></i></span><span class="bar__v">2%</span></div>
+                  <div class="bar"><span>Forms</span><span class="bar__track" style="--v:1; --mark:90"><i></i></span><span class="bar__v">1%</span></div>
+                  <div class="bar"><span>None of these</span><span class="bar__track" style="--v:1; --mark:90"><i></i></span><span class="bar__v">1%</span></div>
+                </div>
+                <p class="mark-legend"><i aria-hidden="true"></i>90% needed to file automatically</p>
+                <div class="panel__sub">
+                  <h4>Independent yes/no check (not combined with the above)</h4>
+                  <ul class="yn">
+                    <li><span>Explainers</span><span class="ans">Yes <small>71%</small></span></li>
+                    <li><span>Procedures</span><span class="ans">Yes <small>58%</small></span></li>
+                    <li><span>Reports</span><span class="ans is-no">No <small>6%</small></span></li>
+                    <li><span>Forms</span><span class="ans is-no">No <small>2%</small></span></li>
+                  </ul>
+                </div>
+              </section>
+              <section class="panel panel--reader" aria-labelledby="ev3-rd">
+                <div class="panel__head"><h4 id="ev3-rd">Reader</h4><span class="meta">A yes or no for each category</span></div>
+                <ul class="yn">
+                  <li><span>Procedures</span><span class="ans">Yes</span></li>
+                  <li><span>Explainers</span><span class="ans is-no">No</span></li>
+                  <li><span>Reports</span><span class="ans is-no">No</span></li>
+                  <li><span>Forms</span><span class="ans is-no">No</span></li>
+                </ul>
+                <div class="panel__sub">
+                  <h4>Its reason</h4>
+                  <p class="muted small">The slides walk through the steps for making a request, in order, with the form to use at each step.</p>
+                </div>
+                <div class="panel__sub">
+                  <h4>Exact quotes it relied on</h4>
+                  <blockquote class="quote">Step 1: open the request form and fill in section A.</blockquote>
+                  <blockquote class="quote">Step 2: send it to your line manager for approval.</blockquote>
+                </div>
+              </section>
+            </div>
+
+            <div>
+              <div class="panel__head viewer-head"><h4>What the systems read</h4><span class="meta">Kept on this computer; shown from the text prepared here</span></div>
+              <div class="viewer">
+                <details><summary><span class="g g--chev" aria-hidden="true"></span>Slide 1 <span class="meta">· Week 3: Making a request</span></summary><div class="viewer__text">Week 3: Making a request
+What you will learn today</div></details>
+                <details><summary><span class="g g--chev" aria-hidden="true"></span>Slide 2 <span class="meta">· Why requests need approval</span></summary><div class="viewer__text">Why requests need approval
+Approval keeps spending and time off fair for everyone.</div></details>
+                <details open><summary><span class="g g--chev" aria-hidden="true"></span>Slide 3 <span class="meta">· The steps</span></summary><div class="viewer__text">The steps
+<mark>Step 1: open the request form and fill in section A.</mark>
+<mark>Step 2: send it to your line manager for approval.</mark>
+Step 3: keep the reply for your records.<div class="viewer__notes"><b>Speaker notes</b>Remind the group that approval usually takes two working days.</div></div></details>
+                <details><summary><span class="g g--chev" aria-hidden="true"></span>Slide 4 <span class="meta">· Questions</span></summary><div class="viewer__text">Questions</div></details>
+              </div>
+            </div>
+
+            <details class="disclosure" data-technical><summary>Details <span class="g g--chev" aria-hidden="true"></span></summary>
+              <div class="disclosure__body technical">
+                <dl><dt>Rule</dt><dd>R5 systems_disagree · priority 1</dd><dt>Certainty</dt><dd>0.842 (choice explainers)</dd><dt>Filing certainty</dt><dd>0.900</dd><dt>Yes/no values</dt><dd>explainers 0.712 · procedures 0.581 · reports 0.064 · forms 0.021</dd><dt>Reader yes</dt><dd>procedures</dd></dl>
+                <pre>{ "ruleId": "R5", "outcome": "review", "reasonCode": "systems_disagree", "priority": 1 }</pre>
+              </div>
+            </details>
+          </section>
+        </td></tr>
+        <tr class="doc" data-outcome="filed"><td class="c-doc">Leave request form.docx</td><td class="c-out"><span class="pill pill--filed"><span class="g g--check" aria-hidden="true"></span>Filed</span></td><td class="c-where">Forms</td><td class="c-why">Both systems chose Forms; 98% sure.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Leave request form.docx</span></button></td></tr>
+        <tr class="doc" data-outcome="review"><td class="c-doc">Week 4 slides.pptx</td><td class="c-out"><span class="pill pill--review"><span class="g g--person" aria-hidden="true"></span>Review</span></td><td class="c-where is-reserved">Needs review</td><td class="c-why">The reader said it fits two categories.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Week 4 slides.pptx</span></button></td></tr>
+        <tr class="doc" data-outcome="filed"><td class="c-doc">Budget handout.pdf</td><td class="c-out"><span class="pill pill--filed"><span class="g g--check" aria-hidden="true"></span>Filed</span></td><td class="c-where">Explainers</td><td class="c-why">Both systems chose Explainers; 93% sure.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Budget handout.pdf</span></button></td></tr>
+        <tr class="doc" data-outcome="review"><td class="c-doc">Team plan 2026.docx</td><td class="c-out"><span class="pill pill--review"><span class="g g--person" aria-hidden="true"></span>Review</span></td><td class="c-where is-reserved">Needs review</td><td class="c-why">Both chose Reports, but only 81% sure (90% needed).</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Team plan 2026.docx</span></button></td></tr>
+        <tr class="doc" data-outcome="failed"><td class="c-doc">Scanned letter.pdf</td><td class="c-out"><span class="pill pill--failed"><span class="g g--slash" aria-hidden="true"></span>Could not process</span></td><td class="c-where is-reserved">Could not process</td><td class="c-why">This PDF is a scanned image with no text.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Scanned letter.pdf</span></button></td></tr>
+        <tr class="doc" data-outcome="filed"><td class="c-doc">Room booking steps.docx</td><td class="c-out"><span class="pill pill--filed"><span class="g g--check" aria-hidden="true"></span>Filed</span></td><td class="c-where">Procedures</td><td class="c-why">Both systems chose Procedures; 95% sure.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Room booking steps.docx</span></button></td></tr>
+        <tr class="doc" data-outcome="review"><td class="c-doc">Meeting notes March.docx</td><td class="c-out"><span class="pill pill--review"><span class="g g--person" aria-hidden="true"></span>Review</span></td><td class="c-where is-reserved">Needs review</td><td class="c-why">No category fitted; it may need a new one.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Meeting notes March.docx</span></button></td></tr>
+        <tr class="doc" data-outcome="filed"><td class="c-doc">Annual review.pdf</td><td class="c-out"><span class="pill pill--filed"><span class="g g--check" aria-hidden="true"></span>Filed</span></td><td class="c-where">Reports</td><td class="c-why">Both systems chose Reports; 96% sure.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Annual review.pdf</span></button></td></tr>
+        <tr class="doc" data-outcome="filed"><td class="c-doc">Expenses form.pdf</td><td class="c-out"><span class="pill pill--filed"><span class="g g--check" aria-hidden="true"></span>Filed</span></td><td class="c-where">Forms</td><td class="c-why">Both systems chose Forms; 99% sure.</td><td class="c-open"><button class="btn btn--sm" type="button" aria-expanded="false">Open<span class="vh"> evidence for Expenses form.pdf</span></button></td></tr>
+        <tr class="empty-row" data-empty hidden><td colspan="5">No documents match. Clear the search.</td></tr>
+      </tbody>
+    </table>
+    <div class="more"><button class="btn btn--sm" type="button">Show 100 more</button><span>The prototype shows a sample of 12 rows.</span></div>
+  </div>
+</div>
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggle = document.querySelector('[data-theme-toggle]');
+  function sync() { if (toggle) toggle.setAttribute('aria-pressed', String(root.dataset.theme === 'dark')); }
+  sync();
+  if (toggle) toggle.addEventListener('click', function () {
+    /* Instant switch (SPEC §8.4, no theme cross-fade): the new theme is applied in one style recalculation with transitions off. */
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    void root.offsetWidth;
+    root.removeAttribute('data-theme-switching');
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+    sync();
+  });
+  var skip = document.querySelector('[data-skip]');
+  if (skip) skip.addEventListener('click', function (ev) { ev.preventDefault(); var m = document.getElementById('main'); if (m) m.focus(); });
+  document.addEventListener('click', function (ev) {
+    var a = ev.target.closest && ev.target.closest('[data-next]');
+    if (!a) return;
+    ev.preventDefault();
+    var p = document.querySelector('[data-primary]');
+    if (!p) return;
+    /* A disabled primary cannot take focus: bring it into view and focus the reasons beneath it, so Next is never inert. */
+    var fb = p.disabled && p.closest('.action') ? p.closest('.action').querySelector('[data-feedback]') : null;
+    if (fb) { p.scrollIntoView({ block: 'center' }); fb.setAttribute('tabindex', '-1'); fb.focus({ preventScroll: true }); }
+    else p.focus();
+  });
+  var header = document.querySelector('.run-header'), strip = document.querySelector('.run-strip'), bar = document.querySelector('.topbar');
+  if (header && strip && bar && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      strip.style.setProperty('--strip-top', bar.getBoundingClientRect().height + 'px');
+      strip.hidden = entries[entries.length - 1].isIntersecting;
+    }, { rootMargin: '-' + Math.round(bar.getBoundingClientRect().height) + 'px 0px 0px 0px' }).observe(header);
+  }
+
+  /* Prototype of the Show control (M8: the 2px indicator slides; labels change colour, never weight) and the search over the sample rows. */
+  var show = document.querySelector('[data-show]');
+  var barEl = document.querySelector('[data-show-bar]');
+  var q = document.querySelector('[data-q]');
+  var caption = document.querySelector('[data-caption]');
+  var empty = document.querySelector('[data-empty]');
+  var LABELS = { all: 'All documents', filed: 'Filed', review: 'Review', failed: 'Could not process', first: 'Review first' };
+  var TOTALS = { all: 114, filed: 83, review: 29, failed: 2, first: 4 };
+  function place() {
+    var input = show.querySelector('input:checked');
+    var span = input.nextElementSibling;
+    var a = show.getBoundingClientRect(), b = span.getBoundingClientRect();
+    barEl.style.setProperty('--x', (b.left - a.left + show.scrollLeft) + 'px');
+    barEl.style.setProperty('--w', String(b.width));
+    barEl.style.top = (b.bottom - a.top - 1) + 'px';
+  }
+  function filter() {
+    var v = show.querySelector('input:checked').value;
+    var text = q.value.trim().toLowerCase();
+    var shown = 0;
+    document.querySelectorAll('tbody tr.doc').forEach(function (tr) {
+      var okShow = v === 'all' || (v === 'first' ? tr.hasAttribute('data-first') : tr.dataset.outcome === v);
+      var okText = !text || tr.textContent.toLowerCase().indexOf(text) !== -1;
+      tr.hidden = !(okShow && okText);
+      var next = tr.nextElementSibling;
+      if (next && next.classList.contains('drawer-row')) next.hidden = tr.hidden;
+      if (!tr.hidden) shown++;
+    });
+    empty.hidden = shown !== 0;
+    caption.textContent = LABELS[v] + (text ? ' matching "' + q.value.trim() + '"' : '') + ' · ' + shown + ' of ' + TOTALS[v] + ' shown';
+  }
+  /* Placement that is not the person's choice (load, fonts arriving, resize) jumps: the transition is off while it is applied,
+     and the style is committed before the transition is turned back on. Only a change of filter slides the indicator (M8). */
+  function placeInstantly() { barEl.classList.remove('is-ready'); place(); void barEl.offsetWidth; barEl.classList.add('is-ready'); }
+  show.addEventListener('change', function () { place(); filter(); });
+  q.addEventListener('input', filter);
+  window.addEventListener('resize', placeInstantly);
+  placeInstantly();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeInstantly);
+})();
+</script>
+</body>
+</html>

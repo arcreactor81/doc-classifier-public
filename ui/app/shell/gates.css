@@ -1,0 +1,10 @@
+/* The browser gate (shell/browser-gate.ts): one stage-like pane holding the gate's content, as
+   prototype-v3 la.css .pane--stage (the stage's raised panel and sheen, its radius and padding). */
+.gate.pane {
+  border-radius: var(--r-xl); background-color: var(--raised);
+  background-image: linear-gradient(180deg, var(--sheen), transparent 45%); padding: 32px 38px;
+}
+.gate--browser > .quiet-links { margin-top: var(--sp-5); }
+@media (max-width: 760px) {
+  .gate.pane { padding: 24px 20px; border-radius: 24px; }
+}

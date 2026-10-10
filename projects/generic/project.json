@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 2,
+  "id": "generic",
+  "productName": "Document classifier",
+  "typeFile": {
+    "types": [],
+    "none_of_these": {
+      "name": "None of these",
+      "what": "The document does not fit any defined type."
+    }
+  },
+  "structuralVocabulary": [],
+  "settings": {
+    "readerEffort": "low",
+    "recoveryEffort": "low",
+    "readerMaxOutputTokens": 16384,
+    "recoveryMaxOutputTokens": 8192,
+    "recoveryMinimumHeadings": 3,
+    "minimumFiledCount": 50,
+    "pilotSize": 25,
+    "pdfPolicy": {
+      "largeFontRatio": 1.2,
+      "maxHeadingCharacters": 120,
+      "topPageFraction": 0.2,
+      "gapRatio": 1.5
+    },
+    "confidenceStatePolicy": "full-text-outline-v3",
+    "decisionNotePolicy": "full-state-structural-info-v4",
+    "readerEvidencePolicy": "whitespace-quotes-v1",
+    "readerContract": "reader-exact-evidence-v2",
+    "confidenceQuestionPolicy": "confidence-single-request-v1",
+    "tokenBytesRatio": 1,
+    "unknownSpendPolicy": "not-processed-zero-v3"
+  },
+  "pins": {
+    "confidence": {
+      "id": "jev-1.13.0",
+      "date": "2026-09-22",
+      "reason": "Version confirmed against official TypeSafe documentation.",
+      "policy": "versioned"
+    },
+    "reader": {
+      "id": "gpt-6-sol",
+      "date": "2026-09-23",
+      "reason": "Owner approved GPT-6 Sol as the reader for new runs on 2026-09-23. The evidence is recorded in docs/pins.md.",
+      "policy": "owner_approved_alias"
+    },
+    "recovery": {
+      "id": "gpt-6-luna",
+      "date": "2026-09-23",
+      "reason": "Owner approved GPT-6 Luna for heading recovery on 2026-09-23. The evidence is recorded in docs/pins.md.",
+      "policy": "owner_approved_alias"
+    }
+  },
+  "budget": {
+    "limitNano": null,
+    "approvedBy": null,
+    "approvedAt": null,
+    "reason": null
+  },
+  "limits": {
+    "readerRequestsPerMinute": null,
+    "readerTokensPerMinute": null,
+    "readerContextTokens": 1050000,
+    "confidenceRequestsPerMinute": 1200,
+    "confidenceStateQuestionTokens": 32000,
+    "confidenceAllQuestionTokens": 64000
+  },
+  "prices": {
+    "interactive": {
+      "recovery": {
+        "longContext": {
+          "aboveInputTokens": 272000,
+          "outputMultiplier": {
+            "denominator": "2",
+            "numerator": "3"
+          },
+          "inputMultiplier": {
+            "denominator": "1",
+            "numerator": "2"
+          }
+        },
+        "inputNanodollarsPerMillion": "100000000",
+        "outputNanodollarsPerMillion": "500000000"
+      },
+      "confidence": {
+        "outputNanodollarsPerMillion": "0",
+        "inputNanodollarsPerMillion": "42000000"
+      },
+      "reader": {
+        "longContext": {
+          "aboveInputTokens": 272000,
+          "outputMultiplier": {
+            "denominator": "2",
+            "numerator": "3"
+          },
+          "inputMultiplier": {
+            "denominator": "1",
+            "numerator": "2"
+          }
+        },
+        "inputNanodollarsPerMillion": "2000000000",
+        "outputNanodollarsPerMillion": "10000000000"
+      }
+    },
+    "source": [
+      "https://developers.openai.com/api/docs/pricing",
+      "https://docs.typesafe.ai/models",
+      "https://developers.openai.com/api/docs/models/gpt-6-sol",
+      "https://developers.openai.com/api/docs/models/gpt-6-luna"
+    ],
+    "verifiedAt": "2026-09-23"
+  }
+}

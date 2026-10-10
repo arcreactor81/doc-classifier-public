@@ -1,0 +1,35 @@
+/* How it decides (screens/help.ts): the artifact's .x-* blocks are site.css's; only what this port adds is here —
+   the jump links as buttons (the address is the router's), list resets for the ordered steps, and the custom
+   properties that replace the artifact's inline widths. */
+.x-page { min-width: 0; }
+.x-jump button {
+  font: inherit; font-size: 14px; color: var(--mute); background: none; cursor: pointer;
+  min-height: 40px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line);
+}
+.x-jump button:hover { color: var(--ink); border-color: var(--line-2); }
+.x-ch h2:focus { outline: none; }
+ol.x-steps { list-style: none; margin: 0; padding: 0; }
+.x-example-title { margin-bottom: 14px; }
+.x-strong { color: var(--ink); font-weight: 500; }
+.x-sl-top { margin-top: 12px; }
+.x-why { font-size: 15px; font-weight: 600; margin-bottom: 10px; font-family: var(--f-body); }
+.x-rules-panel { padding: 8px 12px; }
+.x-rules tr[aria-current] td:nth-child(2) { color: var(--ink); }
+.x-sl--cost { grid-template-columns: 120px minmax(0, 1fr) 70px; }
+.x-track i { width: var(--w); }
+.x-bar .v small { display: block; }
+/* A reader with no measured cost has no bar: an empty one would read as free. */
+.x-bar[data-measured="false"] .x-track { visibility: hidden; }
+.x-bar > div:first-child { min-width: 0; }
+@media (max-width: 640px) {
+  .x-sl, .x-sl--cost { grid-template-columns: minmax(0, 1fr) 56px; }
+  .x-sl > label, .x-sl--cost > label { grid-column: 1 / -1; }
+}
+/* site.css's `.x-sure b.hl` and `.x-rules tr.skip`, renamed: `.hl` and `.skip` are base.css's highlight and skip link. */
+.x-sure b.x-big { color: var(--hl); font-family: var(--f-disp); font-size: 28px; font-weight: 800; }
+.x-rules tr.passed td { color: var(--faint); }
+/* The second line of the title on its own line, as the artifact's 12ch measure sets it. */
+.x-hero h1 em { display: block; }
+/* The artifact draws the second line as outlined letters (transparent fill); a filled light line keeps it readable at
+   every contrast check, in the same light weight. */
+.x-hero h1 em { color: var(--mute); -webkit-text-stroke: 0; }

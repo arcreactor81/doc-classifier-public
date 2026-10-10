@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS feedback_labels (reference_id TEXT NOT NULL REFERENCES feedback_references(id), fingerprint TEXT NOT NULL, ordinal INTEGER NOT NULL, entry_json TEXT NOT NULL, PRIMARY KEY(reference_id, fingerprint));
+CREATE INDEX IF NOT EXISTS feedback_labels_ordinal ON feedback_labels(reference_id, ordinal);
+CREATE TRIGGER IF NOT EXISTS feedback_labels_no_update BEFORE UPDATE ON feedback_labels BEGIN SELECT RAISE(ABORT,'Feedback labels are immutable'); END;
+CREATE TRIGGER IF NOT EXISTS feedback_labels_no_delete BEFORE DELETE ON feedback_labels BEGIN SELECT RAISE(ABORT,'Feedback labels are immutable'); END;
+INSERT OR IGNORE INTO feedback_labels(reference_id, fingerprint, ordinal, entry_json) SELECT r.id, json_extract(e.value, '$.fingerprint'), e.key, json(e.value) FROM feedback_references r, json_each(r.labels_json) e WHERE json_valid(r.labels_json) AND json_type(r.labels_json) = 'array' AND json_type(e.value) = 'object' AND json_extract(e.value, '$.fingerprint') IS NOT NULL;

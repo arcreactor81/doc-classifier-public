@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS provider_cooldowns (  scope TEXT PRIMARY KEY CHECK(scope IN ('openai','typesafe')),  until_ms INTEGER NOT NULL CHECK(until_ms >= 0),  source_attempt_id TEXT NOT NULL,  observed_at_ms INTEGER NOT NULL );

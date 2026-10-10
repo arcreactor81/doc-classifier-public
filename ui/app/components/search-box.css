@@ -1,0 +1,14 @@
+/* SearchBox (SPEC §7.1): The Sorting Room's search pill (styles/site.css .search): the glyph, the field and the `/`
+   key inside one rounded outline that lights when the field has focus. */
+.search { position: relative; }
+.search__field { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.search__glyph { flex: none; color: var(--faint); pointer-events: none; }
+.search .search__input { flex: 1; min-width: 0; width: auto; border: 0; background: transparent; color: var(--ink); outline: none; font-size: 15px; min-height: 44px; padding: 0; }
+.search .search__input:focus-visible { box-shadow: none; }
+.search__input::placeholder { color: var(--faint); opacity: 1; }
+.search__kbd {
+  flex: none; font-family: var(--f-mono); font-size: 11px; line-height: 1; color: var(--faint);
+  border: 1px solid var(--line-2); border-radius: 4px; padding: 3px 6px; pointer-events: none;
+}
+/* The key is a hint for the empty field; typed text (and the browser's own clear control) must not run under it. */
+.search__input:not(:placeholder-shown) ~ .search__kbd { display: none; }

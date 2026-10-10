@@ -1,0 +1,25 @@
+/* MoneyField (SPEC §7.1), on the Sorting Room's .money field (site.css): the "$" and the amount in the display face,
+   the focus ring on the field, not the bare input. The error is text beneath the field, never a colour alone. */
+.money-field { display: grid; gap: 8px; min-width: 0; }
+.money-field__label { font-size: 14px; font-weight: 500; color: var(--ink); }
+/* With `heading`, the label sits inside the panel's h3 and takes its type (site.css .panel h3). */
+.money-field__heading .money-field__label { font: inherit; letter-spacing: inherit; color: inherit; }
+.money-field__hint { font-size: 14px; color: var(--mute); max-width: 40em; }
+.money-field__row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 6px; }
+.money-field .money { flex: 0 1 260px; width: 260px; }
+.money-field .money__cur { flex: none; }
+.money-field .money__input:focus-visible { outline: none; box-shadow: none; }
+.money-field .money__input::placeholder { color: var(--faint); opacity: 1; }
+.money-field .money:focus-within { outline: 2px solid var(--hl); outline-offset: 3px; }
+.money-field .money:has(.money__input:disabled) { opacity: .6; }
+/* A field that is not the panel's heading (the two per-system limits) is a size smaller. */
+.money-field:not(.money-field--heading) .money { min-height: 48px; flex-basis: 200px; width: 200px; }
+.money-field:not(.money-field--heading) .money span,
+.money-field:not(.money-field--heading) .money input { font-size: 20px; }
+.money-field.is-invalid .money { border-color: var(--ink); }
+.money-field__aside { font-size: 14px; color: var(--mute); }
+.money-field__error { display: flex; gap: 8px; align-items: center; font-size: 13.5px; color: var(--ink); font-weight: 500; }
+.money-field__error .glyph { flex: none; color: var(--ink); }
+@media (max-width: 640px) {
+  .money-field .money, .money-field:not(.money-field--heading) .money { flex: 1 1 100%; width: 100%; max-width: none; }
+}

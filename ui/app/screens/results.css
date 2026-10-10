@@ -1,0 +1,90 @@
+/* Results (journey step 6): The Sorting Room's results step. The artifact's blocks (.piles, .pile, .panel, .filters,
+   .fchip, .search, .tbox, table.t, .oc, .sheet-doc, .stamp, .verdicts) are styles/site.css; this file adds what the
+   real screen needs on top: piles as real buttons, the next-step panel's actions, the Show filter drawn as chips, the
+   caption and "Show more", and the evidence drawer opened beneath its row. */
+.results > .h-page { margin-top: 10px; }
+.results > .results-notice, .results > .comparison-card, .results > .trial-review { margin-top: 20px; }
+.results .piles { margin-top: 24px; }
+.results .pile { width: 100%; }
+.results .pile .k, .results .pile .v, .results .pile .s { position: relative; }
+.results .pile .v, .results .pile .s { display: block; }
+.results .pile.is-zero .sheets { opacity: .35; }
+.results .pile:focus-visible { outline-offset: 2px; }
+
+/* The next-step panel: the journey's primary, full width and tall, over the quiet actions. */
+.results .act { display: flex; flex-direction: column; gap: 10px; }
+.results .act .action-slot .action { justify-items: stretch; }
+.results .act .action-slot .btn { width: 100%; min-height: 56px; padding: 10px 24px; font-size: 16px; white-space: normal; line-height: 1.2; }
+.results .act .action__note { color: var(--mute); font-size: 14px; }
+.results .act .quiet-links { display: grid; gap: 2px; }
+.results .act .quiet-links .btn--quiet {
+  min-height: 40px; padding: 4px 0; font-size: 15px; font-weight: 500; color: var(--hl); text-align: left; justify-content: flex-start;
+  white-space: normal; line-height: 1.35;
+}
+.results .act .quiet-links .btn--quiet:hover { color: var(--ink); text-decoration: none; }
+.results .piles.is-closing { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* The Documents panel: the Show filter as chips (components/show-control.ts keeps its radio group and arrow keys),
+   then the search pill. */
+.results .documents { margin-top: 16px; }
+.results .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.results .show { background: none; box-shadow: none; padding: 0; gap: 8px; border-radius: 0; }
+.results .show__bar { display: none; }
+.results .show__opt {
+  height: auto; min-height: 42px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--ground);
+  color: var(--mute); font-size: 14px; font-weight: 400;
+}
+.results .show__opt:hover:not(:disabled) { color: var(--ink); border-color: var(--mute); }
+.results .show__count { color: var(--ink); font-weight: 600; }
+.results .show__opt[aria-checked="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+.results .show__opt[aria-checked="true"] .show__count { color: var(--ground); }
+.results .show__opt:disabled { opacity: .55; }
+.results .show__opt:focus-visible { outline-offset: 2px; }
+.results .toolbar .search { flex: 1 1 280px; max-width: 440px; }
+
+.results .t caption { caption-side: bottom; text-align: left; color: var(--mute); font-size: 14px; padding-top: 12px; }
+.results .t .doc__name { color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.results .t .doc__name:hover { text-decoration: underline; text-underline-offset: 3px; }
+.results .t .ext { margin-left: 6px; }
+.results .t .c-out { white-space: nowrap; }
+.results .t tr.row.is-open td { background: rgba(230, 255, 59, .05); }
+.results .t .c-open { text-align: right; }
+.results .t .c-open .btn[aria-expanded="true"] { border-color: var(--hl); }
+.results .t tr.ev-row:hover td { background: none; }
+.results .t tr.ev-row > td { padding: 4px 0 22px; }
+.results .t .empty-row td { color: var(--mute); padding: 28px 12px; }
+.results .more { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 14px; color: var(--mute); font-size: 14px; }
+.results .more .action { gap: 0; }
+
+/* The evidence drawer, opened beneath its row: the artifact's drawer (.drawer) laid into the table. */
+.doc-drawer {
+  border-radius: var(--r); background: var(--raise-2); border: 1px solid var(--line-2); padding: clamp(16px, 2.2vw, 28px);
+  animation: slide .35s cubic-bezier(.2, .9, .2, 1); white-space: normal; min-width: 0;
+}
+.doc-drawer__head { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.doc-drawer__more { margin: 28px 0 14px; }
+
+@media (max-width: 700px) {
+  .results .t tr.row { position: relative; }
+  .results .t tr.ev-row { display: block; padding: 0 0 14px; }
+  .results .t tr.ev-row > td { display: block; padding: 0; }
+  .results .t td.c-open { text-align: right; }
+}
+
+/* Fixed columns, so opening a drawer never shifts the table. */
+@media (min-width: 701px) {
+  .results table.t { table-layout: fixed; }
+  .results .t th:nth-child(1) { width: 27%; }
+  .results .t th:nth-child(2) { width: 200px; }
+  .results .t th:nth-child(3) { width: 17%; }
+  .results .t th:nth-child(5) { width: 96px; }
+  .results .t td.c-doc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+.results .pile { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; }
+.results .act .quiet-links .btn--quiet { display: block; width: 100%; }
+.results .act .quiet-links .btn--quiet { border-radius: 6px; }
+@media (max-width: 700px) {
+  .results .t caption { display: block; padding: 0 0 6px; }
+  .results .t tr.row.is-open td { background: none; }
+  .results .t tr.row.is-open { box-shadow: inset 2px 0 0 var(--hl); padding-left: 10px; }
+}

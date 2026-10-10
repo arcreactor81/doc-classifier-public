@@ -1,0 +1,45 @@
+/*
+ * Make folders (screens/build.ts), from The Sorting Room artifact: .step-eyebrow, .h-page, .lede, .grid-2, .panel,
+ * .tree/.ln, .copyrow, .bar.live and .done-banner come from styles/site.css. Only what is this screen's own is here.
+ */
+.build-step .h-page { margin-top: 10px; }
+.build-grid { margin-top: 28px; align-items: start; }
+
+/* The two folders: each picked inside the panel (the panel is the container, so the pick sits flat). */
+.build-where .build-where__next { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.build-pick { margin-top: 12px; }
+.build-pick .folder-pick { padding: 0; background: transparent; border: 0; border-radius: 0; }
+
+/* The journey's one action: full width and tall, as the artifact's big buttons. */
+.build-make { display: grid; gap: 12px; margin-top: 22px; }
+.build-make .action-slot .action { justify-items: stretch; width: 100%; }
+.build-make .action-slot .action > .btn { min-height: 56px; padding: 0 28px; font-size: 16px; }
+.build-make .action-slot .action__note, .build-make .action-slot .feedback { max-width: none; }
+
+/* The live copying line: the bar fills to the measured fraction. */
+.build-live .bar { margin-top: 20px; }
+.build-live .bar i { width: var(--w, 0%); }
+.build-live .hint { overflow-wrap: anywhere; }
+
+/* The tree: rows are list items in the artifact's .ln style. */
+.build-tree__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 14px; }
+.build-tree__head .hint { margin: 0; }
+.tree__rows { list-style: none; margin: 0; padding: 0; }
+.tree .ln__name { min-width: 0; overflow-wrap: anywhere; }
+.build-recent { margin-top: 18px; display: grid; gap: 6px; }
+.build-recent__rows { list-style: none; margin: 0; padding: 0; }
+.copyrow__file { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
+.copyrow__to { flex: none; color: var(--faint); font-size: 13px; }
+
+/* What still needs attention after an incomplete build. */
+.build-report { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+.build-report__summary { color: var(--stop); font-weight: 500; }
+.build-problems { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.build-problems li { display: grid; gap: 6px; min-width: 0; padding: 12px 14px; border-radius: 12px; background: var(--ground); border: 1px solid var(--line); }
+.build-problems h4 { font-weight: 600; overflow-wrap: anywhere; }
+.build-problems__path { color: var(--mute); font-size: 13px; overflow-wrap: anywhere; }
+
+@media (max-width: 540px) {
+  .copyrow { flex-wrap: wrap; }
+  .copyrow__file { white-space: normal; overflow-wrap: anywhere; }
+}

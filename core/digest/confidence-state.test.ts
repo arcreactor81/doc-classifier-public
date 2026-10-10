@@ -1,0 +1,35 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {buildConfidenceState} from './confidence-state.ts';
+import {buildStructuredState} from './structured-state.ts';
+import {buildConfidenceRequest,VENDOR_PROMPTS} from '../vendors/requests.ts';
+import {decide} from '../domain/decision.ts';
+import {prepareLocalRun} from '../local/preflight.ts';
+import {requireProject} from '../config/project.ts';
+import generic from '../../projects/generic/project.json' with {type:'json'};
+const fullText='Heading\nExact body with\ttabs and spaces.';
+const outline={headings:[{id:'h',text:'Heading',level:1,position:0}],tables:[{position:10,headers:['Column']}],blocks:[{position:8,headingId:'h',text:fullText.slice(8)}]};
+const typeFile={types:[{id:'type_a',name:'A',what:'Definition',not_for:'Exclusion',examples:['Example']}],none_of_these:{name:'None',what:'No match'}};
+const pin={id:'jev-1.13.0',policy:'versioned' as const,date:'2026-09-23',reason:'Test'};
+test('historical policy uses byte-identical input while new policy removes duplicate sections',()=>{
+ const old=buildConfidenceState('untrimmed-structured-state-v2',fullText,outline,[]);
+ assert.deepEqual(old,buildStructuredState(fullText,outline,[]));
+ const next=buildConfidenceState('full-text-outline-v3',fullText,outline,[]);
+ const oldRequest=JSON.parse(buildConfidenceRequest({pin,typeFile,serializedDigest:old.serialized}).body);
+ const nextRequest=JSON.parse(buildConfidenceRequest({pin,typeFile,serializedDigest:next.serialized}).body);
+ assert.equal(nextRequest.state.fullText,fullText);assert.equal('sections'in nextRequest.state,false);assert.deepEqual(nextRequest.state.headings,oldRequest.state.headings);assert.deepEqual(nextRequest.state.tables,oldRequest.state.tables);
+ assert.equal(oldRequest.questions.classification.instructions,VENDOR_PROMPTS.confidence);
+ assert.equal(nextRequest.questions.classification.instructions,VENDOR_PROMPTS.confidenceFullText);
+ assert.equal(nextRequest.questions.is_type_a.instructions.question,VENDOR_PROMPTS.noulFullText);
+ assert.deepEqual(nextRequest.questions.classification.criteria,oldRequest.questions.classification.criteria);
+ assert.throws(()=>buildConfidenceState(undefined,fullText,outline,[]));
+});
+test('new input policy preserves note/decision conditions and frozen old pack settings',()=>{
+ const current=requireProject({...generic,typeFile,structuralVocabulary:[]});
+ assert.equal(current.settings.confidenceStatePolicy,'full-text-outline-v3');
+ const old={...current,settings:{...current.settings,confidenceStatePolicy:'untrimmed-structured-state-v2'}};const snapshot=JSON.stringify(old);
+ assert.equal(requireProject(old).settings.confidenceStatePolicy,'untrimmed-structured-state-v2');assert.equal(JSON.stringify(old),snapshot);
+ for(const confidenceStatePolicy of ['untrimmed-structured-state-v2','full-text-outline-v3'])assert.equal(decide({typeIds:['type_a'],threshold:0.9,failures:[],notes:['N_NO_OUTLINE'],notePolicy:'full-state-structural-info-v2',confidenceStatePolicy,confidence:{choice:'type_a',certainty:0.9,noul:{type_a:0.5}},readerYes:['type_a']}).ruleId,'R1');
+ const items=prepareLocalRun([{runId:'local',sourcePath:'document.docx',fingerprint:'a'.repeat(64),state:'extracted',document:{fingerprint:'a'.repeat(64),originalFilename:'document.docx',fullText,outline,extractorVersion:'local',parserVersions:{zip:'local',xml:'local',pdf:'local'},needsOutlineRecovery:false,notes:[]}}],current);
+ assert.equal(items[0].upload.fullText,fullText);assert.deepEqual(items[0].quote.tokenCounts,{readerInputTokens:null,confidenceInputTokens:null,recoveryInputTokens:null});
+});

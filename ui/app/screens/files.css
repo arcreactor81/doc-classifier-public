@@ -1,0 +1,81 @@
+/*
+ * Files (journey steps 1–2), on the Sorting Room's RUN.choose and RUN.read. The building blocks (.panel, .dropzone,
+ * .fold, .ms, .bigcount, .bar, .files, .done-banner, .promises, .grid-3, .panel.tiny, .status) are site.css's; only
+ * what is this screen's own lives here, scoped to .files-screen.
+ */
+.files-screen .files__body > .h-page { margin-top: 10px; }
+.files-screen .h-page:focus { outline: none; }
+.files-screen .h-page:focus-visible { outline: 2px solid var(--hl); outline-offset: 4px; }
+
+/* --- Step 1: the dropzone. The folder button is the dropzone's big words; the whole panel presses it. --- */
+.files-screen .dropzone { position: relative; text-align: center; padding-block: 34px; }
+.files-screen .dropzone:has(button[data-op]:focus-visible) { border-color: var(--hl); background: var(--raise-2); }
+.files-screen .dropzone:has(button[data-op]:focus-visible) .ms1 { transform: translate(-30px, -12px) rotate(-16deg); }
+.files-screen .dropzone:has(button[data-op]:focus-visible) .ms2 { transform: translate(0, -20px); }
+.files-screen .dropzone:has(button[data-op]:focus-visible) .ms3 { transform: translate(30px, -12px) rotate(16deg); }
+.files-screen .dropzone .action-slot { display: grid; justify-items: center; gap: 4px; max-width: 520px; }
+.files-screen .dropzone .action { display: grid; justify-items: center; gap: 6px; }
+.files-screen .dropzone .btn[data-op] {
+  min-height: 48px; padding: 0 18px; border: 0; border-radius: 12px; background: transparent; color: var(--ink);
+  font-family: var(--f-disp); font-weight: 700; font-variation-settings: 'wdth' 85; font-size: 26px; letter-spacing: -.01em;
+  box-shadow: none;
+}
+.files-screen .dropzone .btn[data-op]::before, .files-screen .dropzone .btn[data-op]::after { display: none; }
+.files-screen .dropzone .btn[data-op]:hover { color: var(--hl); background: transparent; }
+.files-screen .dropzone .btn[data-op]:disabled { border: 0; color: var(--faint); }
+.files-screen .dropzone .action__note { color: var(--mute); font-size: 14px; max-width: 36em; }
+.files-screen .dropzone .feedback { text-align: left; }
+.files-screen .dz-formats { color: var(--mute); font-size: 16px; }
+.files-screen .files__tiles { margin-top: 16px; }
+
+/* --- Step 2: the loader, the promises and the list. --- */
+.files-screen .files__grid {
+  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; margin-top: 28px;
+}
+@media (max-width: 860px) { .files-screen .files__grid { grid-template-columns: minmax(0, 1fr); } }
+.files-screen .files__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px 12px; flex-wrap: wrap; }
+.files-screen .status { flex-wrap: wrap; }
+.files-screen .status.is-still::before { background: transparent; border: 1.5px solid var(--faint); }
+.files-screen .files__why { color: var(--mute); font-weight: 400; }
+.files-screen .files__src { display: inline-flex; gap: 8px; align-items: center; color: var(--mute); font-size: 14px; min-width: 0; }
+.files-screen .files__src .glyph { flex: none; color: var(--hl); }
+.files-screen .files__src span { overflow-wrap: anywhere; }
+.files-screen .files__loader > .notice, .files-screen .files__notes { margin-top: 16px; }
+.files-screen .bigcount b span { color: inherit; font-size: inherit; }
+/* The bar is site.css's .bar, restated here so another component's unscoped .bar cannot reshape it. */
+.files-screen .files__bar {
+  position: relative; height: 12px; margin-top: 18px; border-radius: 3px 8px 4px 7px; border: 1px solid var(--line);
+  background: var(--ground); overflow: hidden;
+}
+.files-screen .files__bar i {
+  position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); transform: none; opacity: 1; border-radius: 0;
+  background: var(--hl); transition: width .3s;
+}
+/* While reading, the held "Choose folder" waits with its progress beneath it; the button and its note step aside. */
+.files-screen .files__foot .action:has(> .feedback[data-state="working"]) > .btn,
+.files-screen .files__foot .action:has(> .feedback[data-state="working"]) > .action__note { display: none; }
+.files-screen .files__foot { display: grid; gap: 10px; margin-top: 18px; }
+.files-screen .files__foot .hint { color: var(--mute); font-size: 14px; }
+.files-screen .check-stamp .glyph { color: var(--hl-ink); stroke-width: 2.4; }
+.files-screen .files__done-text { flex: 1 1 240px; min-width: 0; }
+.files-screen .files__done-action { flex: 0 1 auto; min-width: 0; max-width: 100%; }
+.files-screen .files__done-action .feedback { font-size: 13px; color: var(--mute); max-width: 32em; }
+.files-screen .files__promises { margin-top: 16px; }
+
+.files-screen .files__list { margin-top: 16px; }
+.files-screen .files__list-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.files-screen .files__list-head .hint { margin: 0; }
+.files-screen .files__list > .hint { color: var(--mute); font-size: 14px; margin-top: 12px; }
+.files-screen .files li { align-items: flex-start; }
+.files-screen .files__name { min-width: 0; overflow-wrap: anywhere; }
+.files-screen .files__name small { margin-top: 2px; white-space: normal; }
+.files-screen .files .st { display: inline-flex; align-items: center; gap: 4px; }
+.files-screen .files .st .glyph { flex: none; }
+/* Rows inside a disclosure (copies, files that are not documents): a short list, not the scrolling one. */
+.files-screen .files--plain { max-height: none; margin-top: 4px; }
+
+@media (max-width: 640px) {
+  .files-screen .dropzone { min-height: 240px; padding-inline: 16px; }
+  .files-screen .dropzone .btn[data-op] { font-size: 22px; }
+  .files-screen .files__done-action, .files-screen .files__done-action .btn { width: 100%; }
+}

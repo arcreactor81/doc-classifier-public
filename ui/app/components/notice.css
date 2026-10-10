@@ -1,0 +1,10 @@
+/* Notice (SPEC §7.1): the shared rules are in styles/base.css, because view/action.ts draws its problem notice with
+   the same classes. Only what is specific to a standalone notice lives here. */
+.notice + .notice { margin-top: var(--sp-2); }
+.notice--blocker .notice__headline { font-size: var(--fs-15); }
+/* T5: the failure rule is a pseudo-element, so notice.ts can draw it down (base.css draws it as an inset shadow; the
+   corners clip it the same way). */
+.notice.notice--failure { position: relative; overflow: hidden; box-shadow: none; }
+.notice--failure::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--fail-line); transform-origin: top center;
+}

@@ -1,0 +1,103 @@
+/*
+ * Screen styles for the Light Architecture look (VISUAL-SPEC-v2 §3, §6). Tokens only; outcome colours appear only
+ * on outcome words, pills, tallies and fills; red means failed; the light's cyan means position and live work.
+ * Each screen's own stylesheet (screens/<name>.css) holds what is its own; the reference's building blocks are in
+ * base.css. What is left here is shared by more than one screen.
+ */
+
+/* ---------- Shared ---------- */
+.section-title {
+  font-size: var(--fs-12); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-overline);
+  text-transform: uppercase; color: var(--accent); margin-top: var(--sp-4);
+}
+.facts { display: grid; gap: var(--sp-1); }
+.facts__main { font-family: var(--font-display); font-size: var(--fs-24); font-weight: 750; font-stretch: 82%; letter-spacing: var(--tracking-heading); color: var(--ink); }
+.quiet-actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--sp-2) var(--sp-5); margin-top: var(--sp-2); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Tables ---------- */
+.table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--fs-14); }
+.table th {
+  text-align: left; font-size: var(--fs-12); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-overline);
+  text-transform: uppercase; color: var(--ink-3); padding: 0 var(--sp-3) var(--sp-2); border-bottom: 1px solid var(--line);
+}
+.table td { padding: var(--sp-3); border-bottom: 1px solid var(--line-2); vertical-align: top; min-height: var(--row-h); }
+.table tbody tr:hover td { background: var(--surface-3); }
+.table tr[data-open="true"] td { background: var(--accent-soft); }
+
+/* ---------- Drafts (Runs) ---------- */
+.draft-list { list-style: none; display: grid; gap: var(--sp-2); }
+.draft-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-4); }
+
+/* ---------- Files ---------- */
+.file-list { list-style: none; display: grid; gap: var(--sp-2); }
+.file-row { display: grid; gap: 2px; }
+.file-row__name { color: var(--ink); overflow-wrap: anywhere; }
+
+/* ---------- Confirm ---------- */
+.spending { display: grid; gap: var(--sp-4); padding: var(--sp-5); border: 1px solid var(--line); border-radius: var(--r); background: var(--surface-2); }
+.spending legend { font-size: var(--fs-12); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-overline); text-transform: uppercase; color: var(--accent); padding: 0 var(--sp-1); }
+
+/* ---------- Fields (Confirm, category editor) ---------- */
+.field { display: grid; gap: 6px; }
+.field label { font-weight: var(--fw-semibold); font-size: var(--fs-14); }
+.field__hint { font-size: var(--fs-13); }
+.field input[type="text"], .field textarea, .category-card input, .category-card textarea {
+  width: 100%; min-height: var(--control-h); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-sm);
+  border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font-size: var(--fs-15);
+}
+.field textarea { resize: vertical; line-height: var(--lh-body); }
+.field input:focus-visible, .field textarea:focus-visible { box-shadow: 0 0 0 6px var(--focus-halo); }
+
+/* ---------- Progress ---------- */
+.progress .status { margin-bottom: var(--sp-2); }
+/* The giant count (VISUAL-SPEC-v2 §3): weight 300, tabular figures after the font settings. */
+.count { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2) var(--sp-4); margin-top: var(--sp-2); }
+.count__n {
+  font-family: var(--font-display); font-size: var(--fs-count); font-weight: 800; font-stretch: 76%; line-height: var(--lh-count);
+  letter-spacing: var(--tracking-count); font-variant-numeric: tabular-nums; color: var(--ink);
+}
+.count__of { font-size: var(--fs-17); color: var(--ink-2); }
+.progress:has(.status[data-light="failed"]) .count__n, .progress:has(.status[data-light="stale"]) .count__n,
+.progress:has(.status[data-light="paused"]) .count__n { color: var(--ink-2); }
+/* The outcome tallies are the reference's .tallies / .tally panes (styles/base.css). */
+.activity { display: grid; gap: var(--sp-2); }
+.activity__list { list-style: none; display: grid; gap: 6px; }
+.activity__row { display: flex; gap: var(--sp-3); font-size: var(--fs-14); color: var(--ink-2); }
+.activity__time { color: var(--ink-3); flex: none; }
+/* The muted stage (§6.6): with a failed, stale or paused light nothing below it claims live activity. */
+.progress:has(.status[data-light="failed"]) .track, .progress:has(.status[data-light="stale"]) .track,
+.progress:has(.status[data-light="paused"]) .track,
+.progress:has(.status[data-light="failed"]) .track__headwrap, .progress:has(.status[data-light="stale"]) .track__headwrap,
+.progress:has(.status[data-light="paused"]) .track__headwrap { filter: saturate(.35); opacity: .8; }
+
+/* ---------- Review (the layout and the panes live in screens/review.css) ---------- */
+.checklist, .moved { display: grid; gap: var(--sp-3); }
+.checklist__group { display: grid; gap: var(--sp-2); }
+.checklist__group h3 { font-size: var(--fs-15); }
+.choice-row { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-5); }
+
+/* ---------- Improve, Compare ---------- */
+.sentences { display: grid; gap: var(--sp-2); padding-left: 1.2em; font-size: var(--fs-17); }
+
+/* ---------- Categories ---------- */
+.definition-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--sp-4); }
+.category-cards { display: grid; gap: var(--sp-5); }
+.category-card {
+  position: relative; display: grid; gap: var(--sp-4); padding: var(--sp-6); border: 1px solid var(--line);
+  border-radius: var(--r-card); background: var(--surface); box-shadow: var(--inner-highlight);
+}
+/* On the flat stage the box needs its own surface: its fields' borders must read 3:1 against what is next to them. */
+.category-none { display: grid; gap: var(--sp-4); padding: var(--sp-5); border: 1px dashed var(--line-strong); border-radius: var(--r-card); background: var(--surface); }
+.category-none legend { font-weight: var(--fw-semibold); padding: 0 var(--sp-1); }
+
+/* ---------- System ---------- */
+[data-testid="system-ready"][data-ready="true"] { color: var(--accent); }
+
+/* ---------- Breakpoints ---------- */
+@media (max-width: 760px) {
+  .table thead { display: none; }
+  .table tr { display: grid; padding: var(--sp-2) 0; border-bottom: 1px solid var(--line-2); }
+  .table td { border: 0; padding: 2px 0; }
+  .tally__n { font-size: var(--fs-40); }
+}

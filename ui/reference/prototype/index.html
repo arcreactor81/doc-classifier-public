@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Visual prototype · Overview</title>
+<script>
+/* Theme before first paint: ?theme=, then the saved choice, then the system setting (as ui/app/public/theme-boot.js). */
+(function () {
+  var t = null;
+  try {
+    var q = new URLSearchParams(location.search).get('theme');
+    if (q === 'light' || q === 'dark') t = q;
+    else { var s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') t = s; }
+  } catch (e) {}
+  if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.dataset.theme = t;
+})();
+</script>
+<link rel="stylesheet" href="prototype.css">
+</head>
+<body>
+<a class="skip" href="#main" data-skip>Skip to content</a>
+<div class="proto-bar"><div class="wrap">
+  <strong>Prototype</strong><span>Placeholder content. Nothing here is connected to the app.</span>
+  <nav aria-label="Prototype screens">
+    <a href="index.html" aria-current="page">Overview</a><a href="home.html">Home</a><a href="confirm.html">Confirm</a><a href="progress.html">Progress</a><a href="progress-stalled.html">Sending stopped</a><a href="results.html">Results</a><a href="review.html">Review</a><a href="system.html">System</a>
+  </nav>
+</div></div>
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="home.html"><span class="brand__mark" aria-hidden="true"></span>Document classification</a>
+  <nav class="nav" aria-label="Main"><a href="home.html">Home</a><a href="home.html#all-runs">Runs</a><a href="review.html">Categories</a><a href="index.html">How it works</a></nav>
+  <div class="topbar__end">
+    <a class="setup-word" href="system.html"><span class="g g--check" aria-hidden="true"></span><span class="setup-word__text">Setup complete</span></a>
+    <button class="icon-btn" type="button" data-theme-toggle aria-pressed="false" title="Change colour theme"><span class="g g--theme" aria-hidden="true"></span><span class="vh">Change colour theme</span></button>
+  </div>
+</div></header>
+
+<main id="main" tabindex="-1" class="wrap">
+<div class="stage stage--wide">
+  <div class="stage-head">
+    <h1 tabindex="-1">Visual prototype</h1>
+    <p class="lead">A static preview of the new look, with placeholder content. Judge the colour, type, spacing and motion here; the pages do not do any real work.</p>
+  </div>
+
+  <section class="block" aria-labelledby="screens-h">
+    <div class="block__head"><h2 id="screens-h">Screens</h2><p class="meta">Each opens in both themes; use the round button at the top right to switch.</p></div>
+    <ul class="screens">
+      <li><a href="home.html"><b>Home <span class="g g--arrow g--sm" aria-hidden="true"></span></b><span>Runs that need you, as links. Nothing is continued from here.</span></a></li>
+      <li><a href="confirm.html"><b>Confirm <span class="g g--arrow g--sm" aria-hidden="true"></span></b><span>Choose how to run it and set a spending limit. Nothing is pre-selected.</span></a></li>
+      <li><a href="progress.html"><b>Progress: sorting <span class="g g--arrow g--sm" aria-hidden="true"></span></b><span>73 of 114 decided, with the pipeline track. Try the motion here.</span></a></li>
+      <li><a href="progress-stalled.html"><b>Progress: sending stopped <span class="g g--arrow g--sm" aria-hidden="true"></span></b><span>Stopped at 13 of 114, with what it means and Continue sending.</span></a></li>
+      <li><a href="results.html"><b>Results <span class="g g--arrow g--sm" aria-hidden="true"></span></b><span>A compact table with outcome pills and one document's evidence open.</span></a></li>
+      <li><a href="review.html"><b>Review folders <span class="g g--arrow g--sm" aria-hidden="true"></span></b><span>The checklist beside the categories the run used. Narrow the window to see the snapped layout.</span></a></li>
+      <li><a href="system.html"><b>System <span class="g g--arrow g--sm" aria-hidden="true"></span></b><span>Setup, filing certainty and the emergency stop, with its confirmation sheet.</span></a></li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="look-h">
+    <div class="block__head"><h2 id="look-h">What to look at</h2></div>
+    <ul class="moments">
+      <li><b>Surfaces.</b> Soft steps between the page, the cards and inset panes, with hairline borders. Pure white is kept for sheets only.</li>
+      <li><b>One accent.</b> Blue means "you are here" and "you can act here". Green, amber and red mean only Filed, Review and Could not process.</li>
+      <li><b>Type.</b> The system face of this computer, in three weights; big numbers and headings in its display cut.</li>
+      <li><b>One motion motif.</b> A thin light trail runs through the journey and into every progress track. It moves only when something is recorded. Try it on <a href="progress.html">Progress</a>.</li>
+      <li><b>Reduced motion.</b> With the reduce-motion setting on, every state, word and number stays the same; only the movement goes.</li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="shell-h">
+    <div class="block__head"><h2 id="shell-h">The shell</h2><p class="meta">Shown on every run</p></div>
+    <div class="frame">
+      <section class="run-header" aria-label="Run 9 (example)">
+        <div class="run-header__top">
+          <p class="run-name">Run 9 · 25 Sep 13:58</p>
+          <div class="run-header__tools">
+            <button class="live" type="button" aria-pressed="true"><span class="live__switch" aria-hidden="true"></span><span>Live updates</span></button>
+            <details class="disclosure facts"><summary>Details <span class="g g--chev" aria-hidden="true"></span></summary>
+              <div class="disclosure__body technical" data-technical>
+                <dl><dt>Run id</dt><dd class="mono">00000000-0000-4000-8000-000000000009</dd><dt>Mode</dt><dd>interactive (from the server)</dd><dt>Category version</dt><dd>4 · revision placeholder-rev-4</dd><dt>Filing certainty</dt><dd>0.900 · untested</dd><dt>Spend</dt><dd>$0.42 known · 0 charges unreported</dd></dl>
+              </div>
+            </details>
+          </div>
+        </div>
+        <ul class="chips" aria-label="Run facts">
+          <li class="chip">Interactive</li>
+          <li class="chip">Categories version 4 · 4</li>
+          <li class="chip chip--dashed">Filing certainty 90% · untested</li>
+          <li class="chip">Spent $0.42 of $5.00</li>
+          <li class="chip">Text in the cloud: yes</li>
+          <li class="chip">Checked against answers from Run 6</li>
+        </ul>
+        <nav class="rail" aria-label="Progress (example)">
+          <ol class="rail__chapters">
+            <li class="rail__chapter"><span class="rail__overline">Your files</span><ol class="rail__steps">
+              <li class="step step--done"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Choose folder</span><span class="vh">, done</span></a></li>
+              <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Read files</span><span class="vh">, done</span></a></li>
+            </ol></li>
+            <li class="rail__chapter"><span class="rail__overline">Start</span><ol class="rail__steps">
+              <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Confirm</span><span class="vh">, done</span></a></li>
+              <li class="step step--done is-lit"><a class="step__in" href="progress.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Send</span><span class="vh">, done</span></a></li>
+            </ol></li>
+            <li class="rail__chapter is-here"><span class="rail__overline">Sorting</span><ol class="rail__steps">
+              <li class="step step--current is-lit is-head"><a class="step__in" href="progress.html" aria-current="step"><span class="step__node">5</span><span class="step__label">Sort</span></a></li>
+              <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="ix-r6"><span class="step__node">6</span><span class="step__label">Results</span></span><span class="step__tip" id="ix-r6" role="tooltip">Available when all 114 documents have an outcome (73 so far).</span></li>
+            </ol></li>
+            <li class="rail__chapter"><span class="rail__overline">Your folders</span><ol class="rail__steps">
+              <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="ix-r7"><span class="step__node">7</span><span class="step__label">Make folders</span></span><span class="step__tip" id="ix-r7" role="tooltip">Available once the results are ready.</span></li>
+              <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="ix-r8"><span class="step__node">8</span><span class="step__label">Review folders</span></span><span class="step__tip" id="ix-r8" role="tooltip">Available once the folders are made.</span></li>
+            </ol></li>
+            <li class="rail__chapter"><span class="rail__overline">Improve</span><ol class="rail__steps">
+              <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="ix-r9"><span class="step__node">9</span><span class="step__label">Update categories</span></span><span class="step__tip" id="ix-r9" role="tooltip">Available after you review the folders.</span></li>
+              <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="ix-r10"><span class="step__node">10</span><span class="step__label">Compare</span></span><span class="step__tip" id="ix-r10" role="tooltip">Available after you decide about the categories.</span></li>
+            </ol></li>
+          </ol>
+          <div class="rail__compact"><span class="step-badge" aria-hidden="true">5</span><span><b>Step 5 of 10</b> · Sort</span><span class="pips" aria-hidden="true"><i class="pip is-done"></i><i class="pip is-done"></i><i class="pip is-here"></i><i class="pip"></i><i class="pip"></i></span></div>
+        </nav>
+        <div class="narration">
+          <span class="narration__label">Now</span>
+          <p class="narration__now">The two systems are reading 114 documents; 73 have an outcome. You can close this page; sorting continues without it.</p>
+        </div>
+      </section>
+      <div class="run-strip run-strip--static" aria-label="Compact run strip (example)"><div class="wrap"><b>Run 9</b><span class="sep">·</span><span>Step 5 of 10 · Sort</span><span class="sep">·</span><span>73 of 114 decided</span><span class="sep">·</span><span>Checked 14:23:10</span></div></div>
+    </div>
+    <p class="frame__cap">The run's name and facts; the ten-step journey in five chapters; one sentence saying what is happening now and, when there is one, the next action. The compact strip appears under the top bar once the header scrolls away.</p>
+  </section>
+
+  <section class="block" aria-labelledby="status-h">
+    <div class="block__head"><h2 id="status-h">Journey step statuses</h2><p class="meta">Colour is never the only cue</p></div>
+    <ul class="statuses">
+      <li><span class="step step--upcoming"><span class="step__in"><span class="step__node">6</span><span class="step__label">Upcoming</span></span></span><p>Not yet. The reason shows on hover and focus.</p></li>
+      <li><span class="step step--current"><span class="step__in"><span class="step__node">5</span><span class="step__label">Current</span></span></span><p>Where you are. Ring and halo.</p></li>
+      <li><span class="step step--done"><span class="step__in"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Done</span></span></span><p>Finished, with a recorded result.</p></li>
+      <li><span class="step step--attention"><span class="step__in"><span class="step__node"><span class="g g--bang" aria-hidden="true"></span></span><span class="step__label">Attention</span></span></span><p>Stalled, stopped or a decision needed. Never amber.</p></li>
+      <li><span class="step step--blocked"><span class="step__in"><span class="step__node"><span class="g g--lock" aria-hidden="true"></span></span><span class="step__label">Blocked</span></span></span><p>The sentence above says what unblocks it.</p></li>
+      <li><span class="step step--skipped"><span class="step__in"><span class="step__node"><span class="g g--dash" aria-hidden="true"></span></span><span class="step__label">Skipped</span></span></span><p>Step 9 only: categories kept as they are.</p></li>
+    </ul>
+    <div class="frame block--spaced">
+      <nav class="rail" aria-label="Progress of Run 4 (example)">
+        <ol class="rail__chapters">
+          <li class="rail__chapter"><span class="rail__overline">Your files</span><ol class="rail__steps">
+            <li class="step step--done"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Choose folder</span><span class="vh">, done</span></a></li>
+            <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Read files</span><span class="vh">, done</span></a></li>
+          </ol></li>
+          <li class="rail__chapter"><span class="rail__overline">Start</span><ol class="rail__steps">
+            <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Confirm</span><span class="vh">, done</span></a></li>
+            <li class="step step--done is-lit"><a class="step__in" href="progress.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Send</span><span class="vh">, done</span></a></li>
+          </ol></li>
+          <li class="rail__chapter is-here"><span class="rail__overline">Sorting</span><ol class="rail__steps">
+            <li class="step step--attention is-lit"><a class="step__in" href="progress.html" aria-current="step"><span class="step__node"><span class="g g--bang" aria-hidden="true"></span></span><span class="step__label">Sort</span><span class="vh">, needs attention</span></a></li>
+            <li class="step step--blocked"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="ix-b6"><span class="step__node"><span class="g g--lock" aria-hidden="true"></span></span><span class="step__label">Results</span></span><span class="step__tip" id="ix-b6" role="tooltip">Run 4 was discarded before every document had an outcome, so it has no results. Start a new run.</span></li>
+          </ol></li>
+          <li class="rail__chapter"><span class="rail__overline">Your folders</span><ol class="rail__steps">
+            <li class="step step--blocked"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="ix-b7"><span class="step__node"><span class="g g--lock" aria-hidden="true"></span></span><span class="step__label">Make folders</span></span><span class="step__tip" id="ix-b7" role="tooltip">Not available for a discarded run.</span></li>
+            <li class="step step--blocked"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="ix-b8"><span class="step__node"><span class="g g--lock" aria-hidden="true"></span></span><span class="step__label">Review folders</span></span><span class="step__tip" id="ix-b8" role="tooltip">Not available for a discarded run.</span></li>
+          </ol></li>
+          <li class="rail__chapter"><span class="rail__overline">Improve</span><ol class="rail__steps">
+            <li class="step step--blocked"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="ix-b9"><span class="step__node"><span class="g g--lock" aria-hidden="true"></span></span><span class="step__label">Update categories</span></span><span class="step__tip" id="ix-b9" role="tooltip">Not available for a discarded run.</span></li>
+            <li class="step step--blocked"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="ix-b10"><span class="step__node"><span class="g g--lock" aria-hidden="true"></span></span><span class="step__label">Compare</span></span><span class="step__tip" id="ix-b10" role="tooltip">Not available for a discarded run.</span></li>
+          </ol></li>
+        </ol>
+        <div class="rail__compact"><span class="step-badge step-badge--attention" aria-hidden="true">!</span><span><b>Step 5 of 10</b> · Sort</span><span class="pips" aria-hidden="true"><i class="pip is-done"></i><i class="pip is-done"></i><i class="pip is-attention"></i><i class="pip"></i><i class="pip"></i></span></div>
+      </nav>
+      <div class="narration"><span class="narration__label">Now</span><p class="narration__now">Run 4 was discarded at 61 of 114 decided. Its later steps are locked; start a new run to sort these documents.</p></div>
+    </div>
+    <div class="frame block--spaced">
+      <nav class="rail" aria-label="Progress of Run 5 (example)">
+        <ol class="rail__chapters">
+          <li class="rail__chapter"><span class="rail__overline">Your files</span><ol class="rail__steps">
+            <li class="step step--done"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Choose folder</span><span class="vh">, done</span></a></li>
+            <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Read files</span><span class="vh">, done</span></a></li>
+          </ol></li>
+          <li class="rail__chapter"><span class="rail__overline">Start</span><ol class="rail__steps">
+            <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Confirm</span><span class="vh">, done</span></a></li>
+            <li class="step step--done is-lit"><a class="step__in" href="progress.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Send</span><span class="vh">, done</span></a></li>
+          </ol></li>
+          <li class="rail__chapter"><span class="rail__overline">Sorting</span><ol class="rail__steps">
+            <li class="step step--done is-lit"><a class="step__in" href="progress.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Sort</span><span class="vh">, done</span></a></li>
+            <li class="step step--done is-lit"><a class="step__in" href="results.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Results</span><span class="vh">, done</span></a></li>
+          </ol></li>
+          <li class="rail__chapter"><span class="rail__overline">Your folders</span><ol class="rail__steps">
+            <li class="step step--done is-lit"><a class="step__in" href="results.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Make folders</span><span class="vh">, done</span></a></li>
+            <li class="step step--done is-lit"><a class="step__in" href="review.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Review folders</span><span class="vh">, done</span></a></li>
+          </ol></li>
+          <li class="rail__chapter is-here"><span class="rail__overline">Improve</span><ol class="rail__steps">
+            <li class="step step--skipped is-lit"><a class="step__in" href="review.html"><span class="step__node"><span class="g g--dash" aria-hidden="true"></span></span><span class="step__label">Update categories</span><span class="vh">, skipped: categories kept as they are</span></a></li>
+            <li class="step step--current is-lit is-head"><a class="step__in" href="results.html" aria-current="step"><span class="step__node">10</span><span class="step__label">Compare</span></a></li>
+          </ol></li>
+        </ol>
+        <div class="rail__compact"><span class="step-badge" aria-hidden="true">10</span><span><b>Step 10 of 10</b> · Compare</span><span class="pips" aria-hidden="true"><i class="pip is-done"></i><i class="pip is-done"></i><i class="pip is-done"></i><i class="pip is-done"></i><i class="pip is-here"></i></span></div>
+      </nav>
+      <div class="narration"><span class="narration__label">Now</span><p class="narration__now">You kept the categories as they are. Save your answers so the next run can be compared with them.</p></div>
+    </div>
+    <p class="frame__cap">Two more real states: a run discarded before it finished (later steps locked), and a run whose categories were kept as they are (step 9 skipped).</p>
+  </section>
+
+  <section class="block" aria-labelledby="parts-h">
+    <div class="block__head"><h2 id="parts-h">Parts</h2></div>
+    <div class="specimen-grid">
+      <div class="specimen">
+        <p class="spec-label">Run facts</p>
+        <div class="specimen-row">
+          <span class="chip">Interactive</span>
+          <span class="chip chip--dashed">Filing certainty 90% · untested</span>
+          <span class="chip chip--dashed">Filing certainty 97% · provisional</span>
+          <span class="chip chip--accent">Filing certainty 97% · confirmed</span>
+          <span class="chip">Spent: <b>Unknown</b> ($0.40 known) of $5.00</span>
+        </div>
+      </div>
+      <div class="specimen">
+        <p class="spec-label">Top bar activity, while this tab is working on a run that is not on screen</p>
+        <div class="specimen-row"><a class="activity-pill" href="progress-stalled.html">Sending Run 8 · 57 of 114</a></div>
+      </div>
+      <div class="specimen">
+        <p class="spec-label">Outcomes: word plus glyph, always</p>
+        <div class="specimen-row">
+          <span class="pill pill--filed"><span class="g g--check" aria-hidden="true"></span>Filed</span>
+          <span class="pill pill--review"><span class="g g--person" aria-hidden="true"></span>Review</span>
+          <span><span class="pill pill--review"><span class="g g--person" aria-hidden="true"></span>Review</span><span class="first-tag">Review first</span></span>
+          <span class="pill pill--failed"><span class="g g--slash" aria-hidden="true"></span>Could not process</span>
+          <span class="pill pill--phase">Being read</span>
+        </div>
+      </div>
+      <div class="specimen">
+        <p class="spec-label">One filled button per screen; its result appears beneath it</p>
+        <div class="action">
+          <div class="action__row"><button class="btn btn--primary" type="button">Save my review</button><button class="btn" type="button">Look again</button><a class="btn btn--quiet" href="#parts-h">Compare two categories</a></div>
+          <div class="feedback"><div class="feedback__status" role="status"><p class="fb fb--done"><span class="g g--check" aria-hidden="true"></span><span>Saved <time>at 10:21:04</time>.</span></p></div><div class="feedback__alert" role="alert"></div></div>
+        </div>
+      </div>
+      <div class="specimen">
+        <p class="spec-label">Unavailable: always with the reason</p>
+        <div class="action">
+          <button class="btn btn--primary" type="button" disabled aria-describedby="spec-why">Start run</button>
+          <div class="feedback" id="spec-why"><div class="feedback__status" role="status"><div class="fb fb--blocked"><span>Why this is unavailable:</span><ul><li>Choose how to run this.</li><li>Set a spending limit, or choose No limit under More spending options.</li></ul></div></div></div>
+        </div>
+      </div>
+      <div class="specimen">
+        <p class="spec-label">Working, with measured time after 5 seconds</p>
+        <div class="feedback"><div class="feedback__status" role="status"><p class="fb fb--working"><span>Comparing your folders with the results… Still working · started 10:20:51 · 12 s</span></p></div></div>
+      </div>
+      <div class="specimen">
+        <p class="spec-label">A problem: neutral, specific, beneath its action</p>
+        <div class="notice notice--problem">
+          <span class="g g--warn" aria-hidden="true"></span>
+          <p class="notice__head">The connection dropped.</p>
+          <p>Nothing was lost. Select the button again to carry on.</p>
+          <details class="disclosure" data-technical><summary>Details <span class="g g--chev" aria-hidden="true"></span></summary><div class="disclosure__body technical"><pre>TypeError: Failed to fetch (placeholder)</pre></div></details>
+        </div>
+      </div>
+      <div class="specimen">
+        <p class="spec-label">Information</p>
+        <div class="notice notice--info">
+          <span class="g g--info" aria-hidden="true"></span>
+          <p class="notice__head">Read by two versions of the reading step.</p>
+          <p>This is recorded for reference and does not send documents to review.</p>
+        </div>
+      </div>
+      <div class="specimen">
+        <p class="spec-label">Outcome tally</p>
+        <dl class="tally">
+          <div class="tally__item"><dt><span class="g g--check g--sm" aria-hidden="true"></span>Filed</dt><dd><span class="tally__n">83</span><span class="meter meter--filed" aria-hidden="true"><i style="--f:.728"></i></span></dd></div>
+          <div class="tally__item"><dt><span class="g g--person g--sm" aria-hidden="true"></span>Review</dt><dd><span class="tally__n">29</span><span class="meter meter--review" aria-hidden="true"><i style="--f:.254"></i></span></dd></div>
+          <div class="tally__item"><dt><span class="g g--slash g--sm" aria-hidden="true"></span>Could not process</dt><dd><span class="tally__n">2</span><span class="meter meter--failed" aria-hidden="true"><i style="--f:.018"></i></span></dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="tracks-h">
+    <div class="block__head"><h2 id="tracks-h">Progress tracks</h2><p class="meta">A bar shows only a recorded count</p></div>
+    <div class="specimen-grid">
+      <div class="track-block">
+        <div class="track-block__cap"><span><b>Sending… 57 of 114</b></span><span>last received 14:44:10</span></div>
+        <div class="track track--lg track--moving" role="progressbar" aria-valuemin="0" aria-valuemax="114" aria-valuenow="57" aria-valuetext="57 of 114 sent" style="--fill:.5"><span class="track__fill"><span class="track__head"></span></span></div>
+        <p class="meta">Moving: the fill stops at the recorded count, with the trail head at its edge.</p>
+      </div>
+      <div class="track-block">
+        <div class="track-block__cap"><span><b>Sent and handed over 114 of 114</b></span><span>at 13:59:20</span></div>
+        <div class="track track--lg track--done" role="progressbar" aria-valuemin="0" aria-valuemax="114" aria-valuenow="114" aria-valuetext="114 of 114 sent and handed over" style="--fill:1"><span class="track__fill"><span class="track__head"></span></span></div>
+        <p class="meta">Done: full, still, no head.</p>
+      </div>
+      <div class="track-block">
+        <div class="track-block__cap"><span><b>Decided 40 of 114</b></span><span>The reader's service asked us to pause until 14:40</span></div>
+        <div class="track track--lg track--waiting" role="progressbar" aria-valuemin="0" aria-valuemax="114" aria-valuenow="40" aria-valuetext="40 of 114 decided; paused until 14:40" style="--fill:.351"><span class="track__fill"><span class="track__head"></span></span></div>
+        <p class="meta">Paused by a provider: static stripes, no movement; the stripes go at the stated time.</p>
+      </div>
+      <div class="track-block">
+        <div class="track-block__cap"><span><b>Sent 13 of 114</b></span><span>No document received since 16:31:07</span></div>
+        <div class="track track--lg track--stalled" role="progressbar" aria-valuemin="0" aria-valuemax="114" aria-valuenow="13" aria-valuetext="13 of 114 sent; stopped" style="--fill:.114"><span class="track__fill"><span class="track__head"></span></span></div>
+        <p class="meta">Stopped: all motion stops; neutral dashes, never amber.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="motion-h">
+    <div class="block__head"><h2 id="motion-h">Where the motion is</h2><p class="meta">Every movement is tied to a recorded event and lasts 5 seconds or less</p></div>
+    <ul class="moments">
+      <li><b>Progress.</b> Select "1 more decided": the pipeline boundaries move, the changed counts flash once, the new activity line fades in, and one trail sweep runs along Decided (at most once every 5 seconds). At 114 the journey advances in place and the button beneath turns into See the results.</li>
+      <li><b>Sending stopped.</b> Everything is still. Select Continue sending: the track turns from dashed to moving and fills to the next recorded count.</li>
+      <li><b>Results.</b> The 2 px indicator slides under the chosen filter.</li>
+      <li><b>System.</b> The confirmation sheet fades in over the page.</li>
+      <li><b>Never:</b> count-up numbers, bounce, pulse, rotation, hover lift, or a theme cross-fade. The theme switch and the focus ring are instant.</li>
+    </ul>
+  </section>
+</div>
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggle = document.querySelector('[data-theme-toggle]');
+  function sync() { if (toggle) toggle.setAttribute('aria-pressed', String(root.dataset.theme === 'dark')); }
+  sync();
+  if (toggle) toggle.addEventListener('click', function () {
+    /* Instant switch (SPEC §8.4, no theme cross-fade): the new theme is applied in one style recalculation with transitions off. */
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    void root.offsetWidth;
+    root.removeAttribute('data-theme-switching');
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+    sync();
+  });
+  var skip = document.querySelector('[data-skip]');
+  if (skip) skip.addEventListener('click', function (ev) { ev.preventDefault(); var m = document.getElementById('main'); if (m) m.focus(); });
+})();
+</script>
+</body>
+</html>

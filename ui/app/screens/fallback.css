@@ -1,0 +1,7 @@
+/* Fallback (screens/fallback.ts): the artifact's plain page — two blank sheets askew above the heading. */
+.fallback { max-width: 760px; }
+.fallback__sheet { position: relative; width: 58px; height: 74px; margin-bottom: 26px; }
+.fallback__sheet i { position: absolute; inset: 0; border-radius: 3px 7px 4px 6px; background: var(--paper); transform: rotate(-6deg); }
+.fallback__sheet i + i { background: var(--raise-2); border: 1px dashed var(--line-2); transform: translate(14px, 6px) rotate(5deg); }
+.fallback__body { margin-top: 28px; align-items: flex-start; }
+.fallback__body > details { align-self: stretch; }

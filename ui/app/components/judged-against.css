@@ -1,0 +1,6 @@
+/* JudgedAgainst (SPEC §7.2): two definitions side by side; one column when narrow or when there is no other side. */
+.judged { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-4); min-width: 0; }
+.judged--single { grid-template-columns: minmax(0, 1fr); }
+.judged__side { display: grid; gap: var(--sp-2); align-content: start; min-width: 0; }
+.judged__label { font-size: var(--fs-13); font-weight: var(--fw-medium); color: var(--ink-2); }
+@media (max-width: 900px) { .judged { grid-template-columns: minmax(0, 1fr); } }

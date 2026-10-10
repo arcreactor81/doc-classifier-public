@@ -1,0 +1,83 @@
+{
+  // PLACEHOLDER: the settings for your own pretend-vendor test site. Every id, hostname and list below is made up.
+  //
+  // The pretend-vendor build (core/server/fake-worker.ts) runs the whole pipeline on real Cloudflare resources while
+  // every model call is answered inside the Worker, so it makes no paid model call (DECISIONS 76 to 79). It must have
+  // its own Worker, database, bucket, Workflow and hostname, and it holds no credential binding: no Secrets Store
+  // entry and no Workers AI binding. scripts/deploy-fake.mjs refuses a file that breaks any of these rules.
+  //
+  // The original of this file holds one person's test site, so it is not published. This copy has the same shape, so
+  // the checks pass. The checks read it as a filled-in file, so the database id ends in 1 instead of being all zeros;
+  // it still names no database in any account, and example.com is not your domain.
+  //
+  // To use it, replace:
+  //   routes[0].pattern     a hostname of its own, never the real site's.
+  //   database_id           the id of a D1 database created for this test site only: `npx wrangler d1 create <name>`.
+  //   ACCESS_TEAM_DOMAIN    your Cloudflare Access team domain, <your-team>.cloudflareaccess.com.
+  //   ACCESS_AUD            the Application Audience (AUD) tag of an Access application in front of this hostname.
+  //   DEFINITION_EDITORS    a JSON array of Access user ids (the JWT `sub`), the owner first; never an email address.
+  // Create the bucket named below with `npx wrangler r2 bucket create doc-classifier-fake-artifacts` (or rename it here
+  // and in the checks). Cloudflare still meters the Workers, D1, R2 and Workflows usage of this site.
+  //
+  // Deploy with `node scripts/deploy-fake.mjs --alias project-pack:./projects/practice/project.json --var PROJECT_ID:practice`
+  // for the scale tests (docs/deployment.md, "Private mechanical scale tests"). Health must report pretend vendors.
+  "name": "doc-classifier-fake",
+  "main": "core/server/fake-worker.ts",
+  "compatibility_date": "2026-09-30",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "docs-preview.example.com",
+      "custom_domain": true
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "traces": {
+      "enabled": true
+    }
+  },
+  "assets": {
+    "directory": "dist",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "doc-classifier-fake",
+      "database_id": "00000000-0000-0000-0000-000000000001",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "ARTIFACTS",
+      "bucket_name": "doc-classifier-fake-artifacts"
+    }
+  ],
+  "workflows": [
+    {
+      "binding": "DOCUMENT_WORKFLOW",
+      "name": "doc-classifier-fake-document",
+      "class_name": "DocumentWorkflow"
+    }
+  ],
+  "vars": {
+    "PROJECT_ID": "owner",
+    "MODEL_CALLS_ENABLED": "true",
+    "ACCESS_TEAM_DOMAIN": "<your-team>.cloudflareaccess.com",
+    "ACCESS_AUD": "0000000000000000000000000000000000000000000000000000000000000000",
+    "BUILD_COMMIT": "unversioned",
+    "DEFINITION_MODE": "runtime",
+    // A JSON array of Cloudflare Access user IDs (the JWT `sub`), the owner first. Health reads NOT READY until one is listed.
+    "DEFINITION_EDITORS": "[\"<access-user-id>\"]",
+    "TRUSTED_USERS": "[]"
+  },
+  "tsconfig": "tsconfig.worker.json",
+  "alias": {
+    "project-pack": "./projects/owner/project.json"
+  }
+}

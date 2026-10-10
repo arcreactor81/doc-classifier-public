@@ -1,0 +1,101 @@
+/* EvidencePanel (SPEC §7.2): the reference's evidence drawer (prototype-v3 la.css .evidence, .ev-*, .sys, .bars, .yn,
+   .quote, .def) in the app's tokens. It sits in a full-width table row beneath the document's row (screens/results.css
+   .drawer), so it continues that row's open background and left rule. The two systems keep their own colours
+   (--sys-confidence, --sys-reader): nothing here is an outcome colour. */
+.ev { position: relative; color: var(--ink-2); white-space: normal; min-width: 0; }
+.ev-body { display: grid; gap: 26px; }
+.ev-loading { font-size: var(--fs-14); color: var(--ink-2); padding: 12px 0 4px; }
+.ev-lead { display: grid; gap: 8px; max-width: 80ch; }
+.ev-lead__text { font-family: var(--font-display); font-size: 19px; line-height: 1.45; color: var(--ink); overflow-wrap: anywhere; }
+.ev-failure { display: grid; gap: 8px; font-size: var(--fs-14); }
+.ev-failure .quote { --sc: var(--fail-line); }
+.ev-h {
+  font-size: 11.5px; font-weight: var(--fw-semibold); line-height: 1.2; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--ink-2); margin-bottom: 12px;
+}
+.ev-h--in { margin: 8px 0 -4px; }
+.ev-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.ev-2--one { grid-template-columns: minmax(0, 1fr); }
+
+/* One system: a pane with its colour along the top edge and a diamond by its name. */
+.sys {
+  position: relative; border-radius: 20px; padding: 22px 22px 20px; background: var(--surface); border: 1px solid var(--line);
+  display: grid; gap: 14px; align-content: start; min-width: 0;
+}
+.sys::before {
+  content: ""; position: absolute; left: 22px; right: 22px; top: -1px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--sc), transparent);
+}
+.sys--check { --sc: var(--sys-confidence); }
+.sys--reader { --sc: var(--sys-reader); }
+.sys > .trace > i { background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--sc) 70%, transparent) 72%, var(--sc) 90%, transparent); }
+.sys__top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.sys__name { display: inline-flex; gap: 10px; align-items: center; font-family: var(--font-display); font-size: 16px; font-weight: 750; font-stretch: 82%; line-height: 1.2; color: var(--ink); }
+.sys__name i { width: 10px; height: 10px; border-radius: 3px; background: var(--sc); transform: rotate(45deg); flex: none; }
+.sys__sub { font-size: 12.5px; color: var(--ink-3); }
+.sys__sub--under { margin-top: -6px; }
+.sys__reason { font-size: var(--fs-14); color: var(--ink); overflow-wrap: anywhere; }
+
+/* Recorded certainty has the filing threshold; category probability bars have no threshold marker. */
+.bars { display: grid; gap: 9px; }
+.bar-row { display: grid; grid-template-columns: 104px minmax(0, 1fr) 42px; gap: 12px; align-items: center; font-size: 13.5px; color: var(--ink-2); }
+.bar-row__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-row.is-choice .bar-row__name { color: var(--ink); font-weight: var(--fw-semibold); }
+.bar-row .v { text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ev .bar { position: relative; height: 6px; margin: 0; border: 0; overflow: visible; border-radius: 6px; background: var(--track); }
+.ev .bar i {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 100%; border-radius: 6px; transform-origin: left;
+  transform: scaleX(var(--fill, 0)); background: var(--sc); opacity: .9;
+}
+.ev .bar__mark { position: absolute; top: -5px; bottom: -5px; left: calc(var(--mark, 0) * 100%); width: 2px; border-radius: 2px; background: var(--ink-2); }
+.bars__note { display: flex; gap: 10px; align-items: center; font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+.bars__note i { width: 2px; height: 14px; background: var(--ink-2); border-radius: 2px; flex: none; }
+
+/* A yes or no per category. */
+.yn { display: grid; }
+.yn > div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line-2); font-size: 13.5px; }
+.yn > div:first-child { border-top: 0; }
+.yn span { color: var(--ink-2); min-width: 0; overflow-wrap: anywhere; }
+.yn b { color: var(--ink); font-weight: var(--fw-semibold); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.yn b.no { color: var(--ink-2); font-weight: var(--fw-medium); }
+.quote { white-space: pre-wrap; font-size: var(--fs-14); color: var(--ink); padding: 8px 0 8px 14px; box-shadow: inset 2px 0 0 var(--sc, var(--light)); overflow-wrap: anywhere; }
+
+/* A definition card with who chose it above the name (the card itself is components/definition-card.ts). */
+.ev-def {
+  border-radius: var(--r-card); background: var(--surface); border: 1px solid var(--line); padding: 18px 20px;
+  display: grid; gap: 10px; align-content: start; min-width: 0;
+}
+.ev-def__by { font-size: 12.5px; color: var(--ink-3); }
+.ev-def .def { background: transparent; padding: 0; border-radius: 0; }
+.ev-def .def__name { font-family: var(--font-display); font-size: var(--fs-17); font-weight: 750; font-stretch: 82%; line-height: 1.2; }
+
+/* The two disclosures at the foot. */
+.ev-disc { border-top: 1px solid var(--line-2); padding-top: 12px; }
+.ev-disc > .disclosure__summary { padding-left: 0; }
+
+@media (max-width: 900px) {
+  .ev-2 { grid-template-columns: minmax(0, 1fr); }
+  .bar-row { grid-template-columns: 84px minmax(0, 1fr) 40px; }
+}
+
+/* The top of the drawer (evidenceSheet): the paper sheet (site.css .sheet-doc, .stamp, .mark) beside the two opinions
+   (site.css .verdicts) and "How this was decided". */
+.ev-sheet { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; margin-top: 4px; }
+.ev-sheet .sheet-doc { margin-top: 18px; }
+.ev-sheet .sheet-doc h4 { overflow-wrap: anywhere; }
+.ev-sheet .sheet-doc .fn { overflow-wrap: anywhere; }
+.ev-sheet .sheet-doc__body p:last-child { margin-bottom: 0; }
+.ev-sheet .verdict b { font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
+.ev-sheet .verdict .v { white-space: nowrap; }
+.ev-sheet .verdict .v.is-agree { color: var(--hl); }
+.ev-sheet .verdict .v.is-differ { color: var(--pink); }
+.ev-sheet .verdict--why > span:last-child { grid-column: span 2; min-width: 0; overflow-wrap: anywhere; }
+.ev-sheet__how { margin-top: 18px; display: grid; gap: 6px; justify-items: start; }
+.ev-sheet__how .hint { color: var(--mute); font-size: 14px; }
+@media (max-width: 900px) {
+  .ev-sheet { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .ev-sheet .verdict { grid-template-columns: 84px minmax(0, 1fr) auto; }
+  .ev-sheet .sheet-doc { padding: 22px 18px; }
+}

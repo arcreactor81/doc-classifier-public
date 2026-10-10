@@ -1,0 +1,1 @@
+This is the original owner-provided visual reference. Use its visual language only. Its sample content and behavior are not production architecture or taxonomy. DESIGN.md remains authoritative. The original root file is preserved.

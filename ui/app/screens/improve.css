@@ -1,0 +1,19 @@
+/* Improve your categories (screens/improve.ts), from The Sorting Room artifact's step "improve": .step-eyebrow, .h-page,
+   .lede, .stack-v.stg, .panel, .ansgrid and .hint come from styles/site.css. Only what is this area's own is here. */
+.improve-step .h-page { margin-top: 10px; }
+.improve__panels { margin-top: 28px; }
+
+/* The findings and answers hold only reactive regions (comments) until the saved review has something to say. */
+.improve__findings:not(:has(> *)), .compare__answers:not(:has(> *)) { display: none; }
+.improve__findings, .compare__answers { display: grid; gap: 12px; margin-top: 14px; }
+.improve__sentences { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.improve__proposal { padding: 12px 14px; border-radius: 12px; background: var(--ground); border: 1px solid var(--line); }
+.compare__answers .ansgrid { margin-top: 2px; }
+
+/* The choice: the journey's one action, full width and tall, with the quiet actions beneath it. */
+.improve__choice { display: grid; gap: 14px; }
+.improve__choice .action-slot .action { justify-items: stretch; width: 100%; }
+.improve__choice .action-slot .action > .btn { min-height: 56px; padding: 0 28px; font-size: 16px; }
+.improve__choice .action-slot .action__note, .improve__choice .action-slot .feedback { max-width: none; }
+.improve__choice .quiet-actions { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+.improve__bakeoff { min-width: 0; }
