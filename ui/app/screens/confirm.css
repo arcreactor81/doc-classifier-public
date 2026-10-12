@@ -1,0 +1,92 @@
+/*
+ * Confirm (journey step 3), on the Sorting Room's RUN.confirm. The building blocks (.confirm-grid, .aside, .flowfig,
+ * .mini-sheet, .strips, .radios/.radio, .money, .check, .why, .panel, .hint) are site.css's; only what is this screen's
+ * own lives here, scoped to .confirm-screen.
+ */
+.confirm-screen > .h-page { margin-top: 10px; }
+.confirm-screen > .h-page:focus { outline: none; }
+.confirm-screen > .h-page:focus-visible { outline: 2px solid var(--hl); outline-offset: 4px; }
+.confirm-screen .confirm-grid { margin-top: 28px; }
+.confirm-screen .panel > .hint + * { margin-top: 14px; }
+
+/* ---------- What stays and what is sent ---------- */
+.confirm-screen .confirm__sheet { margin-top: 16px; }
+.confirm-screen .confirm__sent { color: var(--hl); }
+.confirm-screen .confirm__not-read { margin-top: 10px; color: var(--faint); }
+
+/* ---------- Reader cards: each card is the action that records the choice ---------- */
+.confirm-screen .reader-chosen { display: grid; gap: 6px; margin-top: 14px; }
+.confirm-screen .reader-chosen__line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.confirm-screen .reader-chosen__line b { font-weight: 600; font-size: 17px; }
+.confirm-screen .reader-chosen__extras { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.confirm-screen .reader-chosen__version summary { cursor: pointer; color: var(--mute); font-size: 13px; min-height: 32px; display: inline-flex; align-items: center; }
+.confirm-screen .reader-chosen__version code { font-family: var(--f-mono); font-size: 12.5px; color: var(--mute); }
+.confirm-screen .reader-cards { align-items: stretch; }
+.confirm-screen .reader-card { gap: 6px; padding-right: 40px; transition: border-color .2s, background .2s; }
+.confirm-screen .reader-card:hover { border-color: var(--mute); }
+.confirm-screen .reader-card.is-on { border-color: var(--hl); box-shadow: inset 0 0 0 1px var(--hl); }
+.confirm-screen .reader-card[data-unavailable] { cursor: not-allowed; opacity: .72; }
+.confirm-screen .reader-card__mark {
+  position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%;
+  border: 1.5px solid var(--line-2); color: transparent;
+}
+.confirm-screen .reader-card.is-on .reader-card__mark { background: var(--hl); border-color: var(--hl); color: var(--hl-ink); }
+/* The card's action: its button reads as the card's name (the artifact's <b>), its slot stays beneath it. */
+.confirm-screen .reader-card .action { display: grid; gap: 4px; }
+.confirm-screen .reader-card .btn[data-op] {
+  justify-content: flex-start; min-height: 36px; padding: 0; border: 0; border-radius: 6px; background: transparent;
+  color: var(--ink); font-size: 16px; font-weight: 600; text-align: left; white-space: normal; box-shadow: none;
+}
+.confirm-screen .reader-card .btn[data-op]:hover { color: var(--hl); }
+.confirm-screen .reader-card .btn[data-op]:disabled { border: 0; color: var(--faint); }
+.confirm-screen .reader-card .btn[data-op]::before, .confirm-screen .reader-card .btn[data-op]::after { display: none; }
+.confirm-screen .reader-card .feedback { font-size: 13px; }
+.confirm-screen .reader-card__chosen { font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--hl); }
+.confirm-screen .reader-card .chip { justify-self: start; }
+.confirm-screen .reader-note, .confirm-screen .reader-cost { display: block; font-size: 13px; color: var(--mute); overflow-wrap: anywhere; }
+.confirm-screen .reader-cost { color: var(--ink); }
+.confirm-screen .reader-card > span.reader-note, .confirm-screen .reader-card > span.reader-cost { max-width: 34rem; }
+
+/* ---------- Spending limit ---------- */
+.confirm-screen .confirm__none { display: grid; gap: 6px; }
+.confirm-screen .confirm__more { margin-top: 14px; }
+.confirm-screen .confirm__more > .disclosure__summary { padding-left: 0; }
+.confirm-screen .confirm__more > .disclosure__summary:hover { background: transparent; }
+.confirm-screen .confirm__more > .disclosure__body { padding-left: 0; }
+.confirm-screen .confirm__more-body { display: grid; gap: 12px; }
+.confirm-screen .confirm__systems { display: grid; gap: 14px; }
+.confirm-screen .check { color: var(--ink); font-size: 15px; }
+.confirm-screen .check input { accent-color: var(--hl); }
+.confirm-screen .check--ack { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--pink); }
+
+/* ---------- Daily allowance ---------- */
+.confirm-screen .confirm__usage-body { display: grid; gap: 10px; margin-top: 10px; }
+.confirm-screen .confirm__usage-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0 16px; margin: 4px 0; }
+.confirm-screen .confirm__usage-facts .aside-row { padding: 10px 0; border-top: 1px solid var(--line); }
+.confirm-screen .confirm__usage-facts dt { font-size: 13px; color: var(--faint); }
+.confirm-screen .confirm__usage-facts dd { margin: 2px 0 0; font-weight: 500; }
+.confirm-screen .confirm__usage-list { margin: 0; padding-left: 18px; color: var(--mute); font-size: 14px; display: grid; gap: 2px; }
+.confirm-screen .confirm__usage-details summary { cursor: pointer; color: var(--mute); font-size: 13px; min-height: 32px; display: inline-flex; align-items: center; }
+.confirm-screen .confirm__usage-details p { font-size: 13px; color: var(--mute); }
+.confirm-screen .confirm__usage > .action { margin-top: 10px; }
+
+/* ---------- This run ---------- */
+.confirm-screen .confirm__aside { z-index: 1; }
+.confirm-screen .aside dd { overflow-wrap: anywhere; }
+.confirm-screen .aside dd small { display: block; font-weight: 400; font-size: 13px; color: var(--mute); }
+.confirm-screen .aside dd small.confirm__fail { color: var(--stop); }
+.confirm-screen .aside dd.is-unset { color: var(--mute); font-weight: 400; }
+.confirm-screen .confirm__start { display: grid; gap: 12px; }
+.confirm-screen .confirm__start .action { display: grid; gap: 8px; }
+.confirm-screen .confirm__start .btn[data-op] { width: 100%; min-height: 56px; padding: 10px 28px; font-size: 16px; white-space: normal; }
+.confirm-screen .confirm__start .action__note { margin-top: 0; font-size: 13px; color: var(--mute); }
+.confirm-screen .confirm__start .feedback { font-size: 13px; color: var(--mute); }
+.confirm-screen .confirm__start .feedback__reasons { margin: 4px 0 0; padding-left: 18px; }
+
+/* ---------- A comparison run's fixed settings ---------- */
+.confirm-screen .confirm__bakeoff { display: grid; gap: 8px; }
+.confirm-screen .confirm__bakeoff pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; color: var(--mute); }
+
+@media (max-width: 1100px) {
+  .confirm-screen .aside { position: static; }
+}

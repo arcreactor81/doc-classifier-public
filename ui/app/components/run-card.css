@@ -1,0 +1,16 @@
+/* RunCard: the Sorting Room's .runcard, .segs and .status are site.css's; here only what the card adds. The list is a
+   plain grid of cards (.runs-row), the whole card one link. */
+.run-cards { list-style: none; padding: 0; margin: 0; display: contents; }
+.runcard-item { display: flex; min-width: 0; }
+.runcard-item > .runcard { flex: 1; text-decoration: none; }
+.runcard .runcard__name { font-family: var(--f-disp); font-weight: 700; font-variation-settings: 'wdth' 85; font-size: 22px; line-height: 1.15; margin: 0; }
+.runcard__when, .runcard__step { font-size: 12px; color: var(--faint); }
+.runcard__when { white-space: nowrap; }
+.runcard__kind { font-size: 13px; color: var(--mute); }
+.runcard__now { color: var(--mute); font-size: 15px; margin: 0; }
+.runcard__open { min-height: 0; padding: 0; margin-top: auto; }
+.runcard__open svg { width: 16px; height: 16px; }
+.runcard:hover .runcard__open { color: var(--ink); }
+.runcard:focus-visible { outline: 2px solid var(--hl); outline-offset: 3px; }
+.segs i.f { background: var(--stop); }
+.status.f::before { background: var(--stop); }

@@ -1,0 +1,319 @@
+/*
+ * Base styles (SPEC §8.2, §8.3; WP-6). Tokens come from styles/tokens.css; motion and the effect rules live in
+ * styles/motion.css. This file holds the page basics, the shell regions (SPEC §2.1), buttons, the action block and its
+ * feedback slot (view/action.ts), the neutral notice (VL R-4) and the Glyph base. Component styles sit beside each
+ * component (components/*.css). Colour discipline (§0.1 rule 5): no outcome colour is used here.
+ */
+
+/* ---------- Page basics ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+/* Component display rules must never override the hidden attribute (WP-V finding). */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-optical-sizing: auto;
+  min-height: 100vh;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-15);
+  line-height: var(--lh-body);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--tracking-body);
+  -webkit-font-smoothing: antialiased;
+}
+#app { position: relative; z-index: 1; }
+h1, h2, h3, h4, p, ol, ul, dl, dd, figure, blockquote, fieldset { margin: 0; }
+ol, ul { padding: 0; }
+fieldset { border: 0; padding: 0; min-width: 0; }
+legend { padding: 0; }
+/* Display type: Bricolage Grotesque, heavy and narrow (the Sorting Room voice). */
+h1, h2 { font-family: var(--font-display); font-weight: 750; font-stretch: 82%; }
+h1 { font-size: var(--fs-30); line-height: var(--lh-tight); letter-spacing: var(--tracking-display); }
+/* The highlighter: a hand-drawn marker stroke behind a word or two. */
+mark {
+  background: linear-gradient(104deg, transparent 0 1%, var(--accent) 2% 97%, transparent 98%); color: var(--on-accent);
+  padding: 0 .2em; border-radius: .2em .6em .25em .5em; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+h2 { font-size: var(--fs-20); line-height: var(--lh-snug); letter-spacing: var(--tracking-heading); }
+h3 { font-size: var(--fs-15); line-height: var(--lh-snug); font-weight: var(--fw-semibold); }
+h4 { font-size: var(--fs-14); line-height: var(--lh-snug); font-weight: var(--fw-semibold); }
+strong, b { font-weight: var(--fw-semibold); }
+a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:hover { color: var(--accent-strong); }
+button, input, select, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+button { cursor: pointer; }
+time, table, .num, .count, .chip { font-variant-numeric: tabular-nums; }
+code, pre { font-family: var(--font-mono); font-size: var(--fs-13); }
+
+/* Focus: a 2px accent outline with a 2px offset, instant, plus the glow in dark (SPEC §8.2). Never removed. */
+:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset); }
+:focus-visible { box-shadow: var(--glow); }
+/* Headings and the stage take focus programmatically only (tabindex -1): no ring for a pointer or a script. */
+/* Headings and the stage take focus only so screen readers land in the right place; they are not controls (la.css 234). */
+[tabindex="-1"]:focus, [tabindex="-1"]:focus-visible, :root[data-theme] [tabindex="-1"]:focus-visible { outline: none; box-shadow: none; }
+
+/* The a11y announcer and any visually hidden text (view/a11y.ts). */
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute; left: var(--sp-4); top: -100px; z-index: 100;
+  background: var(--raised); color: var(--ink); padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-sm); box-shadow: var(--shadow-2); text-decoration: none;
+}
+.skip-link:focus { top: var(--sp-2); }
+
+/* ---------- Glyphs (view/glyphs.ts: aria-hidden; meaning is always carried by text) ---------- */
+.glyph { display: inline-block; flex: none; vertical-align: -3px; }
+@media (forced-colors: active) { .glyph { forced-color-adjust: auto; } }
+
+/* ---------- Layout ---------- */
+.wrap { max-width: calc(var(--page-max) + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
+.shell { min-height: 100vh; }
+.shell__page { padding-bottom: var(--sp-9); }
+
+/* ---------- RunStrip (40px, sticky under the TopBar, while the RunHeader is scrolled out of view) ---------- */
+.run-strip {
+  position: absolute; left: 0; right: 0; top: 100%; min-height: var(--runstrip-h);
+  background: var(--surface); border-bottom: 1px solid var(--line); box-shadow: var(--shadow-1);
+  font-size: var(--fs-13); color: var(--ink-2);
+}
+.run-strip__in { min-height: var(--runstrip-h); display: flex; align-items: center; gap: var(--sp-2); overflow: hidden; }
+.run-strip__part { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.run-strip__name { color: var(--ink); font-weight: var(--fw-semibold); flex: none; max-width: 40%; }
+.run-strip__sep { color: var(--ink-3); flex: none; }
+
+/* ---------- RunHeader (SPEC §2.1) ---------- */
+.subject { padding-top: var(--sp-6); }
+.run-header__top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); }
+.run-name {
+  font-family: var(--font-display); font-size: var(--fs-26); font-weight: 750; font-stretch: 84%; line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; min-width: 0; overflow-wrap: anywhere;
+}
+.run-header__tools { margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.run-header__chips { list-style: none; display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-3); }
+.run-header__status {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-1) var(--sp-3); margin-top: var(--sp-3);
+  font-size: var(--fs-13); color: var(--ink-2);
+}
+/* "Checked 14:23:10 · Last change 14:23:05 · Live updates paused at …" (SPEC §2.1, §4.5): the dots are visual only
+   (empty alternative text), so nothing extra is read and no text node changes on a poll. */
+.run-header__changed::before { content: "·" / ""; margin-right: var(--sp-3); color: var(--ink-3); }
+.live-paused::before { content: "·" / ""; color: var(--ink-3); }
+.run-header__sep { color: var(--ink-3); }
+.run-header__problem { color: var(--ink); }
+.run-header__problem .btn--quiet { min-height: 24px; font-size: var(--fs-13); }
+.run-facts { display: grid; grid-template-columns: minmax(8em, auto) minmax(0, 1fr); gap: 4px var(--sp-4); font-size: var(--fs-13); }
+.run-facts dt { color: var(--ink-3); }
+.run-facts dd { color: var(--ink); overflow-wrap: anywhere; }
+.technical { font-size: var(--fs-13); color: var(--ink-2); }
+.technical pre {
+  margin: var(--sp-2) 0 0; padding: var(--sp-3); background: var(--surface-2); border-radius: var(--r-sm);
+  color: var(--ink-2); white-space: pre-wrap; overflow-wrap: anywhere; line-height: var(--lh-body);
+}
+
+.live {
+  display: inline-flex; align-items: center; gap: var(--sp-2); min-height: var(--control-h-sm); padding: 0 var(--sp-3) 0 var(--sp-2);
+  border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+  font-size: var(--fs-13); font-weight: var(--fw-medium);
+  transition: border-color var(--dur-hover) var(--ease-out);
+}
+.live:hover { border-color: var(--line-strong); color: var(--ink); }
+.live__switch {
+  position: relative; width: 28px; height: 16px; border-radius: var(--r-pill); background: var(--surface-3); flex: none;
+  box-shadow: inset 0 0 0 1px var(--line-strong); transition: background-color var(--dur-hover) var(--ease-out);
+}
+.live__switch::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--ink-3); transition: transform var(--dur-hover) var(--ease-out), background-color var(--dur-hover) var(--ease-out);
+}
+.live[aria-pressed="true"] .live__switch { background: var(--accent); box-shadow: none; }
+.live[aria-pressed="true"] .live__switch::after { background: var(--on-accent); transform: translateX(12px); }
+.live-paused { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2); font-size: var(--fs-13); color: var(--ink-2); }
+
+/* ---------- Stage (SPEC §2.1, §2.7, §8.2) ---------- */
+.stage-host { display: block; }
+/* The stage pane: edge-lit graphite (VISUAL-SPEC-v2 §2.3, §4). */
+/* The stage is flat, as the reference's is (la.css .stage): the panes inside it carry the surfaces and the edge light. */
+.stage { position: relative; margin: var(--sp-6) auto 0; min-width: 0; padding: var(--sp-3) 0 0; }
+.stage--narrow { max-width: var(--stage-narrow); }
+.stage--wide { max-width: var(--stage-wide); }
+.stage__head { display: grid; gap: var(--sp-3); margin-bottom: var(--sp-7); }
+/* The heading takes focus on a route change: its ring hugs the words instead of the whole stage width. */
+.stage__head > h1 {
+  justify-self: start; max-width: 100%;
+  font-size: var(--fs-h1); line-height: var(--lh-display); letter-spacing: var(--tracking-display);
+}
+.lead { font-size: var(--fs-17); line-height: var(--lh-read); color: var(--ink-2); max-width: var(--measure-narrow); }
+.body-text { max-width: var(--measure); }
+.muted { color: var(--ink-2); }
+.small { font-size: var(--fs-13); }
+.stack { display: grid; gap: var(--sp-4); }
+.quiet-links { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); }
+.block + .block { margin-top: var(--sp-7); padding-top: var(--sp-7); border-top: 1px solid var(--line-2); }
+.stage__loading { display: grid; gap: var(--sp-3); }
+
+/* ---------- Buttons (SPEC §8.2) ---------- */
+.btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: var(--control-h); padding: 0 24px; border-radius: var(--r-pill); border: 1px solid var(--line);
+  background: var(--surface-2); color: var(--ink); font-size: var(--fs-15); font-weight: var(--fw-semibold); line-height: 1.2;
+  text-decoration: none; max-width: 100%; text-align: center;
+  transition: transform var(--dur-press) var(--ease-out);
+}
+.btn:hover { border-color: var(--line-strong); color: var(--ink); }
+.btn:active:not(:disabled) { transform: translateY(1px) scale(.99); }
+/* The primary: the cyan light, with its halo (VISUAL-SPEC-v2 §2.2 --primary-1/2). */
+.btn--primary {
+  color: var(--on-accent); border-color: var(--accent); background-color: var(--accent);
+  transition: transform var(--dur-press) var(--ease-out), background-color var(--dur-hover) var(--ease-out);
+}
+.btn--primary:hover { color: var(--on-accent); border-color: var(--accent-strong); background-color: var(--accent-strong); }
+.btn--secondary { background: var(--surface-2); border-color: var(--line-strong); color: var(--ink); }
+.btn--secondary:hover { border-color: var(--ink-2); }
+.btn--quiet {
+  background: transparent; border-color: transparent; color: var(--accent); padding: 0 var(--sp-2);
+  min-height: 32px; font-weight: var(--fw-semibold);
+}
+.btn--quiet:hover { border-color: transparent; color: var(--accent-strong); text-decoration: underline; text-underline-offset: 3px; }
+.btn:disabled, .btn[aria-disabled="true"] {
+  background: transparent; background-image: none; border: 1px dashed var(--line-strong); color: var(--ink-3); cursor: not-allowed; box-shadow: none;
+}
+.btn:disabled::after { display: none; }
+.btn--quiet:disabled { background: transparent; border-color: transparent; }
+.btn .glyph { width: 16px; height: 16px; }
+
+/* ---------- Text inputs (SPEC §8.2: --line-strong only for input, checkbox and radio borders) ---------- */
+.input {
+  width: 100%; min-height: var(--control-h); padding: 0 var(--sp-3); border-radius: var(--r-sm);
+  border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font-size: var(--fs-14);
+}
+.input::placeholder { color: var(--ink-3); }
+.check { display: flex; gap: var(--sp-3); align-items: flex-start; font-size: var(--fs-14); cursor: pointer; }
+.check input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
+
+/* ---------- ActionBlock and its feedback slot (view/action.ts; SPEC §5.3, §7.1) ---------- */
+.action { display: grid; justify-items: start; gap: var(--sp-2); min-width: 0; }
+.action__note { font-size: var(--fs-13); color: var(--ink-2); max-width: var(--measure); }
+.feedback { width: 100%; max-width: var(--measure); font-size: var(--fs-13); color: var(--ink-2); line-height: 1.45; }
+.feedback[data-state="idle"] .feedback__status:empty { display: none; }
+.feedback__alert:empty, .feedback__status:empty { display: none; }
+.feedback__status, .feedback__alert { display: block; }
+.feedback[data-state="working"], .feedback[data-state="waiting"] {
+  padding: var(--sp-2) var(--sp-3); border-radius: var(--r-sm); background: var(--surface-2);
+}
+.feedback[data-state="working"] { box-shadow: inset 2px 0 0 var(--accent); }
+.feedback__step { color: var(--ink-2); }
+.feedback__done { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--sp-2); color: var(--ink); }
+.feedback__done .glyph { align-self: center; color: var(--ink); }
+.feedback__time, .feedback__done time { color: var(--ink-3); white-space: nowrap; }
+.feedback__why { color: var(--ink-2); }
+.feedback__reasons { margin: 2px 0 0; padding-left: 18px; color: var(--ink-2); }
+.feedback__reasons li { margin: 2px 0; }
+.feedback__work { display: grid; gap: var(--sp-1); margin-top: var(--sp-2); }
+.feedback__meter {
+  display: block; width: 100%; max-width: 240px; height: var(--track-h); overflow: hidden;
+  border-radius: var(--r-pill); background: var(--track);
+}
+.feedback__meter-fill { background: var(--accent); border-radius: inherit; }
+.feedback__elapsed { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+/* ---------- Notice (VL R-4 neutral problem; R-5 information). Never an outcome colour. ---------- */
+.notice {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px var(--sp-3); align-items: start;
+  padding: var(--sp-3) var(--sp-4); border-radius: var(--r-sm); background: var(--surface-2); color: var(--ink-2);
+  font-size: var(--fs-13); max-width: var(--measure);
+}
+.notice__glyph { margin-top: 2px; color: var(--ink); }
+.notice__body { display: grid; gap: 2px; min-width: 0; }
+.notice__headline { color: var(--ink); font-weight: var(--fw-semibold); font-size: var(--fs-14); }
+.notice__action { color: var(--ink-2); }
+.notice__link { justify-self: start; }
+.notice--problem, .notice--blocker { box-shadow: inset 3px 0 0 var(--ink); }
+/* Red means failed (VISUAL-SPEC-v2 §6): a red rule and glyph; the words stay ink so it reads without glare. */
+.notice--failure { box-shadow: inset 2px 0 0 var(--fail-line); background: var(--surface-2); }
+.notice--failure .notice__glyph { color: var(--failed); }
+.notice--info .notice__glyph { color: var(--accent); }
+.notice__details > summary { cursor: pointer; color: var(--accent); font-size: var(--fs-13); min-height: 24px; }
+.notice__technical {
+  margin: var(--sp-2) 0 0; padding: var(--sp-3); background: var(--surface); border-radius: var(--r-sm);
+  color: var(--ink-2); white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--fs-12);
+}
+
+/* ---------- Breakpoints (SPEC §2.7) ---------- */
+@media (max-width: 900px) {
+  .run-header__tools { margin-left: 0; }
+}
+@media (max-width: 639px) {
+  :root { --gutter: 16px; }
+  .stage { padding: 0; margin-top: var(--sp-4); }
+  .run-facts { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .run-facts dd { margin-bottom: var(--sp-2); }
+}
+
+/* ---------- The reference's building blocks (prototype-v3 la.css: panes, section heads, big counts, tallies, links),
+   in the app's tokens. Every screen composes from these; a screen's own stylesheet adds only what is its own.
+   Token mapping from la.css: --panel → --surface, --panel-stage → --raised, --edge → --line, --edge-faint → --line-2,
+   --edge-strong → --line-strong, --edge-light → --edge-lit, --shadow-pane → --shadow-1, --well → --surface-2,
+   --light-ink → --accent, --light-line → --light, --light-hot → --trail, --light-soft → --accent-soft, --rail → --track,
+   --fail → --failed, --font-text → --font-sans, --t-* → --fs-*. ---------- */
+.pane {
+  position: relative; border-radius: var(--r-card); background-color: var(--surface);
+  border: 1px solid var(--line); padding: clamp(18px, 2.2vw, 28px);
+}
+/* A resting top edge (outcome tallies colour it). */
+.pane::before {
+  content: ""; position: absolute; left: 22px; right: 22px; top: -1px; height: 1px; pointer-events: none;
+  background: transparent;
+}
+.pane--flat { box-shadow: none; }
+.pane--well { background-color: var(--surface-2); }
+.h2, h2.h2 {
+  font-family: var(--font-display); font-size: 22px; font-weight: 700; font-stretch: 86%; line-height: 1.15;
+  letter-spacing: -.01em; color: var(--ink);
+}
+.h3 { font-size: var(--fs-15); font-weight: var(--fw-semibold); line-height: 1.3; color: var(--ink); }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-4); margin-bottom: 18px; }
+.overline {
+  font-family: var(--font-mono); font-size: var(--fs-12); font-weight: var(--fw-medium); line-height: 1.25;
+  letter-spacing: var(--tracking-overline); text-transform: uppercase; color: var(--accent);
+}
+.lede { font-size: 19px; line-height: 1.55; color: var(--ink-2); max-width: 52ch; }
+.faint { color: var(--ink-3); }
+.btn--xl { min-height: var(--control-h-xl); padding: 0 30px; font-size: var(--fs-17); }
+.btn--sm { min-height: var(--control-h-sm); padding: 0 14px; font-size: var(--fs-13); }
+.link-arrow {
+  display: inline-flex; gap: 8px; align-items: center; font-size: var(--fs-14); font-weight: var(--fw-semibold); line-height: 1.2;
+  color: var(--accent); text-decoration: none;
+}
+.link-arrow:hover { text-decoration: underline; text-underline-offset: 3px; }
+.link-arrow .glyph { width: 15px; height: 15px; }
+/* Outcome tallies: three panes, each in its outcome's colour (--oc for the words, --ocb for the bar and edge). */
+.tallies { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.tally { padding: 22px 24px 20px; display: grid; gap: 10px; overflow: hidden; }
+.tally::before { left: 0; right: 0; top: -1px; height: 3px; border-radius: var(--r-card) var(--r-card) 0 0; background: var(--ocb); opacity: .9; }
+.tally--filed { --oc: var(--filed); --ocb: var(--filed-bar); }
+.tally--review { --oc: var(--review); --ocb: var(--review-bar); }
+.tally--failed { --oc: var(--failed); --ocb: var(--failed-bar); }
+/* "Could not process" stays neutral until something has failed; its first red marks the first failure. */
+.tally--failed.is-zero { --oc: var(--ink-2); --ocb: var(--ink-3); }
+.tally__k { display: flex; gap: 8px; align-items: center; font-size: 13.5px; font-weight: var(--fw-semibold); line-height: 1.2; color: var(--oc); }
+.tally__k .glyph { width: 16px; height: 16px; }
+.tally__n {
+  font-family: var(--font-display); font-size: var(--fs-tally); font-weight: 800; font-stretch: 75%; line-height: .9;
+  font-variant-numeric: tabular-nums; letter-spacing: -.035em; color: var(--ink); display: flex; align-items: baseline; gap: 10px;
+}
+.tally__n small { font-family: var(--font-sans); font-stretch: 100%; font-size: var(--fs-14); font-weight: var(--fw-regular); line-height: 1.2; letter-spacing: 0; color: var(--ink-2); }
+.meter { height: 4px; border-radius: 4px; background: var(--track); overflow: hidden; }
+.meter i {
+  display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(var(--fill, 0)); background: var(--ocb);
+  border-radius: 4px; transition: transform var(--dur-fill) var(--ease-fill);
+}
+@media (max-width: 760px) {
+  .tallies { grid-template-columns: minmax(0, 1fr); }
+  .pane { padding: 20px; }
+}

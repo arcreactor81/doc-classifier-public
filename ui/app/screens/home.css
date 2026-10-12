@@ -1,0 +1,70 @@
+/* Home and Welcome: the Sorting Room's home. The story, chapters, picture frame, Continue card, workspace, stats,
+   run cards and categories snapshot are site.css's (.story, .chapter, .hero-ch, .home-h1, .continue, .hero-cta,
+   .promises, .how-head, .how-more, .stage-frame, .glabel, .workspace, .stats, .ws-*, .catsnap); here only what the
+   app's version adds: the picture's labels placed through custom properties, the primary inside its action slot,
+   and the still picture without WebGL. */
+
+/* The pinned picture sits under the app's top bar. */
+.home-story .story-stage { top: calc(var(--hdr, var(--topbar-h)) + 20px); height: calc(100vh - var(--hdr, var(--topbar-h)) - 44px); }
+@media (max-width: 640px), (max-width: 980px) and (orientation: portrait) {
+  .home-story .story-stage { top: var(--hdr, var(--topbar-h)); height: 38vh; }
+}
+
+/* The picture's labels: placed every frame through --x, --y and --o. */
+.sheets .glabel { left: var(--x, 50%); top: var(--y, 50%); opacity: var(--o, 0); }
+.glabel__dot--hl { background: #E6FF3B; }
+.glabel__dot--paper { background: #F4EFE5; }
+.glabel__dot--pink { background: #FF5AA8; }
+.glabel__dot--grey { background: #7D776B; }
+.stage-cap__hint {
+  font-family: var(--f-mono); font-size: 12px; color: var(--faint); background: var(--raise);
+  padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line);
+}
+.stage-cap.is-hidden { opacity: 0; }
+
+/* Without WebGL: a still pile of sheets and the four stages in a row. */
+.sheets--still { display: grid; place-items: center; align-content: center; gap: 28px; padding: 24px; }
+.sheets-still__stack { position: relative; width: 120px; height: 150px; }
+.sheets-still__stack i {
+  position: absolute; inset: 0; border-radius: 6px; background: #F4EFE5; transform: rotate(var(--turn));
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, .6);
+}
+.sheets-still__labels { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.sheets .glabel.glabel--static { position: static; transform: none; opacity: 1; }
+
+/* The hero's primary lives in its action slot: as large as the artifact's .btn.big; plain while a run waits. */
+.hero-cta .action-slot .btn { min-height: 56px; padding: 0 28px; font-size: 16px; }
+.hero-ch.is-waiting .hero-cta .btn--primary { background: var(--raise-2); border-color: var(--line-2); color: var(--ink); font-weight: 500; }
+.hero-ch.is-waiting .hero-cta .btn--primary:hover { border-color: var(--mute); }
+.hero-cta > .link span { margin-left: 2px; }
+.hero__first { margin-top: 24px; font-size: 17px; color: var(--ink); }
+.hero__first + .hero-cta { margin-top: 12px; }
+.hero-cta + .hint { margin-top: 10px; }
+
+.continue { text-decoration: none; }
+.continue__eyebrow { color: var(--pink); }
+.continue .btn svg, .how-more .btn svg, .ws-row .link svg { width: 16px; height: 16px; }
+.how-head__eyebrow { color: var(--hl); }
+.how-head__hint { margin-top: 6px; }
+
+/* The workspace rows: a heading with its link or note on one baseline. */
+.ws-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.ws-head .hint { margin: 0; }
+.ws-runs { min-width: 0; }
+.ws-runs > .ws-row { margin-bottom: 12px; }
+.ws-runs__row { margin-top: 0; }
+.stat__bar { margin-top: 8px; }
+.stat__bar i { width: var(--w); }
+.catsnap li > span:first-child { overflow-wrap: anywhere; }
+.catsnap__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.newcard { text-decoration: none; }
+.home a.link, .welcome a.link, .how-more a.btn, .catsnap a.btn { text-decoration: none; }
+
+/* Contrast (4.5:1 for text): the second heading line is a filled, lighter-weight line rather than an outline, and the
+   chapters not being read are dimmed with colour rather than opacity. */
+.home-h1 em { color: var(--ink-2); -webkit-text-stroke: 0; }
+.home-story .chapter.dim { opacity: 1; }
+.home-story .chapter { transition: color .4s; }
+.home-story .chapter h2, .home-story .chapter p, .home-story .chapter p b, .home-story .chapter .num { transition: color .4s; }
+.home-story .chapter.dim h2 { color: var(--ink-2); }
+.home-story .chapter.dim p, .home-story .chapter.dim p b, .home-story .chapter.dim .num { color: var(--ink-3); }

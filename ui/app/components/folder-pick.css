@@ -1,0 +1,8 @@
+/* FolderPick (SPEC §7.1). The explanation comes before the buttons; the status line names the folder chosen. */
+.folder-pick { display: grid; gap: var(--sp-3); padding: var(--sp-4) var(--sp-5); background: var(--surface-2); border-radius: var(--r); min-width: 0; }
+.folder-pick__explain { color: var(--ink); max-width: var(--measure); }
+.folder-pick__status { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-14); color: var(--ink-2); min-width: 0; }
+.folder-pick__name { overflow-wrap: anywhere; }
+.folder-pick[data-state="chosen"] .folder-pick__name { color: var(--ink); font-weight: var(--fw-medium); }
+.folder-pick__permission { font-size: var(--fs-13); color: var(--ink-2); }
+.folder-pick__actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--sp-3) var(--sp-4); }

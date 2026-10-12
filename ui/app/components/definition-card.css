@@ -1,0 +1,29 @@
+/* DefinitionCard (SPEC §7.1), as the artifact's category card (.cat): the name in the display face, the two fields as
+   faint labels over the text, examples on demand behind a link-coloured summary, the folder in mono. A sentence naming
+   the neighbouring category is marked by a 2px light rule and the words "names …", never colour alone. */
+.def {
+  display: grid; gap: 14px; align-content: start; padding: 18px 20px; border-radius: var(--r, 16px);
+  background: var(--surface); border: 1px solid var(--line); font-size: 15px; line-height: 1.55; min-width: 0;
+}
+.def.panel.cat { background: var(--canvas); padding: clamp(18px, 2.2vw, 28px); }
+.def__name {
+  font-family: var(--f-disp, var(--font-display)); font-size: 18px; font-weight: 750; font-variation-settings: 'wdth' 82; letter-spacing: -.01em;
+  line-height: 1.15; color: var(--ink); overflow-wrap: anywhere;
+}
+.def.cat .def__name { font-size: 22px; }
+.def__fields { display: grid; gap: 12px; margin: 0; }
+.def__fields dt { font-size: 13px; color: var(--ink-3); }
+.def__fields dd { margin: 2px 0 0; color: var(--ink); max-width: 62ch; overflow-wrap: anywhere; }
+.mention { display: block; padding-left: 12px; box-shadow: inset 2px 0 0 var(--accent); color: var(--ink); }
+.mention + .mention { margin-top: 6px; }
+.mention__tag { display: block; margin-top: 2px; font-size: 12px; font-weight: 600; color: var(--accent); }
+.def__folder { font-family: var(--f-mono, ui-monospace, monospace); font-size: 12px; color: var(--ink-3); overflow-wrap: anywhere; }
+.def__confusion { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--ink); }
+.def__confusion .glyph { flex: none; width: 14px; height: 14px; color: var(--accent); }
+/* Examples on demand: the artifact's link-coloured summary. */
+.def__examples > .disclosure__summary {
+  padding: 0; min-height: 32px; border-radius: 0; background: none; font-size: 15px; font-weight: 500; color: var(--accent); cursor: pointer;
+}
+.def__examples > .disclosure__summary:hover { background: transparent; color: var(--ink); }
+.def__examples > .disclosure__body { padding: 6px 0 0; color: var(--ink-2); font-size: 15px; }
+.def__example-list { list-style: disc; display: grid; gap: 4px; margin: 0; padding-left: 18px; }

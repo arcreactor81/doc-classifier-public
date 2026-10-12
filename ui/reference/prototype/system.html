@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Visual prototype · System</title>
+<script>
+/* Theme before first paint: ?theme=, then the saved choice, then the system setting (as ui/app/public/theme-boot.js). */
+(function () {
+  var t = null;
+  try {
+    var q = new URLSearchParams(location.search).get('theme');
+    if (q === 'light' || q === 'dark') t = q;
+    else { var s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') t = s; }
+  } catch (e) {}
+  if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.dataset.theme = t;
+})();
+</script>
+<link rel="stylesheet" href="prototype.css">
+</head>
+<body>
+<a class="skip" href="#main" data-skip>Skip to content</a>
+<div class="proto-bar"><div class="wrap">
+  <strong>Prototype</strong><span>Placeholder content. Nothing here is connected to the app.</span>
+  <nav aria-label="Prototype screens">
+    <a href="index.html">Overview</a><a href="home.html">Home</a><a href="confirm.html">Confirm</a><a href="progress.html">Progress</a><a href="progress-stalled.html">Sending stopped</a><a href="results.html">Results</a><a href="review.html">Review</a><a href="system.html" aria-current="page">System</a>
+  </nav>
+</div></div>
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="home.html"><span class="brand__mark" aria-hidden="true"></span>Document classification</a>
+  <nav class="nav" aria-label="Main"><a href="home.html">Home</a><a href="home.html#all-runs">Runs</a><a href="review.html">Categories</a><a href="index.html">How it works</a></nav>
+  <div class="topbar__end">
+    <a class="setup-word" href="system.html" aria-current="page" data-setup-word><span class="g g--check" aria-hidden="true" data-setup-glyph></span><span class="setup-word__text" data-setup-text>Setup complete</span></a>
+    <button class="icon-btn" type="button" data-theme-toggle aria-pressed="false" title="Change colour theme"><span class="g g--theme" aria-hidden="true"></span><span class="vh">Change colour theme</span></button>
+  </div>
+</div></header>
+
+<main id="main" tabindex="-1" class="wrap">
+<div class="stage stage--narrow">
+  <div class="stage-head">
+    <h1 tabindex="-1">System check</h1>
+    <p class="lead">Whether this app is set up to run, and the switches that affect everyone who uses it.</p>
+  </div>
+
+  <section class="block" aria-labelledby="setup-h">
+    <div class="block__head"><h2 id="setup-h" data-setup-h>Setup complete</h2><p class="meta">Checked 14:24:51</p></div>
+    <p class="muted">This means the app is configured. It doesn't mean the categories are right.</p>
+    <ul class="readiness block--spaced" data-readiness>
+      <li><span class="g g--check" aria-hidden="true"></span><span>You're signed in.</span></li>
+      <li><span class="g g--check" aria-hidden="true"></span><span>Sorting is switched on.</span></li>
+      <li><span class="g g--check" aria-hidden="true"></span><span>Categories are active: version 4, with 4 categories.</span></li>
+      <li><span class="g g--check" aria-hidden="true"></span><span>Spending records are available.</span></li>
+    </ul>
+    <div class="action block--spaced" data-action="system:check-again">
+      <button class="btn btn--primary" type="button" data-op="system:check-again" data-primary aria-describedby="ca-fb">Check again</button>
+      <div class="feedback" id="ca-fb" data-feedback="system:check-again"><div class="feedback__status" role="status" aria-live="polite" aria-atomic="true"><p class="fb fb--done"><span class="g g--check" aria-hidden="true"></span><span>Checked <time>at 14:24:51</time>.</span></p></div><div class="feedback__alert" role="alert"></div></div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="fc-h">
+    <div class="block__head"><h2 id="fc-h">Filing certainty</h2></div>
+    <div class="stack-sm">
+      <div><span class="chip chip--dashed">Filing certainty 90% · untested</span></div>
+      <p class="muted">Documents are filed automatically only when both systems agree and the certainty check is at least 90% sure. Set when version 4 was activated on 22 Sep; it stays untested until you review a run.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="all-h">
+    <div class="block__head"><h2 id="all-h">Across everyone's runs</h2></div>
+    <dl class="kv">
+      <dt>Text held in the cloud</dt><dd>3 runs, across everyone's runs</dd>
+      <dt>Spending not reported yet</dt><dd><b>Unknown</b> for 1 run ($0.40 known)</dd>
+      <dt>Model that answered, per role</dt><dd>Not available yet</dd>
+    </dl>
+  </section>
+
+  <section class="block" aria-labelledby="stop-h">
+    <div class="block__head"><h2 id="stop-h">Emergency stop</h2></div>
+    <div class="stack">
+      <p class="state-line" data-stop-line><span class="state-dot" aria-hidden="true"></span><span data-stop-text>Off. Runs start and continue normally.</span></p>
+      <div class="action" data-action="system:stop">
+        <button class="btn" type="button" data-op="system:stop" data-open-sheet="stop" aria-describedby="stop-note stop-fb">Stop all runs…</button>
+        <p class="action__note" id="stop-note" data-stop-note>For everyone: this stops every run that is sending or sorting.</p>
+        <div class="feedback" id="stop-fb" data-feedback="system:stop"><div class="feedback__status" role="status" aria-live="polite" aria-atomic="true" data-stop-status></div><div class="feedback__alert" role="alert" data-stop-alert></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="stack-sm">
+      <label class="check"><input type="checkbox"> <span>Always show technical details</span></label>
+      <details class="disclosure" data-technical><summary>Details <span class="g g--chev" aria-hidden="true"></span></summary>
+        <div class="disclosure__body technical">
+          <dl><dt>Build</dt><dd class="mono">0000000 (placeholder)</dd><dt>Reading step</dt><dd>1.4 (placeholder)</dd><dt>Pins</dt><dd>certainty model: placeholder · reader: placeholder</dd><dt>Threshold status</dt><dd>untested · basis: initial activation</dd><dt>Health</dt><dd>READY</dd></dl>
+        </div>
+      </details>
+    </div>
+  </section>
+</div>
+</main>
+
+<dialog class="sheet" id="sheet-stop" aria-labelledby="sheet-stop-h" aria-describedby="sheet-stop-p">
+  <div class="sheet__in">
+    <h2 id="sheet-stop-h">Stop all runs for everyone?</h2>
+    <p id="sheet-stop-p">This stops every run that is sending or sorting, including other people's runs. Documents that already have an outcome keep it. Stopped runs <strong>can't be continued</strong> afterwards; they would need to be run again. No new runs can start until someone selects Allow new runs.</p>
+    <div class="sheet__actions">
+      <button class="btn" type="button" data-close-sheet>Cancel</button>
+      <button class="btn btn--primary" type="button" data-confirm="stop">Stop all runs</button>
+    </div>
+  </div>
+</dialog>
+<dialog class="sheet" id="sheet-allow" aria-labelledby="sheet-allow-h" aria-describedby="sheet-allow-p">
+  <div class="sheet__in">
+    <h2 id="sheet-allow-h">Allow new runs?</h2>
+    <p id="sheet-allow-p">New runs can start again. Runs that the emergency stop halted stay stopped.</p>
+    <div class="sheet__actions">
+      <button class="btn" type="button" data-close-sheet>Cancel</button>
+      <button class="btn btn--primary" type="button" data-confirm="allow">Allow new runs</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggle = document.querySelector('[data-theme-toggle]');
+  function sync() { if (toggle) toggle.setAttribute('aria-pressed', String(root.dataset.theme === 'dark')); }
+  sync();
+  if (toggle) toggle.addEventListener('click', function () {
+    /* Instant switch (SPEC §8.4, no theme cross-fade): the new theme is applied in one style recalculation with transitions off. */
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    void root.offsetWidth;
+    root.removeAttribute('data-theme-switching');
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+    sync();
+  });
+  var skip = document.querySelector('[data-skip]');
+  if (skip) skip.addEventListener('click', function (ev) { ev.preventDefault(); var m = document.getElementById('main'); if (m) m.focus(); });
+
+  /* ConfirmSheet prototype (M15). A native modal dialog: focus is trapped, Esc closes, focus returns to the trigger.
+     The outcome is reported beneath the triggering action, never at the top of the page. */
+  var $ = function (sel) { return document.querySelector(sel); };
+  var on = false;
+  var trigger = $('[data-open-sheet]');
+  function now() { return '14:25:03'; }
+  trigger.addEventListener('click', function () { $(on ? '#sheet-allow' : '#sheet-stop').showModal(); });
+  document.querySelectorAll('[data-close-sheet]').forEach(function (b) { b.addEventListener('click', function () { b.closest('dialog').close(); }); });
+  document.querySelectorAll('dialog').forEach(function (d) { d.addEventListener('close', function () { trigger.focus(); }); });
+  function line(text) {
+    var p = document.createElement('p'); p.className = 'fb fb--done';
+    var g = document.createElement('span'); g.className = 'g g--check'; g.setAttribute('aria-hidden', 'true');
+    var s = document.createElement('span'); s.textContent = text;
+    p.append(g, s); return p;
+  }
+  document.querySelectorAll('[data-confirm]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      on = b.dataset.confirm === 'stop';
+      b.closest('dialog').close();
+      $('[data-stop-line]').classList.toggle('is-on', on);
+      $('[data-stop-text]').textContent = on ? 'On since ' + now() + '. No new runs can start, and runs that were sending or sorting have stopped.' : 'Off. Runs start and continue normally.';
+      trigger.textContent = on ? 'Allow new runs…' : 'Stop all runs…';
+      $('[data-stop-note]').textContent = on ? 'Runs that the emergency stop halted stay stopped.' : 'For everyone: this stops every run that is sending or sorting.';
+      $('[data-stop-status]').replaceChildren(line(on ? 'Stopped all runs at ' + now() + '.' : 'New runs are allowed again, from ' + now() + '.'));
+      $('[data-setup-text]').textContent = on ? 'Setup needs attention' : 'Setup complete';
+      $('[data-setup-glyph]').className = on ? 'g g--bang' : 'g g--check';
+      $('[data-setup-h]').textContent = on ? 'Setup needs attention' : 'Setup complete';
+    });
+  });
+  if (new URLSearchParams(location.search).get('sheet') === 'open') trigger.click();
+})();
+</script>
+</body>
+</html>

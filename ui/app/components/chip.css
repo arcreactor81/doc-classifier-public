@@ -1,0 +1,10 @@
+/* Chip (SPEC §7.1, §8.3 VL R-6). Text first; the dashed and accent styles are the filing-certainty states. */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 2px 12px; max-width: 100%;
+  border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink-2); font-size: var(--fs-13); line-height: 1.35; overflow-wrap: anywhere;
+}
+.chip--dashed { background: transparent; border-style: dashed; border-color: var(--line-strong); color: var(--ink-2); }
+.chip--accent { background: var(--accent-soft); border-color: var(--accent-soft); color: var(--accent); }
+.chip--pending .chip__text { color: var(--ink-3); }
+.chip__glyph { flex: none; }

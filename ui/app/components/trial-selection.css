@@ -1,0 +1,12 @@
+/* TrialSelection: the Confirm panel "Choose what this run will read" (the Sorting Room's RUN.confirm first panel). */
+.trial-selection { display: grid; gap: 10px; }
+.trial-selection > p:not(.hint) { font-size: 15px; }
+.trial-selection .hint { margin-top: 0; }
+.trial-selection__trial b { font-weight: 500; }
+.trial-selection__sub { display: block; color: var(--mute); font-size: 14px; }
+.trial-selection__count { font-weight: 500; }
+.trial-selection .trial-selection__choose > summary { cursor: pointer; color: var(--hl); font-weight: 500; min-height: 44px; display: inline-flex; align-items: center; }
+.trial-selection__choose > summary:hover { color: var(--ink); }
+.trial-selection__docs { display: grid; gap: 4px; margin-top: 8px; max-height: 420px; overflow: auto; padding: 2px; }
+.trial-selection__docs > .input { margin-bottom: 8px; }
+.trial-selection__doc { font-size: 14px; overflow-wrap: anywhere; }

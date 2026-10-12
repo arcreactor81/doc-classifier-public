@@ -1,0 +1,53 @@
+/* Track (SPEC §7.1; §8.4 M4 count fill, M9 stall freeze, M10 provider pause; VISUAL-SPEC-v2 §7.6). Never an outcome
+   colour. The rail (.track) clips its fill and the flare; the head and the drawing tip are its siblings, over it. */
+/* The head layer travels the rail's full width, so the block clips sideways a little beyond its own edge (the
+   reference's .lightbar does the same); otherwise a full bar widens the page at 390 px. */
+.track-block { display: grid; gap: var(--sp-2); min-width: 0; position: relative; overflow-x: clip; overflow-clip-margin: 18px; }
+.track { position: relative; height: var(--track-h); border-radius: var(--r-pill); background: var(--track); overflow: hidden; transform-origin: left center; }
+.track-block--lg .track { height: var(--track-h-lg); }
+/* B1: the fill, its edge and the head move together on one transition towards the recorded value. */
+.track__fill {
+  position: absolute; inset: 0; border-radius: inherit; background: var(--accent);
+  transform-origin: left center; transform: scaleX(var(--fill, 0));
+  transition: transform var(--dur-fill) var(--ease-fill);
+}
+.track__edge {
+  position: absolute; inset: 0; pointer-events: none;
+  transform: translateX(calc((var(--fill, 0) - 1) * 100%));
+  transition: transform var(--dur-fill) var(--ease-fill);
+}
+/* B2: a 24px flare centred on the edge, inside the bar (the rail clips it); transparent at rest, red on a failure. */
+.track__flare {
+  position: absolute; right: -12px; top: 50%; width: 24px; height: 24px; margin-top: -12px; border-radius: 50%; opacity: 0;
+  background: radial-gradient(closest-side, var(--trail), var(--light-glow) 45%, transparent);
+}
+.track__flare[data-kind="fail"] { background: radial-gradient(closest-side, var(--fail-line), var(--fail-glow) 45%, transparent); }
+/* The head layer: the whole rail's width, moved by the fill, so the 4 × 20 head sits on the edge and stands proud. */
+.track__headwrap, .track__draw {
+  position: absolute; left: 0; right: 0; top: 0; height: var(--track-h); pointer-events: none;
+}
+.track-block--lg .track__headwrap, .track-block--lg .track__draw { height: var(--track-h-lg); }
+.track__headwrap { transform: translateX(calc(var(--fill, 0) * 100%)); transition: transform var(--dur-fill) var(--ease-fill); }
+.track__head {
+  position: absolute; left: -2px; top: -7px; bottom: -7px; width: 4px; border-radius: 4px; display: none; background: var(--trail);
+  box-shadow: 0 0 10px 1px var(--light-glow), 0 0 26px 4px var(--light-glow-soft);
+}
+.track--moving + .track__headwrap .track__head { display: block; }
+/* B3: the tip that draws the rail the first time the bar is shown (a construction light, never a value). */
+.track__draw > i {
+  position: absolute; left: -9px; top: 50%; width: 18px; height: 18px; margin-top: -9px; border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle, var(--trail) 0 30%, var(--light) 55%, transparent 72%);
+  box-shadow: 0 0 16px 4px var(--light-glow), 0 0 40px 12px var(--light-glow-soft);
+}
+/* Stalled or stopped: all motion stops; neutral dashed segments with 2px gaps; never amber (SPEC §8.1, §8.3). */
+.track--stalled .track__fill {
+  background: repeating-linear-gradient(90deg, var(--ink-3) 0 10px, var(--surface) 10px 12px);
+  transition: none;
+}
+.track--stalled .track__edge, .track--stalled + .track__headwrap { transition: none; }
+/* Provider pause: static stripes on the track; the meaning is in the caption (M10). */
+.track--waiting { background: repeating-linear-gradient(135deg, var(--accent-soft) 0 6px, var(--track) 6px 12px); }
+/* No total yet: a still, neutral segment; nothing moves (SPEC §0.1 rule 6). */
+.track--loading .track__fill { transform: scaleX(0.12); background: var(--line-strong); transition: none; }
+.track--loading .track__edge { display: none; }
+.track__caption { font-size: var(--fs-13); color: var(--ink-2); font-variant-numeric: tabular-nums; }

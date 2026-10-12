@@ -1,0 +1,8 @@
+/* OutcomePill (SPEC §7.1): The Sorting Room's .oc pill (styles/site.css .oc.f / .oc.p / .oc.u): the outcome word and
+   its glyph in the outcome colour, solid for Filed and Needs review, a dashed ring for Could not process. Before a
+   document has an outcome the pill is neutral and shows its stage. "Review first" is extra text, never a colour. */
+.outcome { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; max-width: 100%; min-width: 0; }
+.pill.oc { line-height: 1.3; }
+.pill__glyph { flex: none; stroke-width: 2.2; }
+.oc.ph { background: var(--raise-2); color: var(--mute); font-weight: 500; border: 1px solid var(--line-2); padding-left: 10px; }
+.first-tag { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }

@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 720" width="1180" height="720" role="img" aria-labelledby="title desc" color="#6e7681" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="title">Two judgments, one gate</title>
+  <desc id="desc">One document goes to two judges. Jev, TypeSafe's System One model, answers typed questions: one choice among the categories with a certainty, and a separate yes or no for each category; it gives no reason and no quote, and its failure is a confident wrong choice. The reader, a language model, reads the whole text and answers yes or no for every category with a reason and word-for-word quotes that the code checks; its failure is that it always answers and can be swayed by the document's wording. A gate in code files the document only when both name the same single category, Jev's yes or no for it is at least 0.5, and Jev's certainty is at or above the threshold. Everything else goes to a person as needs review, or is set aside as could not process.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4c7fe0"/>
+    </marker>
+    <style>
+      .card { fill: currentColor; fill-opacity: 0.04; stroke: currentColor; stroke-width: 1.2; }
+      .gate { fill: #4c7fe0; fill-opacity: 0.08; stroke: #4c7fe0; stroke-width: 2; }
+      .out { fill: currentColor; fill-opacity: 0.04; stroke: currentColor; stroke-width: 1.2; }
+      .out-accent { fill: #4c7fe0; fill-opacity: 0.08; stroke: #4c7fe0; stroke-width: 1.6; }
+      .line { fill: none; stroke: currentColor; stroke-width: 1.4; marker-end: url(#arrow); }
+      .line-accent { fill: none; stroke: #4c7fe0; stroke-width: 1.8; marker-end: url(#arrow-accent); }
+      .h { font-size: 13px; font-weight: 600; fill: currentColor; }
+      .k { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; fill: currentColor; }
+      .t { font-size: 12px; fill: currentColor; }
+      .lbl { font-size: 12px; font-style: italic; fill: currentColor; }
+      .accent-text { font-size: 13px; font-weight: 600; fill: #4c7fe0; }
+    </style>
+  </defs>
+
+  <!-- the document -->
+  <rect class="card" x="440" y="20" width="300" height="60" rx="6"/>
+  <text class="h" x="590" y="42" text-anchor="middle">One document</text>
+  <text class="t" x="590" y="60" text-anchor="middle">its full text and outline, plus every category definition</text>
+  <text class="t" x="590" y="74" text-anchor="middle">(the same input goes to both judges)</text>
+
+  <path class="line" d="M 500 80 L 300 128"/>
+  <path class="line" d="M 680 80 L 880 128"/>
+
+  <!-- judge one: Jev -->
+  <rect class="card" x="40" y="130" width="520" height="312" rx="8"/>
+  <text class="h" x="56" y="152">Judge one: Jev, a model built for judgments</text>
+
+  <text class="k" x="56" y="178">WHAT IT IS</text>
+  <text class="t" x="56" y="195">TypeSafe's System One model (pinned to jev-1.13.0). It does not write</text>
+  <text class="t" x="56" y="210">prose. It answers typed questions with probabilities and says how sure it is.</text>
+
+  <text class="k" x="56" y="236">WHAT IT IS ASKED</text>
+  <text class="t" x="56" y="253">Which one category fits best, or none of these? (one question)</text>
+  <text class="t" x="56" y="268">Does the document meet this category? (one yes/no question per category,</text>
+  <text class="t" x="56" y="283">each judged on its own, including the category's "not for" exclusions)</text>
+
+  <text class="k" x="56" y="309">WHAT IT ANSWERS (illustrative values)</text>
+  <text class="t" x="56" y="326">Choice: Leases · certainty 0.96 · a share for every option</text>
+  <text class="t" x="56" y="341">Yes/no per category: Leases 0.93 · Invoices 0.04 · Insurance policies 0.07</text>
+  <text class="t" x="56" y="356">The certainty and the yes/no values are two separate answers; nothing adds them up.</text>
+
+  <text class="k" x="56" y="382">HOW IT FAILS</text>
+  <text class="t" x="56" y="399">A confident wrong choice on a document unlike anything the definitions describe.</text>
+  <text class="t" x="56" y="414">It cannot show its evidence: no reason, no quote. Its numbers are trained to be</text>
+  <text class="t" x="56" y="429">calibrated, and still have to be checked on your own documents.</text>
+
+  <!-- judge two: the reader -->
+  <rect class="card" x="620" y="130" width="520" height="312" rx="8"/>
+  <text class="h" x="636" y="152">Judge two: the reader, a large language model</text>
+
+  <text class="k" x="636" y="178">WHAT IT IS</text>
+  <text class="t" x="636" y="195">A language model that reads the whole text (GPT-5.4 on the owner's</text>
+  <text class="t" x="636" y="210">site, GPT-6 Sol in the generic pack). A reply from the wrong model stops the run.</text>
+
+  <text class="k" x="636" y="236">WHAT IT IS ASKED</text>
+  <text class="t" x="636" y="253">For every category: yes or no, a short reason, and up to three quotes copied</text>
+  <text class="t" x="636" y="268">word for word from the document. It is told not to choose a filing label and</text>
+  <text class="t" x="636" y="283">to treat the document as evidence, never as instructions.</text>
+
+  <text class="k" x="636" y="309">WHAT IT ANSWERS (illustrative values)</text>
+  <text class="t" x="636" y="326">Leases: yes. "This lease agreement is made on the first day of…"</text>
+  <text class="t" x="636" y="341">Invoices: no. Insurance policies: no.</text>
+  <text class="t" x="636" y="356">Every quote must appear in the text word for word, or the reply fails.</text>
+
+  <text class="k" x="636" y="382">HOW IT FAILS</text>
+  <text class="t" x="636" y="399">It always answers, and any confidence it states is just more generated text.</text>
+  <text class="t" x="636" y="414">It can be swayed by the document's own wording. The exact-quote check and</text>
+  <text class="t" x="636" y="429">the second judge are the guards against that.</text>
+
+  <!-- to the gate -->
+  <path class="line" d="M 300 442 L 300 470 L 472 470 L 472 486"/>
+  <path class="line" d="M 880 442 L 880 470 L 708 470 L 708 486"/>
+  <text class="lbl" x="310" y="464">choice, certainty, yes/no per category</text>
+  <text class="lbl" x="870" y="464" text-anchor="end">yes/no per category (the quotes are for the person)</text>
+
+  <!-- the gate -->
+  <rect class="gate" x="340" y="488" width="500" height="92" rx="8"/>
+  <text class="accent-text" x="590" y="510" text-anchor="middle">The agreement gate: code, not a model</text>
+  <text class="t" x="590" y="530" text-anchor="middle">Agree = Jev's one choice is category T, its yes/no for T is at least 0.5,</text>
+  <text class="t" x="590" y="545" text-anchor="middle">and the reader said yes to T and to no other category.</text>
+  <text class="t" x="590" y="566" text-anchor="middle">The two judges' numbers are never averaged or multiplied together.</text>
+
+  <!-- outcomes -->
+  <path class="line-accent" d="M 440 580 L 221 612"/>
+  <path class="line" d="M 590 580 L 590 612"/>
+  <path class="line" d="M 740 580 L 959 612"/>
+
+  <rect class="out-accent" x="48" y="614" width="346" height="66" rx="6"/>
+  <text class="accent-text" x="60" y="634">Filed (rule R1)</text>
+  <text class="t" x="60" y="652">They agree, and Jev's certainty is at or above the</text>
+  <text class="t" x="60" y="667">threshold (90% to start). The only rule that files.</text>
+
+  <rect class="out" x="417" y="614" width="346" height="66" rx="6"/>
+  <text class="h" x="429" y="634">Needs review (rules R2 to R5)</text>
+  <text class="t" x="429" y="652">Agree but not sure enough · fits two categories ·</text>
+  <text class="t" x="429" y="667">neither sees a category · they disagree (looked at first)</text>
+
+  <rect class="out" x="786" y="614" width="346" height="66" rx="6"/>
+  <text class="h" x="798" y="634">Could not process (rule R0)</text>
+  <text class="t" x="798" y="652">A step failed: no text layer, an unsupported file,</text>
+  <text class="t" x="798" y="667">a reply that fails its checks. The reason is recorded.</text>
+
+  <text class="t" x="590" y="706" text-anchor="middle">A person decides every document that was not filed, with both judges' answers beside it. Their folder moves come back as corrections.</text>
+</svg>

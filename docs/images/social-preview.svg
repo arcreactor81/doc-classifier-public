@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-labelledby="title" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="title">Doc Classifier: two AI judges, one rule in code; your files stay on your computer</title>
+  <!-- The source of docs/images/social-preview.png (1280 by 640, GitHub's social preview size). Render it by opening this file in a browser at 1280 by 640 and saving the view as a PNG. -->
+  <rect width="1280" height="640" fill="#f6f8fa"/>
+  <rect x="0" y="628" width="1280" height="12" fill="#4c7fe0"/>
+  <!-- the mark, the logo scaled up -->
+  <g transform="translate(96 176) scale(2.25)">
+    <path d="M 44 10 H 74 L 86 22 V 92 H 44 Z" fill="#4c7fe0" fill-opacity="0.16" stroke="#4c7fe0" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M 74 10 V 22 H 86" fill="none" stroke="#4c7fe0" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M 53 40 L 60 47 L 76 31" fill="none" stroke="#4c7fe0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 53 60 L 60 67 L 76 51" fill="none" stroke="#4c7fe0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 14 64 H 46 L 56 74 H 108 A 6 6 0 0 1 114 80 V 110 A 8 8 0 0 1 106 118 H 22 A 8 8 0 0 1 14 110 Z" fill="#4c7fe0" stroke="#4c7fe0" stroke-width="6" stroke-linejoin="round"/>
+  </g>
+  <text x="440" y="268" font-size="84" font-weight="700" fill="#1f2328">Doc Classifier</text>
+  <text x="444" y="332" font-size="36" font-weight="600" fill="#4c7fe0">Two AI judges, one rule in code.</text>
+  <text x="444" y="388" font-size="27" fill="#57606a">Sorts a folder of documents into categories you define.</text>
+  <text x="444" y="426" font-size="27" fill="#57606a">Your files stay on your computer; only their text goes out.</text>
+  <text x="444" y="484" font-size="22" fill="#6e7681">Chrome or Edge  ·  Cloudflare Workers  ·  MIT licence</text>
+</svg>

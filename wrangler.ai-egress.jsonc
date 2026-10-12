@@ -1,0 +1,24 @@
+{
+  // The placed egress helper (core/server/ai-egress-worker.ts; DECISIONS 156, addendum of 12 October 2026). Deployed as
+  // doc-classifier-ai-egress and bound by wrangler.owner.jsonc since 12 October 2026. Deploy it before a main Worker
+  // binds it (`npx wrangler deploy --config wrangler.ai-egress.jsonc`), with, in the main configuration:
+  //   "services": [{ "binding": "AI_EGRESS", "service": "doc-classifier-ai-egress" }], and the variable
+  //   "AI_GATEWAY_EGRESS": "placed-worker".
+  // It has no public address (no workers.dev, no preview URLs, no routes) and only the AI binding.
+  "name": "doc-classifier-ai-egress",
+  "main": "core/server/ai-egress-worker.ts",
+  "compatibility_date": "2026-09-22",
+  "workers_dev": false,
+  "preview_urls": false,
+  // Run near AWS ap-southeast-1 (Singapore), where the stored Claude calls that succeeded were answered; Anthropic does not
+  // serve Hong Kong (anthropic.com/supported-countries, read 12 October 2026).
+  "placement": {
+    "region": "aws:ap-southeast-1"
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  "observability": {
+    "enabled": false
+  }
+}

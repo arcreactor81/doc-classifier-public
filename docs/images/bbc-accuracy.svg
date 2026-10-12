@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 600" width="1180" height="600" role="img" aria-labelledby="title desc" color="#6e7681" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="title">The BBC News test: 941 articles, two judges, one rule</title>
+  <desc id="desc">Top: what happened to 941 BBC News articles. 801 were filed in the right folder, 11 were filed in the wrong one, 128 were sent to a person and 1 could not be processed. Bottom: the share of wrong answers among the articles each approach would file. The Claude reader alone, filing every article, was not exactly right on 60 of 940, 6.4 percent. Jev alone, filing only when its certainty was at least 0.90, was wrong on 19 of 826, 2.3 percent. The rule the product uses, both judges agreeing and Jev's certainty at least 0.90, was wrong on 11 of 812, 1.35 percent, with a 95 percent range of 0.67 to 2.42 percent.</desc>
+  <defs>
+    <style>
+      .h { font-size: 15px; font-weight: 600; fill: currentColor; }
+      .k { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; fill: currentColor; }
+      .t { font-size: 13px; fill: currentColor; }
+      .s { font-size: 12px; fill: currentColor; }
+      .n { font-size: 13px; font-weight: 600; fill: currentColor; }
+      .right { fill: #4c7fe0; }
+      .wrong { fill: #e0664c; }
+      .review { fill: currentColor; fill-opacity: 0.28; }
+      .cnp { fill: currentColor; }
+      .track { fill: currentColor; fill-opacity: 0.06; }
+      .axis { stroke: currentColor; stroke-width: 1; stroke-opacity: 0.5; }
+      .grid { stroke: currentColor; stroke-width: 1; stroke-opacity: 0.18; stroke-dasharray: 3 4; }
+      .whisker { stroke: currentColor; stroke-width: 2; }
+      .accent { font-size: 13px; font-weight: 600; fill: #4c7fe0; }
+    </style>
+  </defs>
+
+  <!-- Panel A: outcomes -->
+  <text class="k" x="60" y="40">WHAT HAPPENED TO 941 BBC NEWS ARTICLES</text>
+  <rect class="right" x="60" y="58" width="902.3" height="44"/>
+  <rect class="wrong" x="962.3" y="58" width="12.4" height="44"/>
+  <rect class="review" x="974.7" y="58" width="144.2" height="44"/>
+  <rect class="cnp" x="1118.9" y="58" width="1.6" height="44"/>
+  <text x="80" y="86" font-size="15" font-weight="600" fill="#ffffff">801 filed in the right folder (85.1%)</text>
+
+  <line class="axis" x1="968.5" y1="102" x2="968.5" y2="128"/>
+  <text class="n" x="968.5" y="146" text-anchor="end">11 filed in the wrong folder (1.2% of all; 1.35% of those filed)</text>
+  <line class="axis" x1="1046.8" y1="102" x2="1046.8" y2="164"/>
+  <text class="n" x="1120" y="182" text-anchor="end">128 sent to a person (13.6%)</text>
+  <line class="axis" x1="1119.7" y1="102" x2="1119.7" y2="200"/>
+  <text class="n" x="1120" y="218" text-anchor="end">1 could not be processed</text>
+  <text class="s" x="60" y="146">Filed automatically: 812 (86.3%)</text>
+  <text class="s" x="60" y="166">Reader: Claude Sonnet 5.5 · certainty judge: Jev 1.13.0 · threshold 0.90</text>
+  <text class="s" x="60" y="186">Real site, 11 October 2026 · about USD 0.01 per article</text>
+
+  <!-- Panel B: wrong among filed, per approach -->
+  <text class="k" x="60" y="268">WRONG ANSWERS AMONG THE ARTICLES EACH APPROACH WOULD FILE</text>
+  <text class="s" x="60" y="288">Same 941 articles, same answers; only the filing rule changes.</text>
+
+  <!-- axis: x = 360 + 100 px per percentage point -->
+  <line class="grid" x1="460" y1="300" x2="460" y2="520"/>
+  <line class="grid" x1="560" y1="300" x2="560" y2="520"/>
+  <line class="grid" x1="660" y1="300" x2="660" y2="520"/>
+  <line class="grid" x1="760" y1="300" x2="760" y2="520"/>
+  <line class="grid" x1="860" y1="300" x2="860" y2="520"/>
+  <line class="grid" x1="960" y1="300" x2="960" y2="520"/>
+  <line class="axis" x1="360" y1="300" x2="360" y2="520"/>
+  <line class="axis" x1="360" y1="520" x2="1080" y2="520"/>
+  <text class="s" x="360" y="540" text-anchor="middle">0%</text>
+  <text class="s" x="460" y="540" text-anchor="middle">1%</text>
+  <text class="s" x="560" y="540" text-anchor="middle">2%</text>
+  <text class="s" x="660" y="540" text-anchor="middle">3%</text>
+  <text class="s" x="760" y="540" text-anchor="middle">4%</text>
+  <text class="s" x="860" y="540" text-anchor="middle">5%</text>
+  <text class="s" x="960" y="540" text-anchor="middle">6%</text>
+  <text class="s" x="1060" y="540" text-anchor="middle">7%</text>
+
+  <!-- reader alone: 60 of 940 = 6.38% -->
+  <text class="t" x="60" y="331">Reader alone</text>
+  <text class="s" x="60" y="349">files every article</text>
+  <rect class="track" x="360" y="314" width="720" height="40"/>
+  <rect class="wrong" x="360" y="314" width="638.3" height="40"/>
+  <text class="n" x="1006" y="339">6.4% (60 of 940)</text>
+
+  <!-- Jev alone at >= 0.90: 19 of 826 = 2.30% -->
+  <text class="t" x="60" y="401">Jev alone</text>
+  <text class="s" x="60" y="419">files when certainty ≥ 0.90</text>
+  <rect class="track" x="360" y="384" width="720" height="40"/>
+  <rect class="wrong" x="360" y="384" width="230.0" height="40"/>
+  <text class="n" x="598" y="409">2.3% (19 of 826)</text>
+
+  <!-- both + threshold: 11 of 812 = 1.35%, 95% range 0.67%-2.42% -->
+  <text class="accent" x="60" y="471">Both judges agree</text>
+  <text class="s" x="60" y="489">and certainty ≥ 0.90 (the product's rule)</text>
+  <rect class="track" x="360" y="454" width="720" height="40"/>
+  <rect class="wrong" x="360" y="454" width="135.5" height="40"/>
+  <line class="whisker" x1="427" y1="474" x2="602" y2="474"/>
+  <line class="whisker" x1="427" y1="464" x2="427" y2="484"/>
+  <line class="whisker" x1="602" y1="464" x2="602" y2="484"/>
+  <text class="n" x="612" y="479">1.35% (11 of 812) · 95% range 0.67%–2.42%</text>
+
+  <text class="s" x="60" y="580">The reader's 60 include answers that named no category or more than one; the product never files those. Labels come from the dataset's answer key.</text>
+</svg>

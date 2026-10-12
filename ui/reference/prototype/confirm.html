@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Visual prototype · Confirm</title>
+<script>
+/* Theme before first paint: ?theme=, then the saved choice, then the system setting (as ui/app/public/theme-boot.js). */
+(function () {
+  var t = null;
+  try {
+    var q = new URLSearchParams(location.search).get('theme');
+    if (q === 'light' || q === 'dark') t = q;
+    else { var s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') t = s; }
+  } catch (e) {}
+  if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.dataset.theme = t;
+})();
+</script>
+<link rel="stylesheet" href="prototype.css">
+</head>
+<body>
+<a class="skip" href="#main" data-skip>Skip to content</a>
+<div class="proto-bar"><div class="wrap">
+  <strong>Prototype</strong><span>Placeholder content. Nothing here is connected to the app.</span>
+  <nav aria-label="Prototype screens">
+    <a href="index.html">Overview</a><a href="home.html">Home</a><a href="confirm.html" aria-current="page">Confirm</a><a href="progress.html">Progress</a><a href="progress-stalled.html">Sending stopped</a><a href="results.html">Results</a><a href="review.html">Review</a><a href="system.html">System</a>
+  </nav>
+</div></div>
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="home.html"><span class="brand__mark" aria-hidden="true"></span>Document classification</a>
+  <nav class="nav" aria-label="Main"><a href="home.html">Home</a><a href="home.html#all-runs">Runs</a><a href="review.html">Categories</a><a href="index.html">How it works</a></nav>
+  <div class="topbar__end">
+    <a class="setup-word" href="system.html"><span class="g g--check" aria-hidden="true"></span><span class="setup-word__text">Setup complete</span></a>
+    <button class="icon-btn" type="button" data-theme-toggle aria-pressed="false" title="Change colour theme"><span class="g g--theme" aria-hidden="true"></span><span class="vh">Change colour theme</span></button>
+  </div>
+</div></header>
+<div class="run-strip" hidden><div class="wrap"><b>New run · Archive 2026</b><span class="sep">·</span><span>Step 3 of 10 · Confirm</span><span class="sep">·</span><span>112 of 114 ready to send</span></div></div>
+
+<div class="wrap">
+<section class="run-header" aria-label="New run">
+  <div class="run-header__top">
+    <p class="run-name">New run · Archive 2026</p>
+    <div class="run-header__tools">
+      <details class="disclosure facts"><summary>Details <span class="g g--chev" aria-hidden="true"></span></summary>
+        <div class="disclosure__body technical" data-technical>
+          <dl><dt>Local id</dt><dd class="mono">local-0000-placeholder</dd><dt>Read with</dt><dd>reading step 1.4 (placeholder)</dd><dt>Category version</dt><dd>4 · revision placeholder-rev-4</dd><dt>Filing certainty</dt><dd>0.900 · untested</dd></dl>
+        </div>
+      </details>
+    </div>
+  </div>
+  <ul class="chips" aria-label="Run facts">
+    <li class="chip">Not started yet</li>
+    <li class="chip">Categories version 4 · 4</li>
+    <li class="chip chip--dashed">Filing certainty 90% · untested</li>
+    <li class="chip">112 ready · 2 could not be read</li>
+  </ul>
+  <nav class="rail" aria-label="Progress">
+    <ol class="rail__chapters">
+      <li class="rail__chapter"><span class="rail__overline">Your files</span><ol class="rail__steps">
+        <li class="step step--done"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Choose folder</span><span class="vh">, done</span></a></li>
+        <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Read files</span><span class="vh">, done</span></a></li>
+      </ol></li>
+      <li class="rail__chapter is-here"><span class="rail__overline">Start</span><ol class="rail__steps">
+        <li class="step step--current is-lit is-head"><a class="step__in" href="confirm.html" aria-current="step"><span class="step__node">3</span><span class="step__label">Confirm</span></a></li>
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r4"><span class="step__node">4</span><span class="step__label">Send</span></span><span class="step__tip" id="r4" role="tooltip">Available after you start the run.</span></li>
+      </ol></li>
+      <li class="rail__chapter"><span class="rail__overline">Sorting</span><ol class="rail__steps">
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r5"><span class="step__node">5</span><span class="step__label">Sort</span></span><span class="step__tip" id="r5" role="tooltip">Available once every document is sent.</span></li>
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r6"><span class="step__node">6</span><span class="step__label">Results</span></span><span class="step__tip" id="r6" role="tooltip">Available when every document has an outcome.</span></li>
+      </ol></li>
+      <li class="rail__chapter"><span class="rail__overline">Your folders</span><ol class="rail__steps">
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r7"><span class="step__node">7</span><span class="step__label">Make folders</span></span><span class="step__tip" id="r7" role="tooltip">Available once the results are ready.</span></li>
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r8"><span class="step__node">8</span><span class="step__label">Review folders</span></span><span class="step__tip" id="r8" role="tooltip">Available once the folders are made.</span></li>
+      </ol></li>
+      <li class="rail__chapter"><span class="rail__overline">Improve</span><ol class="rail__steps">
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r9"><span class="step__node">9</span><span class="step__label">Update categories</span></span><span class="step__tip" id="r9" role="tooltip">Available after you review the folders.</span></li>
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r10"><span class="step__node">10</span><span class="step__label">Compare</span></span><span class="step__tip" id="r10" role="tooltip">Available after you decide about the categories.</span></li>
+      </ol></li>
+    </ol>
+    <div class="rail__compact"><span class="step-badge" aria-hidden="true">3</span><span><b>Step 3 of 10</b> · Confirm</span><span class="pips" aria-hidden="true"><i class="pip is-done"></i><i class="pip is-here"></i><i class="pip"></i><i class="pip"></i><i class="pip"></i></span></div>
+  </nav>
+  <div class="narration">
+    <span class="narration__label">Now</span>
+    <p class="narration__now">112 documents are ready. Choose how to run this and set a spending limit; nothing is sent until you start.</p>
+    <span class="narration__next"><span class="narration__label">Next</span><a href="#main-primary" data-next>Start run <span class="g g--arrow g--sm" aria-hidden="true"></span></a></span>
+  </div>
+</section>
+</div>
+
+<main id="main" tabindex="-1" class="wrap">
+<div class="stage stage--narrow">
+  <div class="stage-head">
+    <h1 tabindex="-1">Check and start</h1>
+    <p class="lead">Nothing is sent until you select Start run.</p>
+  </div>
+
+  <section class="block" aria-labelledby="sent-h">
+    <h2 id="sent-h" class="section-title">What will be sent</h2>
+    <div class="pair">
+      <div class="inset"><h3>Sent</h3><p class="muted">The text and headings of 112 documents, and the names of all 114.</p></div>
+      <div class="inset"><h3>Stays on this computer</h3><p class="muted">The original files.</p></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <fieldset class="cards" aria-describedby="mode-help">
+      <legend>How to run it</legend>
+      <p class="small muted" id="mode-help">Nothing is chosen for you.</p>
+      <label class="rcard"><input type="radio" name="mode" value="interactive"><span><span class="rcard__title">Interactive</span><span class="rcard__detail">Each document is sorted as soon as it arrives. You can watch it here.</span></span></label>
+      <p class="group-label">Other option</p>
+      <label class="rcard"><input type="radio" name="mode" value="batch" disabled aria-describedby="batch-why"><span><span class="rcard__title">Batch</span><span class="rcard__detail">Documents are sent together and sorted later, as one piece of work.</span><span class="rcard__reason" id="batch-why">Paused while it is being checked. Recent Batch runs did not finish.</span></span></label>
+    </fieldset>
+  </section>
+
+  <section class="block" aria-labelledby="limit-h">
+    <h2 id="limit-h" class="section-title">Spending limit</h2>
+    <div class="stack">
+      <div class="field">
+        <label for="limit">Stop this run if spending reaches</label>
+        <div class="money"><span class="money__cur" aria-hidden="true">$</span><input class="input" id="limit" inputmode="decimal" autocomplete="off" aria-describedby="limit-err"></div>
+        <p class="small muted" id="limit-err" data-limit-err></p>
+      </div>
+      <details class="disclosure"><summary>More spending options <span class="g g--chev" aria-hidden="true"></span></summary>
+        <div class="disclosure__body stack-sm">
+          <label class="check"><input type="checkbox" data-nolimit> <span>No limit for this run</span></label>
+          <label class="check" data-ack-row hidden><input type="checkbox" data-ack> <span>I understand spending won't stop this run. I'll tick this each time.</span></label>
+        </div>
+      </details>
+      <p class="small muted">Spending is worked out from what each service reports. New work stops when the limit is reached; work already under way can still add a little on top.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="cost-h">
+    <h2 id="cost-h" class="section-title">Rough cost</h2>
+    <p class="muted">No estimate available yet.</p>
+  </section>
+
+  <section class="block" aria-labelledby="cat-h">
+    <h2 id="cat-h" class="section-title">Categories</h2>
+    <p class="muted">Version 4 · 4 categories · Filing certainty 90% (untested).</p>
+  </section>
+
+  <section class="block">
+    <div class="action" data-action="confirm:start:local-placeholder">
+      <button class="btn btn--primary" type="button" id="main-primary" data-op="confirm:start:local-placeholder" data-primary disabled aria-describedby="start-fb">Start run</button>
+      <div class="feedback" id="start-fb" data-feedback="confirm:start:local-placeholder">
+        <div class="feedback__status" role="status" aria-live="polite" aria-atomic="true"><div class="fb fb--blocked" data-blocked><span>Why this is unavailable:</span><ul data-reasons><li>Choose how to run this.</li><li>Set a spending limit, or choose No limit under More spending options.</li></ul></div></div>
+        <div class="feedback__alert" role="alert"></div>
+      </div>
+    </div>
+  </section>
+</div>
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggle = document.querySelector('[data-theme-toggle]');
+  function sync() { if (toggle) toggle.setAttribute('aria-pressed', String(root.dataset.theme === 'dark')); }
+  sync();
+  if (toggle) toggle.addEventListener('click', function () {
+    /* Instant switch (SPEC §8.4, no theme cross-fade): the new theme is applied in one style recalculation with transitions off. */
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    void root.offsetWidth;
+    root.removeAttribute('data-theme-switching');
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+    sync();
+  });
+  var skip = document.querySelector('[data-skip]');
+  if (skip) skip.addEventListener('click', function (ev) { ev.preventDefault(); var m = document.getElementById('main'); if (m) m.focus(); });
+  document.addEventListener('click', function (ev) {
+    var a = ev.target.closest && ev.target.closest('[data-next]');
+    if (!a) return;
+    ev.preventDefault();
+    var p = document.querySelector('[data-primary]');
+    if (!p) return;
+    /* A disabled primary cannot take focus: bring it into view and focus the reasons beneath it, so Next is never inert. */
+    var fb = p.disabled && p.closest('.action') ? p.closest('.action').querySelector('[data-feedback]') : null;
+    if (fb) { p.scrollIntoView({ block: 'center' }); fb.setAttribute('tabindex', '-1'); fb.focus({ preventScroll: true }); }
+    else p.focus();
+  });
+  var header = document.querySelector('.run-header'), strip = document.querySelector('.run-strip'), bar = document.querySelector('.topbar');
+  if (header && strip && bar && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      strip.style.setProperty('--strip-top', bar.getBoundingClientRect().height + 'px');
+      strip.hidden = entries[entries.length - 1].isIntersecting;
+    }, { rootMargin: '-' + Math.round(bar.getBoundingClientRect().height) + 'px 0px 0px 0px' }).observe(header);
+  }
+
+  /* Prototype of the Confirm blockers: the button is enabled only by a click on a mode and a valid limit (or No limit plus its acknowledgement). */
+  var start = document.getElementById('main-primary');
+  var reasons = document.querySelector('[data-reasons]');
+  var blocked = document.querySelector('[data-blocked]');
+  var limit = document.getElementById('limit');
+  var err = document.querySelector('[data-limit-err]');
+  var noLimit = document.querySelector('[data-nolimit]');
+  var ack = document.querySelector('[data-ack]');
+  var ackRow = document.querySelector('[data-ack-row]');
+  var chosen = null;
+  function update() {
+    var list = [];
+    var v = limit.value.trim();
+    var valid = /^\d+(\.\d{1,2})?$/.test(v) && Number(v) > 0;
+    err.textContent = v && !valid ? 'Enter an amount in dollars, like 5 or 12.50.' : '';
+    ackRow.hidden = !noLimit.checked;
+    if (!chosen) list.push('Choose how to run this.');
+    if (noLimit.checked) { if (!ack.checked) list.push('Tick the box to confirm there is no limit.'); }
+    else if (!valid) list.push('Set a spending limit, or choose No limit under More spending options.');
+    reasons.replaceChildren.apply(reasons, list.map(function (t) { var li = document.createElement('li'); li.textContent = t; return li; }));
+    blocked.hidden = list.length === 0;
+    start.disabled = list.length > 0;
+  }
+  document.querySelectorAll('input[name="mode"]').forEach(function (r) {
+    r.addEventListener('click', function () { chosen = r.value; update(); });
+    r.addEventListener('change', function () { chosen = r.value; update(); });
+  });
+  limit.addEventListener('input', update);
+  noLimit.addEventListener('change', function () { ack.checked = false; update(); });
+  ack.addEventListener('change', update);
+  start.addEventListener('click', function () { location.href = 'progress.html'; });
+  update();
+})();
+</script>
+</body>
+</html>

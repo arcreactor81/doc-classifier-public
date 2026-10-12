@@ -1,0 +1,11 @@
+# Evidence comparison
+
+Reader quotes are stored exactly as returned. The selected comparison policy is frozen with each run and recorded alongside validated reader artifacts and in its results.
+
+- `exact-substring-v1`: require an exact nonempty contiguous substring. Historical runs without a policy field retain this behavior.
+- `whitespace-quotes-v1`: on both the quote and extracted source, map curly single/double quotation marks to their ASCII counterparts, collapse whitespace runs (including line breaks) to one space, and trim the ends. Require a nonempty contiguous substring after that transformation.
+- `layout-quotes-v2` (DECISIONS 156, addendum of 12 October 2026; the owner and practice packs select it for new runs, the generic pack keeps `whitespace-quotes-v1`): everything `whitespace-quotes-v1` accepts, plus three typesetting rules, each a published Unicode definition applied the same way to every document: a character in a Unicode presentation-form block is read as its compatibility (NFKC) form on both sides (a ligature such as U+FB01 is the letters f and i; full NFKC is not used, so superscripts, fractions and mathematical letters stay distinct); the soft hyphen U+00AD is removed, with a line break directly after it; and a hyphen between two letters at a mandatory line break in the source may be read with the hyphen kept, with the hyphen and one space, or with neither. Measured on held-out replies before it was switched on: 11 of 15 refusals recovered, nothing `whitespace-quotes-v1` accepted refused (HANDOFF, 12 October 2026).
+
+Neither policy changes words, numbers, order or letter case, removes punctuation, inserts ellipses, joins a table heading to a separated row, or uses fuzzy similarity. `whitespace-quotes-v1` does not join hyphenated words; `layout-quotes-v2` forgives only the three typesetting differences above. Neither ever rewrites the quote or original source. Heading recovery still uses exact verbatim matching.
+
+Changing the policy does not revalidate or rewrite historical results. A new run remains subject to normal human-confirmed spending and activation. Offline checks of retained responses are comparison evidence, not a new classification run.

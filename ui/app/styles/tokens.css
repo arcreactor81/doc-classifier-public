@@ -1,0 +1,213 @@
+/*
+ * The Sorting Room: warm paper-dark ground, highlighter yellow for action, dark-only by owner decision (30 September 2026).
+ * The reference dark palette is the default, including before scripts run and when scripts are blocked.
+ * Saved or system light preferences do not change the product. Fixed colour meanings and motion are retained.
+ * Hex colour tokens are checked by scripts/tokens-contrast.test.mjs; effects are separate.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --canvas: #12110F;
+  --surface: #1B1A17;
+  --surface-2: #24221E;
+  --surface-3: #2B2924;
+  --raised: #201E1B;
+  --scrim: rgb(18 17 15 / .76);
+
+  /* Text */
+  --ink: #F4F0E8;
+  --ink-2: #BDB7AB;
+  --ink-3: #A39D91;
+
+  /* Lines */
+  --line: #34312B;
+  --line-2: #2A2824;
+  --line-strong: #7E796E;
+  --track: #34312B;
+
+  /* Action, position, progress: highlighter yellow is the product's light */
+  --accent: #E6FF3B;
+  --accent-strong: #F2FF8C;
+  --accent-soft: #2A2E14;
+  --on-accent: #16150F;
+  --trail: #F6FFB8;
+  --glow: 0 0 0 1px rgb(230 255 59 / .20);
+  --light: #E6FF3B;
+  --primary-1: #EEFF6A;
+  --primary-2: #D9F22E;
+  --reading-fill: #4A5320;
+
+  /* System identity (evidence panels only) */
+  --sys-confidence: #E6FF3B;
+  --sys-confidence-soft: #2A2E14;
+  --sys-reader: #F1ECE2;
+  --sys-reader-soft: #36332D;
+
+  /* Outcomes (the Sorting Room): highlighter = filed, pink = needs you, stone = could not process. Coral red only marks errors. */
+  --filed: #E6FF3B;
+  --filed-soft: #2A2E14;
+  --filed-bar: #E6FF3B;
+  --review: #FF5AA8;
+  --review-soft: #3A1E2D;
+  --review-bar: #FF5AA8;
+  --failed: #C9C2B4;
+  --failed-soft: #2E2B26;
+  --failed-bar: #C9C2B4;
+  --fail-line: #FF6A4D;
+
+  /* Effects (not hex) */
+  --light-glow: rgb(230 255 59 / .16); /* Base effect; indicators scale halo and soft-ring alpha separately for contrast. */
+  --light-glow-soft: rgb(230 255 59 / .08);
+  --fail-glow: rgb(255 106 77 / .38);
+  --edge-lit: rgb(244 240 232 / .10);
+  --fail-edge-lit: rgb(255 120 96 / .62);
+  --trace-band: rgb(244 255 170 / .9);
+  --fail-trace-band: rgb(255 140 118 / .66);
+  --sheen: rgb(244 240 232 / .02);
+  --ground-glow-1: rgb(230 255 59 / .035);
+  --ground-glow-2: rgb(255 90 168 / .03);
+  --lattice: rgb(244 240 232 / .022);
+  --focus-halo: rgb(230 255 59 / .22);
+  --hold-a: 1;
+  --status-halo-strength: 1;
+
+  /* Elevation */
+  --shadow-1: 0 1px 0 rgb(0 0 0 / .3), 0 24px 48px -30px rgb(0 0 0 / .7);
+  --shadow-2: 0 20px 50px -18px rgb(0 0 0 / .7), 0 0 0 1px rgb(244 240 232 / .10);
+  --inner-highlight: inset 0 1px 0 rgb(255 255 255 / .04);
+
+  /* Type (bundled with the app from @fontsource-variable; nothing is fetched from a third party) */
+  --font-sans: "Geist Variable", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", "Geist Variable", "Segoe UI Variable Display", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-17: 17px;
+  --fs-20: 20px;
+  --fs-24: 24px;
+  --fs-26: 26px;
+  --fs-30: 30px;
+  --fs-40: 40px;
+  --fs-hero: clamp(48px, 6.4vw, 112px);
+  --fs-h1: clamp(38px, 4.6vw, 68px);
+  --fs-count: clamp(64px, 7.4vw, 112px);
+  --fs-tally: 64px;
+  --fs-spend: 48px;
+  --lh-tight: 1.12;
+  --lh-snug: 1.3;
+  --lh-body: 1.5;
+  --lh-read: 1.6;
+  --lh-display: .94;
+  --lh-count: .92;
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 650;
+  --tracking-display: -0.02em;
+  --tracking-hero: -0.03em;
+  --tracking-count: -0.04em;
+  --tracking-heading: -0.01em;
+  --tracking-body: 0;
+  --tracking-overline: 0.14em;
+  --measure: 66ch;
+  --measure-narrow: 58ch;
+  --measure-now: 78ch;
+
+  /* Space (4px base, 2px half-step) */
+  --sp-0-5: 2px;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 40px;
+  --sp-9: 56px;
+  --sp-10: 72px;
+  --sp-11: 96px;
+
+  /* Radius (symmetric only) */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r: 14px;
+  --r-card: 16px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+  --r-pill: 999px;
+
+  /* Sizes */
+  --control-h: 46px;
+  --control-h-sm: 34px;
+  --control-h-xl: 56px;
+  --icon-btn: 40px;
+  --track-h: 6px;
+  --track-h-lg: 16px;
+  --tab-indicator: 4px;
+  --focus-width: 2px;
+  --focus-offset: 3px;
+  --page-max: 1344px;
+  --gutter: 48px;
+
+  /* Layout */
+  --stage-narrow: 760px;
+  --stage-wide: 1180px;
+  --topbar-h: 64px;
+  --runstrip-h: 40px;
+  --row-h: 46px;
+  --panel-w: 400px;
+  --spine-w: 244px;
+  --spine-gap: 52px;
+  --light-dot: 12px;
+
+  /* Motion (full event-driven catalogue; no theme or reduced-motion fork) */
+  --dur-press: 90ms;
+  --dur-hover: 160ms;
+  --dur-reveal: 300ms;
+  --dur-word: 320ms;
+  --dur-change: 260ms;
+  --dur-fail: 180ms;
+  --dur-rule: 220ms;
+  --dur-list: 300ms;
+  --dur-roll: 280ms;
+  --dur-exit: 90ms;
+  --dur-exit-launch: 140ms;
+  --dur-pane: 420ms;
+  --dur-move: 320ms;
+  --dur-fill: 760ms;
+  --dur-flash: 900ms;
+  --dur-trace: 900ms;
+  --dur-trace-open: 720ms;
+  --dur-pulse: 1600ms;
+  --dur-beat: 900ms;
+  --dur-settle: 900ms;
+  --dur-hold: 700ms;
+  --dur-power: 620ms;
+  --dur-tick: 200ms;
+  --dur-spine: 560ms;
+  --dur-ignite: 760ms;
+  --dur-handoff: 560ms;
+  --delay-ignite: 260ms;
+  --dur-show: 420ms;
+  --dur-tab: 520ms;
+  --dur-ambient: 2400ms;
+  --dur-sweep: 1200ms;
+  --stagger: 45ms;
+  --stagger-word: 20ms;
+  --stagger-head: 24ms;
+  --stagger-digit: 24ms;
+  --stagger-row: 30ms;
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ease-glide: cubic-bezier(.16, 1, .3, 1);
+  --ease-roll: cubic-bezier(.3, .7, .1, 1);
+  --ease-fill: cubic-bezier(.22, 1, .36, 1);
+  --ease-trace: cubic-bezier(.45, .05, .2, 1);
+  --ease-leave: cubic-bezier(.2, .6, .4, 1);
+  --ease-in: cubic-bezier(.4, 0, 1, 1);
+  --ease-inout: cubic-bezier(.65, 0, .35, 1);
+  --ease-beat: cubic-bezier(.2, .6, .3, 1);
+  --ease-linear: linear;
+}

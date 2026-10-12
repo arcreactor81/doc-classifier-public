@@ -1,0 +1,12 @@
+.bakeoff__baseline, .bakeoff__experiment { padding: 1.25rem; border: 1px solid var(--line); border-radius: var(--radius, 12px); }
+.bakeoff__arms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.bakeoff__arm { display: grid; align-content: start; gap: .75rem; }
+.bakeoff__actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.bakeoff__documents { display: grid; gap: .75rem; min-width: 0; padding: 1rem; border: 1px solid var(--line-strong); }
+.bakeoff__file-list { display: grid; gap: .6rem; max-height: 22rem; overflow: auto; }
+.bakeoff__file-list .check { overflow-wrap: anywhere; }
+.bakeoff select { max-width: 100%; width: 100%; }
+.bakeoff pre { max-height: 26rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bakeoff__scores { overflow-x: auto; }
+.bakeoff__scores th, .bakeoff__scores td { padding: .6rem; text-align: left; border-bottom: 1px solid var(--line); }
+@media (max-width: 639px) { .bakeoff__arms { grid-template-columns: 1fr; } }

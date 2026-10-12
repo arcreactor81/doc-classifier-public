@@ -1,0 +1,6 @@
+/* TrialReview (results of a trial run): the artifact's panel, each checked document as a quiet sheet row. */
+.trial-review .hint { margin-top: 0; }
+.trial-file { padding: 14px 16px; border-radius: 12px; background: var(--ground); border: 1px solid var(--line); min-width: 0; }
+.trial-file h4 { font-weight: 600; overflow-wrap: anywhere; }
+.trial-file details > summary { cursor: pointer; color: var(--mute); font-size: 14px; }
+.trial-file .quiet-actions { display: flex; flex-wrap: wrap; gap: 8px 14px; }

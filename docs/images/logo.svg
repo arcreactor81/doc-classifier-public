@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-labelledby="title">
+  <title id="title">Doc Classifier: a document carrying two ticks slides into a folder</title>
+  <!-- the document: one sheet, its corner folded -->
+  <path d="M 44 10 H 74 L 86 22 V 92 H 44 Z" fill="#4c7fe0" fill-opacity="0.16" stroke="#4c7fe0" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M 74 10 V 22 H 86" fill="none" stroke="#4c7fe0" stroke-width="6" stroke-linejoin="round"/>
+  <!-- two ticks: both judges say yes -->
+  <path d="M 53 40 L 60 47 L 76 31" fill="none" stroke="#4c7fe0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 53 60 L 60 67 L 76 51" fill="none" stroke="#4c7fe0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- the folder, drawn last so the sheet slides in behind it -->
+  <path d="M 14 64 H 46 L 56 74 H 108 A 6 6 0 0 1 114 80 V 110 A 8 8 0 0 1 106 118 H 22 A 8 8 0 0 1 14 110 Z" fill="#4c7fe0" stroke="#4c7fe0" stroke-width="6" stroke-linejoin="round"/>
+</svg>

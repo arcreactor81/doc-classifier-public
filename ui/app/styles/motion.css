@@ -1,0 +1,86 @@
+/*
+ * Motion (SPEC §8.4; VISUAL-SPEC-v2 §7). Only what moves lives here; layout and colour of the action slot and the
+ * tracks belong to styles/base.css. Every duration comes from a token in styles/tokens.css. view/motion.ts adds the
+ * Web Animations side. There is no reduced-motion variant (owner decision, 26 Sep 2026).
+ */
+
+/* M4: a determinate fill. The --fill value (0…1) is the recorded count; the transition only eases towards it. */
+.feedback__meter-fill {
+  display: block;
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(var(--fill, 0));
+  transition: transform var(--dur-fill) var(--ease-out);
+}
+
+/* M11: short local work with no count. The sweep runs 4 × --dur-sweep (4.8 s, within the 5 s bound), then stops
+   and stays as a still segment. Under reduced motion it is a still segment from the start. */
+.feedback__sweep {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 160px;
+  height: 2px;
+  border-radius: var(--r-pill);
+  background: var(--track);
+}
+.feedback__sweep::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 30%;
+  border-radius: inherit;
+  background: var(--accent);
+  animation: feedback-sweep var(--dur-sweep) var(--ease-linear) 4;
+}
+@keyframes feedback-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(333%); }
+}
+
+/* M5: the light-trail head that sweepOnce() moves along a track; transparent at rest. */
+.motion-sweep-host {
+  position: relative;
+  overflow: hidden;
+}
+.motion-sweep {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 20%;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--trail), transparent);
+}
+
+/* T1: a heading's words, each its own box so it can rise on its own (view/motion.ts). */
+.w { display: inline-block; }
+
+/* E1 edge trace (VISUAL-SPEC-v2 §7.7): a band of light slides once along a pane's edge (translateX only). A static
+   mask shows it only on a 1.5px ring just inside the border, so it runs along the top and bottom edges and lights
+   each side as it passes. The pane needs position: relative and a border radius. */
+.trace {
+  position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none; padding: 1.5px; z-index: 1;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.trace > i {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 34%; opacity: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--trace-band) 72%, var(--trail) 90%, transparent);
+}
+.trace.is-fail > i { background: linear-gradient(90deg, transparent, var(--fail-trace-band) 72%, var(--fail-line) 90%, transparent); }
+
+/* S1 screen leave (VISUAL-SPEC-v2 §7.3; shell/stage-host.ts): a static copy of the outgoing stage, fixed to the
+   viewport at the place it had (custom properties the stage host sets), above the screen that replaced it, for
+   --dur-exit. Inert and aria-hidden; the stage host removes it when the transition's own timer resolves. */
+.stage.stage-ghost {
+  position: fixed; top: var(--ghost-top); left: var(--ghost-left); width: var(--ghost-width); max-width: none; margin: 0;
+  z-index: 3; pointer-events: none;
+}
+/* The copy is a still picture of the screen as it was: CSS animations would start again on the cloned elements (an
+   entrance from transparent, a red light's beat), so none of them runs inside it. Its own fade is a Web Animation. */
+.stage-ghost *, .stage-ghost *::before, .stage-ghost *::after { animation: none !important; transition: none !important; }

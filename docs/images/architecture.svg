@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 804" width="1180" height="804" role="img" aria-labelledby="title desc" color="#6e7681" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="title">How a document moves through Doc Classifier</title>
+  <desc id="desc">Three columns. Your computer: the browser reads each original file and uploads only its text, outline and fingerprint. Your Cloudflare deployment: one durable job per document asks TypeSafe Jev and a reader model, then a rule table in code decides filed, needs review or could not process; the record is the database and the file store. The AI services: Jev returns one choice, a certainty and a yes or no per category; the reader returns a yes or no per category with a reason and word-for-word quotes. A person reviews, the browser builds folders from the originals, the person's folder moves come back as corrections, and proposals wait for a person to accept them.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4c7fe0"/>
+    </marker>
+    <style>
+      .panel { fill: currentColor; fill-opacity: 0.05; stroke: none; }
+      .box { fill: currentColor; fill-opacity: 0.04; stroke: currentColor; stroke-width: 1.2; }
+      .box-accent { fill: #4c7fe0; fill-opacity: 0.08; stroke: #4c7fe0; stroke-width: 2; }
+      .line { fill: none; stroke: currentColor; stroke-width: 1.4; marker-end: url(#arrow); }
+      .line-accent { fill: none; stroke: #4c7fe0; stroke-width: 1.8; marker-end: url(#arrow-accent); }
+      .h { font-size: 13px; font-weight: 600; fill: currentColor; }
+      .t { font-size: 12px; fill: currentColor; }
+      .lbl { font-size: 12px; font-style: italic; fill: currentColor; }
+      .col { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; fill: currentColor; }
+      .accent-text { font-size: 13px; font-weight: 600; fill: #4c7fe0; }
+    </style>
+  </defs>
+
+  <!-- column panels -->
+  <rect class="panel" x="12" y="48" width="340" height="744" rx="10"/>
+  <rect class="panel" x="416" y="48" width="360" height="744" rx="10"/>
+  <rect class="panel" x="856" y="48" width="308" height="744" rx="10"/>
+  <text class="col" x="24" y="34">YOUR COMPUTER (CHROME OR EDGE)</text>
+  <text class="col" x="428" y="34">YOUR CLOUDFLARE DEPLOYMENT</text>
+  <text class="col" x="872" y="34">THE TWO AI SERVICES</text>
+
+  <!-- left column -->
+  <rect class="box" x="24" y="64" width="316" height="64" rx="6"/>
+  <text class="h" x="36" y="84">Your folder of originals</text>
+  <text class="t" x="36" y="102">PDF, Word (.docx) and PowerPoint (.pptx) files.</text>
+  <text class="t" x="36" y="118">They never leave this computer.</text>
+
+  <path class="line" d="M 182 128 L 182 142"/>
+
+  <rect class="box" x="24" y="144" width="316" height="96" rx="6"/>
+  <text class="h" x="36" y="164">The browser reads each file</text>
+  <text class="t" x="36" y="182">The full text with page or slide markers, the</text>
+  <text class="t" x="36" y="198">outline (headings and table headers) and a</text>
+  <text class="t" x="36" y="214">fingerprint: a SHA-256 hash, a short code</text>
+  <text class="t" x="36" y="230">computed from the file's bytes.</text>
+
+  <path class="line" d="M 182 240 L 182 254"/>
+
+  <rect class="box" x="24" y="256" width="316" height="64" rx="6"/>
+  <text class="h" x="36" y="276">You confirm the run</text>
+  <text class="t" x="36" y="294">Reader choice and a spending limit. For more</text>
+  <text class="t" x="36" y="310">than 25 files, a small trial comes first.</text>
+
+  <!-- upload arrow -->
+  <path class="line" d="M 340 288 L 426 288"/>
+  <text class="lbl" x="384" y="278" text-anchor="middle">text, outline</text>
+  <text class="lbl" x="384" y="304" text-anchor="middle">+ fingerprint</text>
+
+  <rect class="box" x="24" y="524" width="316" height="80" rx="6"/>
+  <text class="h" x="36" y="544">A person reviews</text>
+  <text class="t" x="36" y="562">Every document with what both systems said.</text>
+  <text class="t" x="36" y="578">The documents they disagreed on come first.</text>
+  <text class="t" x="36" y="594">No model decides anything on this screen.</text>
+
+  <path class="line" d="M 182 604 L 182 618"/>
+
+  <rect class="box" x="24" y="620" width="316" height="80" rx="6"/>
+  <text class="h" x="36" y="640">The browser builds the folders</text>
+  <text class="t" x="36" y="658">Copies (never moves) your originals into one</text>
+  <text class="t" x="36" y="674">folder per category, plus Needs review and</text>
+  <text class="t" x="36" y="690">Could not process, each with a short note.</text>
+
+  <path class="line" d="M 182 700 L 182 714"/>
+
+  <rect class="box" x="24" y="716" width="316" height="64" rx="6"/>
+  <text class="h" x="36" y="736">You move misplaced copies</text>
+  <text class="t" x="36" y="754">In File Explorer, like any other file. That</text>
+  <text class="t" x="36" y="770">move is your correction.</text>
+
+  <!-- correction arrow -->
+  <path class="line" d="M 340 748 L 426 748"/>
+  <text class="lbl" x="384" y="738" text-anchor="middle">folder listing</text>
+  <text class="lbl" x="384" y="764" text-anchor="middle">(names only)</text>
+
+  <!-- middle column -->
+  <rect class="box" x="428" y="64" width="308" height="80" rx="6"/>
+  <text class="h" x="440" y="84">Saved category versions</text>
+  <text class="t" x="440" y="102">Name, what it is, what it is not, examples,</text>
+  <text class="t" x="440" y="118">plus "none of these". A run keeps the version</text>
+  <text class="t" x="440" y="134">it started with.</text>
+
+  <path class="line" d="M 582 144 L 582 158"/>
+
+  <rect class="box" x="428" y="160" width="308" height="368" rx="6"/>
+  <text class="h" x="440" y="180">One durable job per document</text>
+  <text class="t" x="440" y="197">A Workflow: every finished step is saved;</text>
+  <text class="t" x="440" y="212">an interrupted job resumes from the last</text>
+  <text class="t" x="440" y="227">saved step.</text>
+
+  <rect class="box" x="440" y="238" width="284" height="58" rx="5"/>
+  <text class="h" x="452" y="256">1 · Ask Jev</text>
+  <text class="t" x="452" y="273">the full text and outline, with every</text>
+  <text class="t" x="452" y="288">category definition</text>
+
+  <rect class="box" x="440" y="306" width="284" height="58" rx="5"/>
+  <text class="h" x="452" y="324">2 · Ask the reader</text>
+  <text class="t" x="452" y="341">the same text and the same definitions</text>
+  <text class="t" x="452" y="356">(neither judge sees the other's answer)</text>
+
+  <text class="t" x="440" y="386">Each raw reply is saved before it is read.</text>
+  <text class="t" x="440" y="401">Every reply's model is checked and recorded;</text>
+  <text class="t" x="440" y="416">a reply from the wrong model stops the run.</text>
+
+  <rect class="box-accent" x="440" y="428" width="284" height="86" rx="5"/>
+  <text class="accent-text" x="452" y="448">3 · The rule table decides</text>
+  <text class="t" x="452" y="466">Code, not a model: the first matching rule</text>
+  <text class="t" x="452" y="482">wins and its id is recorded. Outcomes:</text>
+  <text class="t" x="452" y="498">filed · needs review · could not process</text>
+
+  <path class="line" d="M 582 528 L 582 542"/>
+
+  <rect class="box" x="428" y="544" width="308" height="80" rx="6"/>
+  <text class="h" x="440" y="564">The record: D1 database and R2 file store</text>
+  <text class="t" x="440" y="582">Decisions, both replies, fingerprints. The</text>
+  <text class="t" x="440" y="598">uploaded text stays only until you close</text>
+  <text class="t" x="440" y="614">the run.</text>
+
+  <!-- results back to the person -->
+  <path class="line" d="M 428 560 L 342 560"/>
+  <text class="lbl" x="384" y="550" text-anchor="middle">results +</text>
+  <text class="lbl" x="384" y="576" text-anchor="middle">both replies</text>
+
+  <rect class="box" x="428" y="700" width="308" height="80" rx="6"/>
+  <text class="h" x="440" y="720">Corrections become proposals</text>
+  <text class="t" x="440" y="738">A new threshold, an example, a "not for"</text>
+  <text class="t" x="440" y="754">sentence or a new category. Proposed, never</text>
+  <text class="t" x="440" y="770">applied by itself.</text>
+
+  <!-- the loop back to the category versions -->
+  <path class="line-accent" d="M 736 720 L 752 720 L 752 104 L 738 104"/>
+  <text class="lbl" transform="translate(766 700) rotate(-90)">a person accepts or rejects each proposal</text>
+
+  <!-- right column -->
+  <rect class="box" x="872" y="212" width="276" height="112" rx="6"/>
+  <text class="h" x="884" y="232">TypeSafe Jev · jev-1.13.0</text>
+  <text class="t" x="884" y="250">A System One model: typed judgments</text>
+  <text class="t" x="884" y="266">with calibrated probabilities, not prose.</text>
+  <text class="t" x="884" y="282">Returns one choice among the categories</text>
+  <text class="t" x="884" y="298">or "none of these", how sure it is, and</text>
+  <text class="t" x="884" y="314">a yes/no probability for each category.</text>
+
+  <path class="line" d="M 724 256 L 870 256"/>
+  <text class="lbl" x="744" y="248">text + definitions</text>
+  <path class="line" d="M 872 280 L 726 280"/>
+  <text class="lbl" x="744" y="296">choice, certainty,</text>
+  <text class="lbl" x="744" y="310">yes/no for each</text>
+
+  <rect class="box" x="872" y="336" width="276" height="96" rx="6"/>
+  <text class="h" x="884" y="356">The reader · a large language model</text>
+  <text class="t" x="884" y="374">Reads the whole text. For every category</text>
+  <text class="t" x="884" y="390">it returns yes or no, a short reason and</text>
+  <text class="t" x="884" y="406">up to three quotes copied word for word,</text>
+  <text class="t" x="884" y="422">which the code checks against the text.</text>
+
+  <path class="line" d="M 724 344 L 870 344"/>
+  <text class="lbl" x="744" y="336">text + definitions</text>
+  <path class="line" d="M 872 358 L 726 358"/>
+  <text class="lbl" x="744" y="374">yes/no for each,</text>
+  <text class="lbl" x="744" y="388">reason and quotes</text>
+
+  <!-- footnote -->
+  <text class="t" x="872" y="468">The AI services inform step 3. They never</text>
+  <text class="t" x="872" y="484">choose the label, and their two kinds of</text>
+  <text class="t" x="872" y="500">answer are never averaged or multiplied</text>
+  <text class="t" x="872" y="516">together.</text>
+</svg>

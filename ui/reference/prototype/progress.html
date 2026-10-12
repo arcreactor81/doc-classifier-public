@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Visual prototype · Progress: sorting</title>
+<script>
+/* Theme before first paint: ?theme=, then the saved choice, then the system setting (as ui/app/public/theme-boot.js). */
+(function () {
+  var t = null;
+  try {
+    var q = new URLSearchParams(location.search).get('theme');
+    if (q === 'light' || q === 'dark') t = q;
+    else { var s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') t = s; }
+  } catch (e) {}
+  if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.dataset.theme = t;
+})();
+</script>
+<link rel="stylesheet" href="prototype.css">
+</head>
+<body>
+<a class="skip" href="#main" data-skip>Skip to content</a>
+<div class="proto-bar"><div class="wrap">
+  <strong>Prototype</strong><span>Placeholder content. Nothing here is connected to the app.</span>
+  <nav aria-label="Prototype screens">
+    <a href="index.html">Overview</a><a href="home.html">Home</a><a href="confirm.html">Confirm</a><a href="progress.html" aria-current="page">Progress</a><a href="progress-stalled.html">Sending stopped</a><a href="results.html">Results</a><a href="review.html">Review</a><a href="system.html">System</a>
+  </nav>
+</div></div>
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="home.html"><span class="brand__mark" aria-hidden="true"></span>Document classification</a>
+  <nav class="nav" aria-label="Main"><a href="home.html">Home</a><a href="home.html#all-runs">Runs</a><a href="review.html">Categories</a><a href="index.html">How it works</a></nav>
+  <div class="topbar__end">
+    <a class="setup-word" href="system.html"><span class="g g--check" aria-hidden="true"></span><span class="setup-word__text">Setup complete</span></a>
+    <button class="icon-btn" type="button" data-theme-toggle aria-pressed="false" title="Change colour theme"><span class="g g--theme" aria-hidden="true"></span><span class="vh">Change colour theme</span></button>
+  </div>
+</div></header>
+<div class="run-strip" hidden><div class="wrap"><b>Run 9</b><span class="sep">·</span><span data-strip-step>Step 5 of 10 · Sort</span><span class="sep">·</span><span data-strip-figure>73 of 114 decided</span><span class="sep">·</span><span data-strip-checked>Checked 14:23:10</span></div></div>
+
+<div class="wrap">
+<section class="run-header" aria-label="Run 9">
+  <div class="run-header__top">
+    <p class="run-name">Run 9 · 25 Sep 13:58</p>
+    <div class="run-header__tools">
+      <button class="live" type="button" aria-pressed="true" data-live><span class="live__switch" aria-hidden="true"></span><span data-live-label>Live updates</span></button>
+      <details class="disclosure facts"><summary>Details <span class="g g--chev" aria-hidden="true"></span></summary>
+        <div class="disclosure__body technical" data-technical>
+          <dl><dt>Run id</dt><dd class="mono">00000000-0000-4000-8000-000000000009</dd><dt>Mode</dt><dd>interactive (recorded by the server)</dd><dt>Category version</dt><dd>4 · revision placeholder-rev-4</dd><dt>Filing certainty</dt><dd>0.900 · untested</dd><dt>Status version</dt><dd class="mono">0000000000000000</dd></dl>
+        </div>
+      </details>
+    </div>
+  </div>
+  <ul class="chips" aria-label="Run facts">
+    <li class="chip">Interactive</li>
+    <li class="chip">Categories version 4 · 4</li>
+    <li class="chip chip--dashed">Filing certainty 90% · untested</li>
+    <li class="chip" data-spend-chip>Spent $0.42 of $5.00</li>
+    <li class="chip">Text in the cloud: yes</li>
+    <li class="chip">Checked against answers from Run 6</li>
+  </ul>
+  <nav class="rail" aria-label="Progress">
+    <ol class="rail__chapters">
+      <li class="rail__chapter"><span class="rail__overline">Your files</span><ol class="rail__steps">
+        <li class="step step--done"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Choose folder</span><span class="vh">, done</span></a></li>
+        <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Read files</span><span class="vh">, done</span></a></li>
+      </ol></li>
+      <li class="rail__chapter"><span class="rail__overline">Start</span><ol class="rail__steps">
+        <li class="step step--done is-lit"><a class="step__in" href="confirm.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Confirm</span><span class="vh">, done</span></a></li>
+        <li class="step step--done is-lit"><a class="step__in" href="progress.html"><span class="step__node"><span class="g g--check" aria-hidden="true"></span></span><span class="step__label">Send</span><span class="vh">, done</span></a></li>
+      </ol></li>
+      <li class="rail__chapter is-here"><span class="rail__overline">Sorting</span><ol class="rail__steps">
+        <li class="step step--current is-lit is-head" data-step="5"><a class="step__in" href="progress.html" aria-current="step"><span class="step__node" data-node>5</span><span class="step__label">Sort</span><span class="vh" data-state></span></a></li>
+        <li class="step step--upcoming" data-step="6"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r6"><span class="step__node">6</span><span class="step__label">Results</span></span><span class="step__tip" id="r6" role="tooltip" data-r6>Available when all 114 documents have an outcome (73 so far).</span></li>
+      </ol></li>
+      <li class="rail__chapter"><span class="rail__overline">Your folders</span><ol class="rail__steps">
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r7"><span class="step__node">7</span><span class="step__label">Make folders</span></span><span class="step__tip" id="r7" role="tooltip">Available once the results are ready.</span></li>
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r8"><span class="step__node">8</span><span class="step__label">Review folders</span></span><span class="step__tip" id="r8" role="tooltip">Available once the folders are made.</span></li>
+      </ol></li>
+      <li class="rail__chapter"><span class="rail__overline">Improve</span><ol class="rail__steps">
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r9"><span class="step__node">9</span><span class="step__label">Update categories</span></span><span class="step__tip" id="r9" role="tooltip">Available after you review the folders.</span></li>
+        <li class="step step--upcoming"><span class="step__in" tabindex="0" aria-disabled="true" aria-describedby="r10"><span class="step__node">10</span><span class="step__label">Compare</span></span><span class="step__tip" id="r10" role="tooltip">Available after you decide about the categories.</span></li>
+      </ol></li>
+    </ol>
+    <div class="rail__compact"><span class="step-badge" aria-hidden="true" data-compact-badge>5</span><span data-compact-text><b>Step 5 of 10</b> · Sort</span><span class="pips" aria-hidden="true"><i class="pip is-done"></i><i class="pip is-done"></i><i class="pip is-here"></i><i class="pip"></i><i class="pip"></i></span></div>
+  </nav>
+  <div class="narration">
+    <span class="narration__label">Now</span>
+    <p class="narration__now" data-now>The two systems are reading 114 documents; 73 have an outcome. You can close this page; sorting continues without it.</p>
+    <span class="narration__next" data-next-wrap hidden><span class="narration__label">Next</span><a href="#main-primary" data-next>See the results <span class="g g--arrow g--sm" aria-hidden="true"></span></a></span>
+  </div>
+</section>
+</div>
+
+<main id="main" tabindex="-1" class="wrap">
+<div class="stage stage--wide">
+  <div class="stage-head">
+    <h1 tabindex="-1">Sending and sorting</h1>
+    <p class="lead">Each document is read by both systems, then gets one of three outcomes. Every number here is a recorded count.</p>
+  </div>
+
+  <div class="inset row">
+    <span class="g g--check" aria-hidden="true"></span>
+    <p><b>Sent and handed over 114 of 114</b> <span class="muted">at 13:59:20.</span></p>
+    <div class="track track--done" style="--fill:1" role="progressbar" aria-valuemin="0" aria-valuemax="114" aria-valuenow="114" aria-valuetext="114 of 114 sent and handed over"><span class="track__fill"><span class="track__head"></span></span></div>
+  </div>
+
+  <section class="block block--spaced" aria-labelledby="sort-h">
+    <div class="block__head">
+      <h2 id="sort-h" data-sort-h>Sorting</h2>
+      <p class="meta"><span data-checked>Checked 14:23:10</span> · <span data-changed>Last change 14:23:04</span></p>
+    </div>
+    <div class="big"><span class="big__n" data-decided data-count="decided">73</span><span class="big__of">of 114 have an outcome</span></div>
+    <div class="pipe" role="img" data-pipe aria-label="Of 114: 73 decided (52 filed, 20 review, 1 could not process), 19 being read, 22 waiting their turn.">
+      <div class="pipe__decided" data-seg="decided" style="--n:73">
+        <span class="pipe__seg pipe__seg--filed" data-seg="filed" style="--n:52"></span>
+        <span class="pipe__seg pipe__seg--review" data-seg="review" style="--n:20"></span>
+        <span class="pipe__seg pipe__seg--failed" data-seg="failed" style="--n:1"></span>
+      </div>
+      <span class="pipe__seg pipe__seg--reading" data-seg="reading" style="--n:19"></span>
+      <span class="pipe__seg pipe__seg--queued" data-seg="queued" style="--n:22"></span>
+      <span class="pipe__seg pipe__seg--received is-empty" data-seg="received" style="--n:0"></span>
+      <span class="pipe__seg pipe__seg--unsent is-empty" data-seg="unsent" style="--n:0"></span>
+    </div>
+    <dl class="stations">
+      <div class="station"><dt><span class="swatch swatch--decided" aria-hidden="true"></span>Decided</dt><dd data-count="decided">73</dd></div>
+      <div class="station"><dt><span class="swatch swatch--reading" aria-hidden="true"></span>Being read</dt><dd data-count="reading">19</dd></div>
+      <div class="station"><dt><span class="swatch swatch--queued" aria-hidden="true"></span>Waiting its turn</dt><dd data-count="queued">22</dd></div>
+      <div class="station"><dt><span class="swatch swatch--received" aria-hidden="true"></span>Received</dt><dd data-count="received">0</dd></div>
+      <div class="station"><dt><span class="swatch swatch--unsent" aria-hidden="true"></span>Not sent yet</dt><dd data-count="unsent">0</dd></div>
+    </dl>
+
+    <div class="action block--spaced" data-action="progress:results:run-9" data-slot>
+      <p class="muted" data-idle>Nothing to do now. The page updates as documents are decided, and you can close it; sorting continues without it.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="tally-h">
+    <div class="block__head"><h2 id="tally-h">Outcomes so far</h2><p class="meta">Out of 114</p></div>
+    <dl class="tally">
+      <div class="tally__item"><dt><span class="g g--check g--sm" aria-hidden="true"></span>Filed</dt><dd><span class="tally__n" data-count="filed">52</span><span class="meter meter--filed" aria-hidden="true"><i data-meter="filed" style="--f:.456"></i></span></dd></div>
+      <div class="tally__item"><dt><span class="g g--person g--sm" aria-hidden="true"></span>Review</dt><dd><span class="tally__n" data-count="review">20</span><span class="meter meter--review" aria-hidden="true"><i data-meter="review" style="--f:.175"></i></span></dd></div>
+      <div class="tally__item"><dt><span class="g g--slash g--sm" aria-hidden="true"></span>Could not process</dt><dd><span class="tally__n" data-count="failed">1</span><span class="meter meter--failed" aria-hidden="true"><i data-meter="failed" style="--f:.009"></i></span></dd></div>
+    </dl>
+  </section>
+
+  <section class="block" aria-labelledby="spend-h">
+    <div class="block__head"><h2 id="spend-h">Spending</h2></div>
+    <p class="spend"><span>Spent so far: <b data-spend>$0.42</b> of $5.00</span><span class="meta">· 1 charge not reported yet</span></p>
+    <details class="disclosure"><summary>How spending is counted <span class="g g--chev" aria-hidden="true"></span></summary>
+      <div class="disclosure__body">Spending is worked out from what each service reports. New work stops when the limit is reached; work already under way can still add a little on top.</div>
+    </details>
+  </section>
+
+  <section class="block" aria-labelledby="act-h">
+    <div class="block__head"><h2 id="act-h">What's happening</h2><p class="meta">The last 5 recorded events</p></div>
+    <ol class="activity" data-activity>
+      <li><time>14:23:04</time><span>'Budget handout.pdf' filed in Explainers.</span></li>
+      <li><time>14:22:57</time><span>'Week 5 slides.pptx' needs your review.</span></li>
+      <li><time>14:22:49</time><span>'Room booking steps.docx' filed in Procedures.</span></li>
+      <li><time>14:22:41</time><span>'Annual review 2025.pdf' filed in Reports.</span></li>
+      <li><time>14:22:30</time><span>'Registration form.docx' filed in Forms.</span></li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <details class="disclosure" data-technical><summary>Details <span class="g g--chev" aria-hidden="true"></span></summary>
+      <div class="disclosure__body technical stack-sm">
+        <p>Stations come from the recorded checkpoints of each document. Counts refresh every few seconds while live updates are on.</p>
+        <div><button class="btn btn--sm" type="button">Discard this run…</button></div>
+      </div>
+    </details>
+  </section>
+
+  <div class="proto-controls" role="group" aria-labelledby="pc-h">
+    <p class="proto-controls__title" id="pc-h">Prototype control: simulate recorded events</p>
+    <p>Each click stands for one poll that brought new recorded outcomes. Only then does anything move: the pipeline boundaries and meters fill to the new counts, changed numbers flash once, the new activity line fades in, and one light trail runs along Decided (at most once every 5 seconds). Numbers jump to their true value.</p>
+    <div class="row">
+      <button class="btn" type="button" data-sim="1">1 more decided</button>
+      <button class="btn" type="button" data-sim="10">10 more decided</button>
+      <a class="btn btn--quiet" href="progress.html">Start again</a>
+      <label class="check"><input type="checkbox" data-reduce> <span>Preview with reduced motion</span></label>
+    </div>
+    <p data-sim-note></p>
+  </div>
+</div>
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggle = document.querySelector('[data-theme-toggle]');
+  function sync() { if (toggle) toggle.setAttribute('aria-pressed', String(root.dataset.theme === 'dark')); }
+  sync();
+  if (toggle) toggle.addEventListener('click', function () {
+    /* Instant switch (SPEC §8.4, no theme cross-fade): the new theme is applied in one style recalculation with transitions off. */
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    void root.offsetWidth;
+    root.removeAttribute('data-theme-switching');
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+    sync();
+  });
+  var skip = document.querySelector('[data-skip]');
+  if (skip) skip.addEventListener('click', function (ev) { ev.preventDefault(); var m = document.getElementById('main'); if (m) m.focus(); });
+  document.addEventListener('click', function (ev) {
+    var a = ev.target.closest && ev.target.closest('[data-next]');
+    if (!a) return;
+    ev.preventDefault();
+    var p = document.querySelector('[data-primary]');
+    if (!p) return;
+    /* A disabled primary cannot take focus: bring it into view and focus the reasons beneath it, so Next is never inert. */
+    var fb = p.disabled && p.closest('.action') ? p.closest('.action').querySelector('[data-feedback]') : null;
+    if (fb) { p.scrollIntoView({ block: 'center' }); fb.setAttribute('tabindex', '-1'); fb.focus({ preventScroll: true }); }
+    else p.focus();
+  });
+  var header = document.querySelector('.run-header'), strip = document.querySelector('.run-strip'), bar = document.querySelector('.topbar');
+  if (header && strip && bar && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      strip.style.setProperty('--strip-top', bar.getBoundingClientRect().height + 'px');
+      strip.hidden = entries[entries.length - 1].isIntersecting;
+    }, { rootMargin: '-' + Math.round(bar.getBoundingClientRect().height) + 'px 0px 0px 0px' }).observe(header);
+  }
+
+  /* ---- Prototype simulation. The state changes on a click; every movement is CSS (SPEC §8.4 M2, M4, M5, M6, M13). ---- */
+  var TOTAL = 114;
+  var s = { decided: 73, filed: 52, review: 20, failed: 1, reading: 19, queued: 22, received: 0, unsent: 0, spend: 0.42, clock: 14 * 3600 + 23 * 60 + 4 };
+  var seq = ('FFFR'.repeat(9) + 'FFFF').split(''); seq.splice(18, 0, 'X');           /* 41 more: 31 filed, 9 review, 1 could not process */
+  var names = [
+    ['Onboarding checklist.docx', 'Procedures'], ['Quarterly summary Q3.pdf', 'Reports'], ['Week 6 slides.pptx', 'Explainers'],
+    ['Leave request form.docx', 'Forms'], ['Printer setup steps.docx', 'Procedures'], ['Survey results.pdf', 'Reports'],
+    ['Budget overview.pptx', 'Explainers'], ['Expenses form.pdf', 'Forms'], ['Week 7 slides.pptx', 'Explainers'],
+    ['Visitor sign-in steps.docx', 'Procedures'], ['Annual review 2024.pdf', 'Reports'], ['Travel request form.docx', 'Forms']
+  ];
+  var lastSweep = -Infinity;
+  var live = document.querySelector('[data-live]');
+  var $ = function (sel) { return document.querySelector(sel); };
+  function hms(t) { var h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, x = t % 60; return [h, m, x].map(function (n) { return String(n).padStart(2, '0'); }).join(':'); }
+  function flash(el) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+  function setCount(key, value) {
+    document.querySelectorAll('[data-count="' + key + '"]').forEach(function (el) {
+      if (el.textContent !== String(value)) { el.textContent = String(value); flash(el); }
+    });
+  }
+  function setSeg(key, n) {
+    var el = $('[data-seg="' + key + '"]');
+    el.style.setProperty('--n', String(n));
+    el.classList.toggle('is-empty', n === 0);
+  }
+  function addActivity(text) {
+    var list = $('[data-activity]');
+    var li = document.createElement('li');
+    var t = document.createElement('time'); t.textContent = hms(s.clock);
+    var span = document.createElement('span'); span.textContent = text;
+    li.append(t, span); li.classList.add('is-landing');
+    list.prepend(li);
+    while (list.children.length > 5) list.lastElementChild.remove();
+  }
+  function decideOne(i) {
+    var kind = seq[s.decided - 73];
+    var doc = names[i % names.length];
+    s.decided++; s.reading--;
+    if (s.queued > 0) { s.queued--; s.reading++; }
+    s.clock += 6; s.spend += 0.0058;
+    if (kind === 'F') { s.filed++; addActivity("'" + doc[0] + "' filed in " + doc[1] + '.'); }
+    else if (kind === 'R') { s.review++; addActivity("'" + doc[0] + "' needs your review."); }
+    else { s.failed++; addActivity("'Scanned notice.pdf' could not be processed."); }
+  }
+  function render(before) {
+    setSeg('decided', s.decided); setSeg('filed', s.filed); setSeg('review', s.review); setSeg('failed', s.failed);
+    setSeg('reading', s.reading); setSeg('queued', s.queued);
+    ['decided', 'reading', 'queued', 'filed', 'review', 'failed'].forEach(function (k) { setCount(k, s[k]); });
+    ['filed', 'review', 'failed'].forEach(function (k) { $('[data-meter="' + k + '"]').style.setProperty('--f', (s[k] / TOTAL).toFixed(4)); });
+    $('[data-pipe]').setAttribute('aria-label', 'Of 114: ' + s.decided + ' decided (' + s.filed + ' filed, ' + s.review + ' review, ' + s.failed + ' could not process), ' + s.reading + ' being read, ' + s.queued + ' waiting their turn.');
+    $('[data-changed]').textContent = 'Last change ' + hms(s.clock);
+    $('[data-checked]').textContent = 'Checked ' + hms(s.clock + 4);
+    $('[data-strip-checked]').textContent = 'Checked ' + hms(s.clock + 4);
+    $('[data-strip-figure]').textContent = s.decided + ' of 114 decided';
+    var money = '$' + s.spend.toFixed(2);
+    if ($('[data-spend]').textContent !== money) { $('[data-spend]').textContent = money; flash($('[data-spend]')); }
+    var chip = $('[data-spend-chip]'); var chipText = 'Spent ' + money + ' of $5.00';
+    if (chip.textContent !== chipText) { chip.textContent = chipText; flash(chip); }
+    $('[data-r6]').textContent = 'Available when all 114 documents have an outcome (' + s.decided + ' so far).';
+    /* M5: one sweep along Decided, only when it rose and no sweep ran on it in the last 5 s */
+    var dec = $('[data-seg="decided"]');
+    var now = performance.now();
+    if (s.decided > before && now - lastSweep >= 5000) { lastSweep = now; dec.classList.remove('is-sweep'); void dec.offsetWidth; dec.classList.add('is-sweep'); }
+    if (s.decided === TOTAL) finish();
+    else $('[data-now]').textContent = 'The two systems are reading 114 documents; ' + s.decided + ' have an outcome. You can close this page; sorting continues without it.';
+  }
+  /* Done in place: no route change. The rail advances (M2), the narration updates, and the slot turns into the next action. */
+  function finish() {
+    $('[data-now]').textContent = 'Sorted 114: ' + s.filed + ' filed, ' + s.review + ' for your review, ' + s.failed + ' could not be processed.';
+    $('[data-next-wrap]').hidden = false;
+    $('[data-sort-h]').textContent = 'Sorted';
+    $('#tally-h').textContent = 'Outcomes';
+    var s5 = $('[data-step="5"]');
+    s5.classList.remove('step--current', 'is-head'); s5.classList.add('step--done');
+    var link5 = s5.querySelector('a'); link5.removeAttribute('aria-current');
+    var check5 = document.createElement('span'); check5.className = 'g g--check'; check5.setAttribute('aria-hidden', 'true');
+    s5.querySelector('[data-node]').replaceChildren(check5);
+    s5.querySelector('[data-state]').textContent = ', done';
+    var s6 = $('[data-step="6"]');
+    s6.className = 'step step--current is-head';
+    var a6 = document.createElement('a'); a6.className = 'step__in'; a6.href = 'results.html'; a6.setAttribute('aria-current', 'step');
+    var n6 = document.createElement('span'); n6.className = 'step__node'; n6.textContent = '6';
+    var l6 = document.createElement('span'); l6.className = 'step__label'; l6.textContent = 'Results';
+    a6.append(n6, l6); s6.replaceChildren(a6);
+    void s6.offsetWidth; s6.classList.add('is-lit');
+    $('[data-compact-badge]').textContent = '6';
+    var ct = $('[data-compact-text]'), cb = document.createElement('b'); cb.textContent = 'Step 6 of 10'; ct.replaceChildren(cb, ' · Results');
+    $('[data-strip-step]').textContent = 'Step 6 of 10 · Results';
+    var slot = $('[data-slot]');
+    var btn = document.createElement('a'); btn.className = 'btn btn--primary is-landing'; btn.href = 'results.html'; btn.id = 'main-primary';
+    btn.setAttribute('data-primary', ''); btn.setAttribute('data-op', 'progress:results:run-9'); btn.textContent = 'See the results';
+    var fb = document.createElement('div'); fb.className = 'feedback';
+    var st = document.createElement('div'); st.className = 'feedback__status'; st.setAttribute('role', 'status');
+    var line = document.createElement('p'); line.className = 'fb fb--done is-landing';
+    var g = document.createElement('span'); g.className = 'g g--check'; g.setAttribute('aria-hidden', 'true');
+    var msg = document.createElement('span'); msg.textContent = 'Sorted all 114 documents ';
+    var at = document.createElement('time'); at.textContent = 'at ' + hms(s.clock);
+    msg.append(at, '.'); line.append(g, msg); st.append(line); fb.append(st);
+    slot.replaceChildren(btn, fb);
+    document.querySelectorAll('[data-sim]').forEach(function (b) { b.disabled = true; });
+    $('[data-sim-note]').textContent = 'All 114 have an outcome. The page changed in place; nothing moved you to another page.';
+  }
+  document.querySelectorAll('[data-sim]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (live && live.getAttribute('aria-pressed') !== 'true') return;
+      var before = s.decided;
+      var n = Math.min(Number(b.dataset.sim), TOTAL - s.decided);
+      for (var i = 0; i < n; i++) decideOne(before - 73 + i);
+      if (n > 0) render(before);
+    });
+  });
+  $('[data-reduce]').addEventListener('change', function (ev) {
+    if (ev.target.checked) root.dataset.motion = 'reduce'; else delete root.dataset.motion;
+  });
+  if (live) live.addEventListener('click', function () {
+    var on = live.getAttribute('aria-pressed') !== 'true';
+    live.setAttribute('aria-pressed', String(on));
+    live.querySelector('[data-live-label]').textContent = on ? 'Live updates' : 'Live updates paused at ' + hms(s.clock + 4) + ' · Resume';
+    document.querySelectorAll('[data-sim]').forEach(function (b) { if (s.decided < TOTAL) b.disabled = !on; });
+    $('[data-sim-note]').textContent = on ? '' : 'Live updates are paused, so nothing on this page changes until you resume them.';
+  });
+})();
+</script>
+</body>
+</html>

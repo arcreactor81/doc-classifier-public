@@ -1,0 +1,34 @@
+/* ShowControl (SPEC §7.1, §8.4 M8; prototype-v3 la.css .show). A capsule of options; the chosen one sits on a pill
+   (`.show__bar`) placed through --x/--y/--w/--h, which glides only when the person changes the filter. */
+.show-wrap { display: grid; min-width: 0; max-width: 100%; }
+.show {
+  position: relative; display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 4px; border-radius: 22px; max-width: 100%;
+  background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line);
+}
+.show__opt {
+  position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px;
+  border-radius: var(--r-pill); border: 0; background: transparent; color: var(--ink-2);
+  font-size: 13.5px; font-weight: var(--fw-medium); line-height: 1; white-space: nowrap; cursor: pointer;
+  transition: color var(--dur-hover) var(--ease-out);
+}
+.show__opt:hover:not(:disabled) { color: var(--ink); }
+.show__opt[aria-checked="true"] { color: var(--ink); }
+.show__opt:disabled { color: var(--ink-3); cursor: not-allowed; }
+.show__opt:focus-visible { outline-offset: -2px; }
+.show__count { color: var(--ink-3); font-weight: var(--fw-regular); font-variant-numeric: tabular-nums; }
+.show__opt[aria-checked="true"] .show__count { color: var(--ink-2); }
+.show__dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.show__dot--filed { background: var(--filed-bar); }
+.show__dot--review { background: var(--review-bar); }
+.show__dot--failed { background: var(--failed-bar); }
+/* The pill: hidden until its first placement, so nothing is ever seen at 0,0. */
+.show__bar {
+  position: absolute; left: 0; top: 0; width: calc(var(--w, 0) * 1px); height: var(--h, 34px); border-radius: var(--r-pill);
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--light) 55%, transparent), 0 0 14px var(--light-glow-soft);
+  transform-origin: left top; transform: translate(var(--x, 0px), var(--y, 0px)); pointer-events: none; visibility: hidden;
+}
+.show__bar.is-ready { visibility: visible; }
+@media (max-width: 639px) {
+  .show__opt { padding: 0 10px; }
+}

@@ -1,0 +1,13 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {validateManifest,verifyCellText,requestForCell,MODELS} from './contract.mjs';
+const [sourcePath,packPath,ledgerPath,outputPath]=process.argv.slice(2);if(!outputPath)throw new Error('Usage: prepare-manifest.mjs <frozen-sources.json> <project.json> <campaign-ledger.json> <new-manifest.json>');
+const hash=value=>createHash('sha256').update(value).digest('hex');const sourceBytes=await readFile(sourcePath),source=JSON.parse(sourceBytes),pack=JSON.parse(await readFile(packPath,'utf8')),ledger=JSON.parse(await readFile(ledgerPath,'utf8'));
+if(source.entries.length!==5||new Set(source.entries.map(e=>e.actor)).size!==1)throw new Error('Exactly five same-owner frozen successful sources required.');
+const m={id:'paired-readers-sol-terra-20260923',actor:source.entries[0].actor,authorization:'Owner authorized 10 paired reader cells on five retained successful documents, GPT-5.6 Terra/GPT-6 Sol; GPT-6 Luna explicitly excluded from reader role, within existing independent vendor USD5 campaign allowances; no production migration',baselineVerifiedAt:source.frozenAt,baselineOpenaiNano:ledger.vendorActualSpendNanodollars.openai,baselineTypesafeNano:ledger.vendorActualSpendNanodollars.typesafe,limitNano:'5000000000',typeFile:pack.typeFile,typeHash:hash(JSON.stringify(pack.typeFile)),sourceManifestSha256:hash(sourceBytes),sources:source.entries,referenceSha256:hash(await readFile('.local/projects/validation/independent-review.json')),readerPromptVersion:'reader-exact-evidence-v2',priceVerifiedAt:'2026-09-23',noteReplayPolicy:'full-state-structural-info-v2',cells:[]};
+for(const [i,e]of source.entries.entries()){
+ const bytes=await readFile(e.input.file),confidenceBytes=await readFile(e.confidence.file);if(hash(bytes)!==e.input.artifactSha256||hash(confidenceBytes)!==e.confidence.artifactSha256)throw new Error('Frozen artifact bytes changed.');const input=JSON.parse(bytes);if(hash(input.fullText)!==e.textSha256||input.fingerprint!==e.fingerprint)throw new Error('Frozen full text identity changed.');
+ for(let j=0;j<2;j++){const model=MODELS[(i+j)%2],c={id:`${e.id}-${model.replaceAll('.','-')}`,caseId:e.id,model,textSha256:e.textSha256};await verifyCellText(m,c,input.fullText);c.requestSha256=hash(requestForCell(m,c,input.fullText).body);m.cells.push(c);}
+}
+validateManifest(m);await writeFile(outputPath,JSON.stringify(m,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({manifest:outputPath,cells:m.cells.length,sha256:hash(JSON.stringify(m)),textUploaded:false,vendorCalls:0}));
+

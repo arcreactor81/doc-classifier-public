@@ -1,0 +1,32 @@
+/* Count (VISUAL-SPEC-v2 §7.5, N1): the digit roll. Only a changed digit moves, inside its own box, by exactly one line;
+   the old and new never overlap. The box is as wide as the wider of the two digits (both sit in one grid cell, hidden).
+   The window is the numeral band, cap height to baseline, measured from the font (count.ts numeralBand) and read here
+   from --band-top, --band-bottom and --band-fade, with a static soft edge just outside it, so digits come out of and
+   go into a soft edge instead of being cut; at rest a digit is fully inside it. No blur on the thin numerals. */
+.dg { position: relative; display: inline-block; }
+.dg__ph { visibility: hidden; display: inline-grid; }
+.dg__ph > span { grid-area: 1 / 1; }
+.dg__m {
+  position: absolute; left: -.12em; right: -.12em; top: -.25em; bottom: -.25em;
+  clip-path: inset(var(--band-top, 0px) 0 var(--band-bottom, 0px) 0);
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent var(--band-top, 0px),
+    rgb(0 0 0 / .12) calc(var(--band-top, 0px) + .45 * var(--band-fade, 0px)),
+    rgb(0 0 0 / .5) calc(var(--band-top, 0px) + .75 * var(--band-fade, 0px)),
+    #000 calc(var(--band-top, 0px) + var(--band-fade, 0px)),
+    #000 calc(100% - var(--band-bottom, 0px) - var(--band-fade, 0px)),
+    rgb(0 0 0 / .5) calc(100% - var(--band-bottom, 0px) - .75 * var(--band-fade, 0px)),
+    rgb(0 0 0 / .12) calc(100% - var(--band-bottom, 0px) - .45 * var(--band-fade, 0px)),
+    transparent calc(100% - var(--band-bottom, 0px)));
+  mask-image: linear-gradient(to bottom,
+    transparent var(--band-top, 0px),
+    rgb(0 0 0 / .12) calc(var(--band-top, 0px) + .45 * var(--band-fade, 0px)),
+    rgb(0 0 0 / .5) calc(var(--band-top, 0px) + .75 * var(--band-fade, 0px)),
+    #000 calc(var(--band-top, 0px) + var(--band-fade, 0px)),
+    #000 calc(100% - var(--band-bottom, 0px) - var(--band-fade, 0px)),
+    rgb(0 0 0 / .5) calc(100% - var(--band-bottom, 0px) - .75 * var(--band-fade, 0px)),
+    rgb(0 0 0 / .12) calc(100% - var(--band-bottom, 0px) - .45 * var(--band-fade, 0px)),
+    transparent calc(100% - var(--band-bottom, 0px)));
+}
+.dg__col { position: absolute; left: .12em; right: .12em; top: .25em; }
+.dg__col > span { display: block; }

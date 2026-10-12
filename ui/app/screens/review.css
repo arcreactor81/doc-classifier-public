@@ -1,0 +1,131 @@
+/*
+ * Review the folders (screens/review.ts), from The Sorting Room artifact's review deck: .rtabs/.rtab, .deck,
+ * .deck-cards (.under, .card.in), .sheet-doc, .stamp, .mark, .vrow, .choices/.choice (.sug, .picked), .dots, .keys,
+ * .savebar, .done-banner, .copyrow and .radios come from styles/site.css. Only what is this screen's own is here.
+ * Layout hooks script 08 reads: .review__layout, .review__main, .review__deck.
+ */
+.review-step .h-page { margin-top: 10px; }
+.review .review__layout, .review-step .review__layout {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); gap: 24px; align-items: start; margin-top: 28px;
+}
+.review__main { min-width: 0; gap: 20px; }
+.review__jump { display: none; justify-self: start; align-self: flex-start; align-items: center; gap: 6px; }
+
+/* The sorted folder: full before it is read, a quiet line with Look again afterwards. */
+.review__folder-head, .review__panel-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 14px; }
+.review__folder-head .action, .review__panel-head .action { justify-items: end; }
+.review__folder-head .feedback, .review__panel-head .feedback { max-width: 34ch; }
+.review__pick { margin-top: 12px; }
+.review__pick .folder-pick { padding: 0; background: transparent; border: 0; border-radius: 0; }
+.review__folder.is-read { padding-block: 16px; }
+.review__folder.is-read .folder-pick__explain { display: none; }
+
+/* The deck region: the queue tabs and keys, the intro, then the card and its choices. */
+.review__deck { position: relative; display: grid; gap: 16px; min-width: 0; outline-offset: 6px; overflow-x: clip; border-radius: 12px; }
+.review__bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.rtab__opt { font-size: 12px; color: var(--faint); }
+.rtab__done { display: inline-flex; color: var(--hl); }
+.review-keys { margin: 0; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 3px; }
+.review__intro { max-width: 46em; display: grid; gap: 6px; }
+.review__intro.hint, .review__intro .hint { margin: 0; }
+.spot-progress { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.spot-progress b { font-family: var(--f-disp); font-weight: 800; font-variation-settings: 'wdth' 80; font-size: 22px; font-variant-numeric: tabular-nums; }
+.spot-progress .hint { margin: 0; font-size: 13px; }
+
+/* One card: the paper on its pile, the question beside it. */
+.card-host { min-width: 0; }
+.card-deck { display: grid; gap: 16px; min-width: 0; }
+.card-deck .deck { margin-top: 4px; }
+.deck-cards .card.sheet-doc { margin-top: 0; min-width: 0; min-height: 440px; }
+.check-stamp .glyph { color: var(--hl-ink); }
+.sheet-doc h4 { overflow-wrap: anywhere; padding-right: 96px; }
+.card__facts { display: flex; flex-wrap: wrap; gap: 0 4px; }
+.card__reason { margin-bottom: 14px; }
+.card__quotes p { margin: 0 0 10px; }
+.card__quotes .mark { overflow-wrap: anywhere; }
+.card__systems { margin-top: 18px; display: grid; gap: 8px; font-family: var(--f-body); font-size: 14px; }
+.card__systems .vrow b { text-align: right; overflow-wrap: anywhere; }
+.vrow__differs { color: #B0145F; }
+.card__trial { margin-top: 12px; font-size: 15px; }
+/* The card leaving the pile: a copy of it, placed where it was, flies off (review.ts flyOut). */
+.card-ghost { position: absolute; left: var(--gx); top: var(--gy); width: var(--gw); z-index: 3; pointer-events: none; }
+.card-ghost .card { margin: 0; }
+
+.deck-side { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.deck-side__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; }
+.deck-side__head h3 { font-family: var(--f-disp); font-weight: 700; font-variation-settings: 'wdth' 88; font-size: 21px; }
+.deck-side__pos { font-size: 13px; color: var(--faint); }
+.card__answer { display: grid; gap: 12px; min-width: 0; }
+.card__answer .choice > span, .choices--aside .choice > span { min-width: 0; }
+.card__answer .choice b, .choices--aside .choice b { display: block; }
+.choices--aside .choice { min-height: 50px; border-style: dashed; }
+.choices--aside .choice.picked { border-style: solid; }
+.card__said { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+.card__said .glyph { color: var(--hl); flex: none; }
+.card__said-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+.card__nav { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+.card__nav .action { gap: 0; }
+.card__nav .action .feedback:empty, .card__nav .action .feedback[data-state="idle"] { display: none; }
+.card-deck .dots { margin-top: 0; }
+
+/* "Either folder is right": the tick inside an artifact choice, with its key. */
+.mv__either { cursor: pointer; }
+.mv__either-text { display: inline-flex !important; align-items: center; gap: 10px; color: var(--ink) !important; font-size: 15px !important; }
+.tick { appearance: none; -webkit-appearance: none; display: inline-block; margin: 0; width: 22px; height: 22px; border-radius: 7px;
+  border: 1.5px solid var(--line-2); background: var(--ground); cursor: pointer; vertical-align: middle; flex: none; }
+.tick:checked { border-color: var(--hl); background: var(--hl); box-shadow: inset 0 0 0 4px var(--ground); }
+
+/* Everything both systems recorded, behind one line. */
+.review-evidence { border-top: 1px solid var(--line); padding-top: 12px; min-width: 0; }
+.review-evidence > summary { cursor: pointer; color: var(--mute); font-size: 14px; min-height: 32px; display: flex; align-items: center; }
+.review-evidence > summary:hover { color: var(--ink); }
+.review-evidence[open] > summary { margin-bottom: 12px; }
+.review-evidence .ev { border-radius: 12px; }
+
+/* A queue's summary. */
+.review__done .done-banner { margin-top: 0; }
+.review__done .quiet-actions { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.done-banner__text { flex: 1 1 240px; min-width: 0; }
+
+/* Pending moves, carried checks, new folders. */
+.review__pending, .review__carried, .review__new { display: grid; gap: 10px; }
+.pending-list, .carried-list { list-style: none; margin: 0; padding: 0; }
+.pending-list .copyrow, .carried-list .copyrow { overflow-wrap: anywhere; }
+.review__carried-toggle { justify-self: start; }
+.checklist { display: grid; gap: 14px; margin-top: 4px; }
+.frow { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 14px; align-items: start; padding: 14px 16px; border-radius: 12px;
+  border: 1px dashed var(--line-2); min-width: 0; }
+.frow__g { color: var(--faint); margin-top: 2px; }
+.frow__body { display: grid; gap: 4px; min-width: 0; }
+.frow__name { font-weight: 600; overflow-wrap: anywhere; }
+.frow__body .hint { margin: 0; }
+.frow__radios { margin-top: 10px; }
+
+/* The save bar: the summary and the one action, full width and tall. */
+.review__save { display: grid; gap: 14px; }
+.review__totals { display: grid; gap: 2px; }
+.review__totals p:first-child { font-weight: 500; }
+.review__save .action-slot .action { justify-items: stretch; width: 100%; }
+.review__save .action-slot .action > .btn { min-height: 56px; padding: 0 28px; font-size: 16px; }
+.review__save .action-slot .action__note, .review__save .action-slot .feedback { max-width: none; }
+
+/* The frozen definitions, sticky beside the deck. */
+.review__defs { position: sticky; top: calc(var(--hdr) + 20px); max-height: calc(100vh - var(--hdr) - 40px); overflow: auto;
+  overscroll-behavior: contain; display: grid; gap: 14px; align-content: start; min-width: 0; scrollbar-width: thin; }
+.defs-head { display: grid; gap: 6px; }
+.defs-list { display: grid; gap: 10px; }
+.reserved { font-size: 13px; color: var(--mute); display: grid; gap: 8px; }
+.reserved b { color: var(--ink); font-weight: 600; }
+
+/* The definitions sit beside the deck only where both have their width. */
+@media (max-width: 1400px) {
+  .review-step .review__layout { grid-template-columns: minmax(0, 1fr); }
+  .review__defs { position: static; max-height: none; overflow: visible; }
+  .review__jump { display: inline-flex; }
+}
+@media (max-width: 640px) {
+  .sheet-doc h4 { padding-right: 0; padding-top: 14px; }
+  .deck-cards .card.sheet-doc { min-height: 0; }
+  .deck-cards { margin-right: 10px; }
+  .review-keys { display: none; }
+}

@@ -1,0 +1,1 @@
+ALTER TABLE runs ADD COLUMN notes_json TEXT NOT NULL DEFAULT '[]';

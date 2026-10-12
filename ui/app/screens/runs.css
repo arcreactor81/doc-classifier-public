@@ -1,0 +1,8 @@
+/* Runs: the Sorting Room's runs page. The cards are site.css's .runcard in a .runs-row; here only the page's own. */
+.runs__action { margin-top: 22px; }
+.runs__empty { margin-top: 18px; }
+.runs__cards { margin-top: 28px; }
+.runs__drafts { margin-top: 40px; display: grid; gap: 12px; }
+.runs .draft-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.runs .draft-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; padding: 12px 18px; }
+.runs .draft-row .action { margin-left: auto; }

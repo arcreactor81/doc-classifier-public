@@ -1,0 +1,214 @@
+/*
+ * Design tokens (SPEC §8.1; the visual-language study's §4 set, adopted exactly).
+ * Colour tokens stay 6-digit hex so scripts/tokens-contrast.test.mjs can verify every required pair.
+ * Light is the default; theme-boot.js sets data-theme before first paint. The prefers-color-scheme block
+ * repeats the dark block for the rare case where theme-boot.js is blocked; keep the two identical.
+ */
+
+/* ---------- Light (default) ---------- */
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --canvas: #EEF1F5;
+  --surface: #F9FAFC;
+  --surface-2: #F2F4F7;
+  --surface-3: #E6EAF0;
+  --raised: #FFFFFF;
+  --scrim: rgb(238 241 245 / .86);
+
+  /* Text */
+  --ink: #18212C;
+  --ink-2: #434F5D;
+  --ink-3: #5A6674;
+
+  /* Lines */
+  --line: #DCE1E8;
+  --line-2: #E8ECF1;
+  --line-strong: #7B8694;
+  --track: #DCE2EA;
+
+  /* Action, position, progress */
+  --accent: #2352BD;
+  --accent-strong: #1B4399;
+  --accent-soft: #E5ECFA;
+  --on-accent: #FFFFFF;
+  --trail: #6F93E8;
+  --glow: 0 0 0 1px rgb(35 82 189 / .14), 0 0 10px rgb(35 82 189 / .12);
+
+  /* System identity (evidence panels only) */
+  --sys-confidence: #5A43B5;
+  --sys-confidence-soft: #ECE8FA;
+  --sys-reader: #0B6A80;
+  --sys-reader-soft: #DFF0F4;
+
+  /* Outcomes: fixed meanings, never reused */
+  --filed: #1C7439;
+  --filed-soft: #E2F2E6;
+  --review: #865400;
+  --review-soft: #FAEED6;
+  --failed: #B0281D;
+  --failed-soft: #FBE5E1;
+
+  /* Elevation */
+  --shadow-1: 0 1px 2px rgb(24 33 44 / .05), 0 6px 18px rgb(24 33 44 / .05);
+  --shadow-2: 0 2px 6px rgb(24 33 44 / .06), 0 16px 40px rgb(24 33 44 / .09);
+  --inner-highlight: none;
+
+  /* Type (system fonts only; nothing is downloaded) */
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-17: 17px;
+  --fs-20: 20px;
+  --fs-24: 24px;
+  --fs-30: 30px;
+  --fs-40: 40px;
+  --lh-tight: 1.12;
+  --lh-snug: 1.3;
+  --lh-body: 1.5;
+  --lh-read: 1.6;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --tracking-display: -0.02em;
+  --tracking-heading: -0.01em;
+  --tracking-body: 0;
+  --tracking-overline: 0.06em;
+  --measure: 66ch;
+  --measure-narrow: 58ch;
+
+  /* Space (4px base, 2px half-step) */
+  --sp-0-5: 2px;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 40px;
+  --sp-9: 56px;
+
+  /* Radius (symmetric only) */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r: 10px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+
+  /* Sizes */
+  --control-h: 40px;
+  --control-h-sm: 32px;
+  --icon-btn: 40px;
+  --track-h: 6px;
+  --track-h-lg: 10px;
+  --tab-indicator: 2px;
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --page-max: 1280px;
+  --gutter: 28px;
+
+  /* Layout additions (no new colours) */
+  --stage-narrow: 760px;
+  --stage-wide: 1180px;
+  --topbar-h: 56px;
+  --runstrip-h: 40px;
+  --row-h: 40px;
+  --panel-w: 420px;
+
+  /* Motion */
+  --dur-press: 90ms;
+  --dur-hover: 150ms;
+  --dur-reveal: 240ms;
+  --dur-exit: 140ms;
+  --dur-move: 320ms;
+  --dur-fill: 600ms;
+  --dur-sweep: 1200ms;
+  --dur-flash: 800ms;
+  --stagger: 40ms;
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ease-in: cubic-bezier(.4, 0, 1, 1);
+  --ease-inout: cubic-bezier(.45, 0, .25, 1);
+  --ease-linear: linear;
+}
+
+/* ---------- Dark ---------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #0C1117;
+  --surface: #131A23;
+  --surface-2: #18212C;
+  --surface-3: #212B37;
+  --raised: #1B2430;
+  --scrim: rgb(12 17 23 / .84);
+  --ink: #DCE3EB;
+  --ink-2: #AAB5C2;
+  --ink-3: #8E9AA8;
+  --line: #253140;
+  --line-2: #1D2733;
+  --line-strong: #667384;
+  --track: #26313E;
+  --accent: #86A9FF;
+  --accent-strong: #A6C0FF;
+  --accent-soft: #1B2A48;
+  --on-accent: #0B1733;
+  --trail: #B8D6FF;
+  --glow: 0 0 0 1px rgb(134 169 255 / .30), 0 0 14px rgb(134 169 255 / .22);
+  --sys-confidence: #B3A3FF;
+  --sys-confidence-soft: #251F45;
+  --sys-reader: #62C6DA;
+  --sys-reader-soft: #11323A;
+  --filed: #6DD08B;
+  --filed-soft: #15301F;
+  --review: #EDB85A;
+  --review-soft: #372A12;
+  --failed: #FF9282;
+  --failed-soft: #41211C;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / .40), 0 8px 24px rgb(0 0 0 / .28);
+  --shadow-2: 0 2px 8px rgb(0 0 0 / .45), 0 18px 44px rgb(0 0 0 / .40);
+  --inner-highlight: inset 0 1px 0 rgb(255 255 255 / .04);
+}
+
+/* ---------- Dark by system preference, only when theme-boot.js did not run (same values as above) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --canvas: #0C1117;
+    --surface: #131A23;
+    --surface-2: #18212C;
+    --surface-3: #212B37;
+    --raised: #1B2430;
+    --scrim: rgb(12 17 23 / .84);
+    --ink: #DCE3EB;
+    --ink-2: #AAB5C2;
+    --ink-3: #8E9AA8;
+    --line: #253140;
+    --line-2: #1D2733;
+    --line-strong: #667384;
+    --track: #26313E;
+    --accent: #86A9FF;
+    --accent-strong: #A6C0FF;
+    --accent-soft: #1B2A48;
+    --on-accent: #0B1733;
+    --trail: #B8D6FF;
+    --glow: 0 0 0 1px rgb(134 169 255 / .30), 0 0 14px rgb(134 169 255 / .22);
+    --sys-confidence: #B3A3FF;
+    --sys-confidence-soft: #251F45;
+    --sys-reader: #62C6DA;
+    --sys-reader-soft: #11323A;
+    --filed: #6DD08B;
+    --filed-soft: #15301F;
+    --review: #EDB85A;
+    --review-soft: #372A12;
+    --failed: #FF9282;
+    --failed-soft: #41211C;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / .40), 0 8px 24px rgb(0 0 0 / .28);
+    --shadow-2: 0 2px 8px rgb(0 0 0 / .45), 0 18px 44px rgb(0 0 0 / .40);
+    --inner-highlight: inset 0 1px 0 rgb(255 255 255 / .04);
+  }
+}

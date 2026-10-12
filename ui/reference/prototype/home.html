@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Visual prototype · Home</title>
+<script>
+/* Theme before first paint: ?theme=, then the saved choice, then the system setting (as ui/app/public/theme-boot.js). */
+(function () {
+  var t = null;
+  try {
+    var q = new URLSearchParams(location.search).get('theme');
+    if (q === 'light' || q === 'dark') t = q;
+    else { var s = localStorage.getItem('theme'); if (s === 'light' || s === 'dark') t = s; }
+  } catch (e) {}
+  if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.dataset.theme = t;
+})();
+</script>
+<link rel="stylesheet" href="prototype.css">
+</head>
+<body>
+<a class="skip" href="#main" data-skip>Skip to content</a>
+<div class="proto-bar"><div class="wrap">
+  <strong>Prototype</strong><span>Placeholder content. Nothing here is connected to the app.</span>
+  <nav aria-label="Prototype screens">
+    <a href="index.html">Overview</a><a href="home.html" aria-current="page">Home</a><a href="confirm.html">Confirm</a><a href="progress.html">Progress</a><a href="progress-stalled.html">Sending stopped</a><a href="results.html">Results</a><a href="review.html">Review</a><a href="system.html">System</a>
+  </nav>
+</div></div>
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="home.html"><span class="brand__mark" aria-hidden="true"></span>Document classification</a>
+  <nav class="nav" aria-label="Main"><a href="home.html" aria-current="page">Home</a><a href="home.html#all-runs">Runs</a><a href="review.html">Categories</a><a href="index.html">How it works</a></nav>
+  <div class="topbar__end">
+    <a class="setup-word" href="system.html"><span class="g g--check" aria-hidden="true"></span><span class="setup-word__text">Setup complete</span></a>
+    <button class="icon-btn" type="button" data-theme-toggle aria-pressed="false" title="Change colour theme"><span class="g g--theme" aria-hidden="true"></span><span class="vh">Change colour theme</span></button>
+  </div>
+</div></header>
+
+<main id="main" tabindex="-1" class="wrap">
+<div class="stage stage--wide">
+  <div class="stage-head">
+    <h1 tabindex="-1">Pick up where you left off</h1>
+    <p class="lead">One run needs you. Open it to see what stopped and what to do; nothing is continued from this page.</p>
+  </div>
+
+  <div class="action" data-action="home:open:run-8">
+    <div class="action__row">
+      <a class="btn btn--primary" href="progress-stalled.html" data-primary aria-describedby="open8-note">Open Run 8</a>
+      <a class="btn" href="confirm.html">Start a new run</a>
+      <a class="btn btn--quiet" href="#all-runs">All runs</a>
+    </div>
+    <p class="action__note" id="open8-note">Sending stopped at 13 of 114 (last received 16:31).</p>
+  </div>
+
+  <section class="block block--spaced" aria-labelledby="cards-h">
+    <div class="block__head"><h2 id="cards-h">Your recent runs</h2><p class="meta">Checked 16:12:40</p></div>
+    <ul class="jcards" role="list">
+      <li class="jcard">
+        <div class="row row--between"><h3 class="jcard__name">Run 8 · 24 Sep 16:20</h3><span class="chip">Interactive</span></div>
+        <ol class="mini" aria-hidden="true">
+          <li class="done"><i></i></li><li class="done lit"><i></i></li><li class="done lit ch"><i></i></li><li class="attention lit"><i></i></li>
+          <li class="ch"><i></i></li><li><i></i></li><li class="ch"><i></i></li><li><i></i></li><li class="ch"><i></i></li><li><i></i></li>
+        </ol>
+        <p class="meta">Step 4 of 10 · Send · needs attention</p>
+        <p class="jcard__now">Sending stopped at 13 of 114 (last received 16:31).</p>
+        <a href="progress-stalled.html">Open Run 8 <span class="g g--arrow g--sm" aria-hidden="true"></span></a>
+      </li>
+      <li class="jcard">
+        <div class="row row--between"><h3 class="jcard__name">Run 9 · 25 Sep 13:58</h3><span class="chip">Interactive</span></div>
+        <ol class="mini" aria-hidden="true">
+          <li class="done"><i></i></li><li class="done lit"><i></i></li><li class="done lit ch"><i></i></li><li class="done lit"><i></i></li>
+          <li class="here lit ch"><i></i></li><li><i></i></li><li class="ch"><i></i></li><li><i></i></li><li class="ch"><i></i></li><li><i></i></li>
+        </ol>
+        <p class="meta">Step 5 of 10 · Sort</p>
+        <p class="jcard__now">The two systems are reading 114 documents; 73 have an outcome.</p>
+        <a href="progress.html">Open Run 9 <span class="g g--arrow g--sm" aria-hidden="true"></span></a>
+      </li>
+      <li class="jcard">
+        <div class="row row--between"><h3 class="jcard__name">Run 7 · 23 Sep 09:41</h3><span class="chip">Interactive</span></div>
+        <ol class="mini" aria-hidden="true">
+          <li class="done"><i></i></li><li class="done lit"><i></i></li><li class="done lit ch"><i></i></li><li class="done lit"><i></i></li>
+          <li class="done lit ch"><i></i></li><li class="here lit"><i></i></li><li class="ch"><i></i></li><li><i></i></li><li class="ch"><i></i></li><li><i></i></li>
+        </ol>
+        <p class="meta">Step 6 of 10 · Results</p>
+        <p class="jcard__now">Sorted 114: 83 filed, 29 for your review, 2 could not be processed.</p>
+        <a href="results.html">Open Run 7 <span class="g g--arrow g--sm" aria-hidden="true"></span></a>
+      </li>
+    </ul>
+  </section>
+
+  <section class="block" id="all-runs" aria-labelledby="runs-h">
+    <div class="block__head"><h2 id="runs-h">All runs</h2><p class="meta">Newest first</p></div>
+    <ul class="runs-list">
+      <li><div><b>Run 9 · 25 Sep 13:58</b><p class="muted">Sorting · 73 of 114 have an outcome</p></div><a href="progress.html">Open<span class="vh"> Run 9</span></a></li>
+      <li><div><b>Run 8 · 24 Sep 16:20</b><p class="muted">Sending stopped at 13 of 114</p></div><a href="progress-stalled.html">Open<span class="vh"> Run 8</span></a></li>
+      <li><div><b>Run 7 · 23 Sep 09:41</b><p class="muted">Results ready · 114 documents</p></div><a href="results.html">Open<span class="vh"> Run 7</span></a></li>
+      <li><div><b>Run 6 · 22 Sep 10:14</b><p class="muted">Reviewing folders · 114 documents</p></div><a href="review.html">Open<span class="vh"> Run 6</span></a></li>
+      <li><div><b>Run 5 · 19 Sep 15:02</b><p class="muted">Compared: 78 of 80 automatic filings match your answers</p></div><a href="results.html">Open<span class="vh"> Run 5</span></a></li>
+    </ul>
+  </section>
+</div>
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggle = document.querySelector('[data-theme-toggle]');
+  function sync() { if (toggle) toggle.setAttribute('aria-pressed', String(root.dataset.theme === 'dark')); }
+  sync();
+  if (toggle) toggle.addEventListener('click', function () {
+    /* Instant switch (SPEC §8.4, no theme cross-fade): the new theme is applied in one style recalculation with transitions off. */
+    root.setAttribute('data-theme-switching', '');
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    void root.offsetWidth;
+    root.removeAttribute('data-theme-switching');
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+    sync();
+  });
+  var skip = document.querySelector('[data-skip]');
+  if (skip) skip.addEventListener('click', function (ev) { ev.preventDefault(); var m = document.getElementById('main'); if (m) m.focus(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+ALTER TABLE runs ADD COLUMN campaign_role TEXT CHECK(campaign_role IN ('pilot','full'));
+CREATE INDEX IF NOT EXISTS runs_campaign ON runs(campaign_id);
+CREATE TABLE IF NOT EXISTS pilot_reviews (id TEXT PRIMARY KEY, run_id TEXT NOT NULL REFERENCES runs(id), fingerprint TEXT NOT NULL, verdict TEXT NOT NULL CHECK(verdict IN ('right','wrong')), actor TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS pilot_reviews_document ON pilot_reviews(run_id, fingerprint, created_at);
+CREATE TRIGGER IF NOT EXISTS pilot_reviews_no_update BEFORE UPDATE ON pilot_reviews BEGIN SELECT RAISE(ABORT,'Pilot reviews are immutable'); END;
+CREATE TRIGGER IF NOT EXISTS pilot_reviews_no_delete BEFORE DELETE ON pilot_reviews BEGIN SELECT RAISE(ABORT,'Pilot reviews are immutable'); END;
+CREATE TABLE IF NOT EXISTS pilot_confirmations (id TEXT PRIMARY KEY, campaign_id TEXT NOT NULL, pilot_run_id TEXT NOT NULL REFERENCES runs(id), definition_revision_id TEXT NOT NULL, filed_count INTEGER NOT NULL, actor TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS pilot_confirmations_campaign ON pilot_confirmations(campaign_id, created_at);
+CREATE TRIGGER IF NOT EXISTS pilot_confirmations_no_update BEFORE UPDATE ON pilot_confirmations BEGIN SELECT RAISE(ABORT,'Pilot confirmations are immutable'); END;
+CREATE TRIGGER IF NOT EXISTS pilot_confirmations_no_delete BEFORE DELETE ON pilot_confirmations BEGIN SELECT RAISE(ABORT,'Pilot confirmations are immutable'); END;

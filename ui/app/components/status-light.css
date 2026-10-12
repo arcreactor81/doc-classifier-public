@@ -1,0 +1,66 @@
+/* StatusLight (VISUAL-SPEC-v2 §5.1, §5.5). Only transform and opacity animate; the pulse runs only while
+   data-light="live", which the light model withdraws at the lease deadline. Red never pulses. */
+/* site.css's .status draws its own dot (::before); the component's dot is .ind, so that one is off here. */
+.status.status-light::before { content: none; }
+.status { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; min-width: 0; }
+.status__state { font-size: var(--fs-15); line-height: 1.3; font-weight: var(--fw-semibold); color: var(--ink); }
+.status__why { font-size: var(--fs-14); line-height: 1.4; color: var(--ink-2); }
+.status[data-light="failed"] .status__state { color: var(--fail-line); } /* a failed run is an error: coral, not the stone of "could not process" */
+.status[data-light="idle"] .status__state, .status[data-light="stale"] .status__state,
+.status[data-light="paused"] .status__state { color: var(--ink-2); }
+
+.ind {
+  --ic: var(--light); --ig: var(--light-glow);
+  position: relative; flex: none; width: var(--light-dot); height: var(--light-dot); display: inline-grid; place-items: center;
+}
+.ind > span { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
+.ind__dot { background: var(--ic); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ic) calc(16% * var(--status-halo-strength)), transparent); }
+.ind__halo { inset: -7px !important; background: radial-gradient(closest-side, color-mix(in srgb, var(--ig) calc(100% * var(--status-halo-strength)), transparent), transparent); opacity: .55; }
+.ind__ring, .ind__beat { border: 1.5px solid var(--ic); opacity: 0; }
+/* P3: the red beat ring, animated once by status-light.ts beat() on a failed outcome; transparent at rest. */
+.ind__beat { border-color: var(--fail-line); }
+.ind__hold { inset: -5px !important; border: 1.5px solid var(--ic); opacity: 0; transform: scale(.6); }
+
+/* Waiting: steady, brighter halo and a still outer ring; it differs from live in form, not only in motion.
+   P2: on live → waiting the halo rises and the ring settles in (the transitions belong to the waiting state only, so
+   leaving it is instant, like every other state change). */
+[data-light="waiting"] .ind__halo { opacity: .9; transition: opacity var(--dur-settle) var(--ease-inout); }
+[data-light="waiting"] .ind__hold {
+  opacity: var(--hold-a); transform: none;
+  transition: opacity var(--dur-hold) var(--ease-glide), transform var(--dur-hold) var(--ease-glide);
+}
+/* Grey: no claim. */
+[data-light="stale"] .ind, [data-light="paused"] .ind, [data-light="idle"] .ind { --ic: var(--ink-3); --ig: transparent; }
+[data-light="stale"] .ind__dot, [data-light="paused"] .ind__dot, [data-light="idle"] .ind__dot,
+[data-light="done"] .ind__dot { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ic); }
+[data-light="done"] .ind { --ig: transparent; }
+/* Red: failed. It beats once when it appears, then stays still. */
+[data-light="failed"] .ind { --ic: var(--fail-line); --ig: var(--fail-glow); }
+[data-light="failed"] .ind__halo { opacity: .8; }
+[data-light="failed"] .ind__ring { animation: light-beat var(--dur-beat) var(--ease-beat) 1; }
+
+/* Live: the ring leaves the dot to 3x and the halo swells, once per beat. */
+[data-light="live"] .ind__ring { animation: light-ring var(--dur-pulse) var(--ease-beat) infinite; }
+[data-light="live"] .ind__halo { animation: light-halo var(--dur-pulse) var(--ease-inout) infinite; }
+
+@keyframes light-ring {
+  0% { transform: scale(1); opacity: 0; }
+  4% { transform: scale(1); opacity: 1; }
+  72% { transform: scale(3); opacity: 0; }
+  100% { transform: scale(3); opacity: 0; }
+}
+@keyframes light-halo {
+  0% { opacity: .45; }
+  14% { opacity: 1; }
+  75% { opacity: .45; }
+  100% { opacity: .45; }
+}
+@keyframes light-beat {
+  0% { transform: scale(1); opacity: .95; }
+  100% { transform: scale(3.2); opacity: 0; }
+}
+
+@media (forced-colors: active) {
+  .ind__dot { forced-color-adjust: none; background: CanvasText; }
+  .ind__halo { display: none; }
+}
