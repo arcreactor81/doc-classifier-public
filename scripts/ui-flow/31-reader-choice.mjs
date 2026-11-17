@@ -28,7 +28,8 @@ await runScript(SCRIPT,'Explicit reader choice survives reload, freezes with con
  const selected=()=>page.locator('[data-testid="confirm-reader-selected"]').textContent();
  const mini=()=>page.locator(`button[data-op="confirm:reader:${localId}:mini"]`),standard=()=>page.locator(`button[data-op="confirm:reader:${localId}:standard"]`);
  const savedSelection=()=>page.evaluate(async id=>{const {journeyDb}=await import('/persist/journey-db.ts');return journeyDb.get('trials',id);},localId);
- check('the configured standard reader is shown and saved before any quote',await selected()==='GPT-5.4'&&(await savedSelection()).selectedReaderModel==='standard'&&fake.requestsTo({method:'POST',path:'/api/quote'}).length===0);
+ const configuredDefault=owner.readerModels.options.find(option=>option.id===owner.readerModels.defaultId);
+ check('the configured default reader is shown and saved before any quote',await selected()===configuredDefault.label&&(await savedSelection()).selectedReaderModel===configuredDefault.id&&fake.requestsTo({method:'POST',path:'/api/quote'}).length===0);
  await page.locator('#confirm-limit-blended').fill('5');await slotReady(page,'confirm-primary',/^Start run$/i);
  // Hold the first storage read to test the gap before setTrial acquires its existing cross-tab lock.
  await page.evaluate(async id=>{
@@ -61,7 +62,7 @@ await runScript(SCRIPT,'Explicit reader choice survives reload, freezes with con
  // DECISIONS 136: four readers in the owner's order; the two experimental ones are labelled; every reader says who sees the text.
  const optionIds=await page.locator('[data-testid^="confirm-reader-option-"]').evaluateAll(nodes=>nodes.map(node=>node.dataset.testid.replace('confirm-reader-option-','')));
  // DECISIONS 156: Claude Sonnet 5.5 follows, not experimental.
- check('the menu offers GPT-5.4, GPT-5.4 mini, Qwen 3.8 27B (Cloudflare), DeepSeek Flash and Claude Sonnet 5.5, in that order',JSON.stringify(optionIds)===JSON.stringify(['standard','mini','qwen','deepseek','claude']),optionIds);
+ check('the menu offers every configured reader in the pack order',JSON.stringify(optionIds)===JSON.stringify(owner.readerModels.options.map(option=>option.id)),optionIds);
  const experimental=async id=>page.locator(`[data-testid="confirm-reader-experimental-${id}"]`).count();
  check('only the two new readers are labelled experimental',await experimental('qwen')===1&&await experimental('deepseek')===1&&await experimental('standard')===0&&await experimental('mini')===0&&await experimental('claude')===0&&
    (await page.locator('[data-testid="confirm-reader-experimental-qwen"]').textContent()).trim()===confirmCopy.readerExperimental);
