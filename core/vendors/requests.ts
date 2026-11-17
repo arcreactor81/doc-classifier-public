@@ -1,5 +1,6 @@
 import type {ReaderEvidencePolicy} from './evidence-policy.ts';
-import { modelFamily, permittedPin, promptCachePolicy, validateTypes, type ModelPin, type ModelVendor, type PromptCachePolicy, type TypeFile } from '../config/project.ts';
+import { confidenceContextPolicy, type ConfidenceContextPolicy } from '../config/confidence-context.ts';
+import { modelFamily, permittedPin, promptCachePolicy, validateTypes, type ModelPin, type ModelVendor, type PromptCachePolicy, type ReaderEffort, type TypeFile } from '../config/project.ts';
 import { usageCopy } from '../ui/copy-usage.ts';
 import { READER_COMPACT_CONTRACT, ValidationFailure, readerContract, validateConfidence, validateReader, type ConfidenceOutput, type ReaderContract, type ReaderOutput, type ReaderVerdict } from './validate.ts';
 
@@ -24,6 +25,7 @@ export interface FrozenVendorRequest {
   readonly model: string;
   readonly modelPolicy: Readonly<ModelPin>;
   readonly body: string;
+  readonly confidenceContextPolicy?: ConfidenceContextPolicy;
 }
 /**
  * Who serves a request: Jev for the confidence role, otherwise the vendor of the pinned model's family. A pin outside
@@ -125,12 +127,14 @@ export function confidenceRequestParts(input: { pin: ModelPin; typeFile: TypeFil
   return { state, questions };
 }
 /** One frozen confidence request over `state` carrying exactly `questions` (a subset of the parts, in their order). */
-export function freezeConfidenceRequest(pin: ModelPin, state: unknown, questions: Readonly<Record<string, unknown>>): FrozenVendorRequest {
-  return freeze('confidence', pin, { model: pin.id, state, questions });
+export function freezeConfidenceRequest(pin: ModelPin, state: unknown, questions: Readonly<Record<string, unknown>>, contextPolicy?: ConfidenceContextPolicy): FrozenVendorRequest {
+  confidenceContextPolicy(contextPolicy);
+  const request = freeze('confidence', pin, { model: pin.id, state, questions });
+  return contextPolicy === undefined ? request : Object.freeze({ ...request, confidenceContextPolicy: contextPolicy });
 }
-export function buildConfidenceRequest(input: { pin: ModelPin; typeFile: TypeFile; serializedDigest: string }): FrozenVendorRequest {
+export function buildConfidenceRequest(input: { pin: ModelPin; typeFile: TypeFile; serializedDigest: string; contextPolicy?: ConfidenceContextPolicy }): FrozenVendorRequest {
   const { state, questions } = confidenceRequestParts(input);
-  return freezeConfidenceRequest(input.pin, state, questions);
+  return freezeConfidenceRequest(input.pin, state, questions, input.contextPolicy);
 }
 /**
  * `cachePolicy` is the pack's recorded prompt-cache policy; a missing one is the frozen-pack default
@@ -141,7 +145,8 @@ export function buildConfidenceRequest(input: { pin: ModelPin; typeFile: TypeFil
 function responseBody(role: 'reader' | 'recovery', input: { pin: ModelPin; text: string; effort: string; maxOutputTokens: number; cachePolicy?: PromptCachePolicy }, prompt: string, name: string, outputSchema: object) {
   const family = modelFamily(role, input.pin);
   const efforts: readonly string[] = family && family.vendor !== 'openai' ? family.efforts : ['none', 'low', 'medium', 'high', 'xhigh', 'max'];
-  if (!Number.isSafeInteger(input.maxOutputTokens) || input.maxOutputTokens < 1 || !efforts.includes(input.effort)) {
+  if (!Number.isSafeInteger(input.maxOutputTokens) || input.maxOutputTokens < 1 || !efforts.includes(input.effort) ||
+      family?.vendor === 'deepseek' && input.effort === 'low' && input.maxOutputTokens !== 16384) {
     throw new ValidationFailure('E_READER_CONFIGURATION', 'blocker', 'Explicit effort and a positive output token cap are required.');
   }
   let cache: PromptCachePolicy;
@@ -324,7 +329,7 @@ function messageJson(raw: Record<string, unknown>, pin: ModelPin, role: 'reader'
   schema(outputs.length === 1, role, 'Expected exactly one structured output text.');
   return { model: raw.model as string, value: structuredOutput(outputs[0], role) };
 }
-function responseJson(raw: unknown, pin: ModelPin, role: 'reader' | 'recovery', evaluation?: ReaderEvaluationPolicy): { model: string; value: Record<string, unknown> } {
+function responseJson(raw: unknown, pin: ModelPin, role: 'reader' | 'recovery', evaluation?: ReaderEvaluationPolicy, effort?: ReaderEffort): { model: string; value: Record<string, unknown> } {
   schema(record(raw), role, 'The model response must be an object.');
   const vendor = evaluation === undefined ? requestVendor(role, pin) : 'openai';
   if (vendor === 'cloudflare') return chatJson(raw, pin, role);
@@ -332,7 +337,7 @@ function responseJson(raw: unknown, pin: ModelPin, role: 'reader' | 'recovery', 
   verifyModelPolicy(pin, raw.model, role, evaluation);
   if (vendor === 'deepseek') {
     const reasoning = record(raw.usage) ? reasoningTokens(raw.usage.output_tokens_details) : undefined;
-    thinkingRefused(typeof reasoning === 'number' && reasoning > 0 ||
+    if (effort !== 'low') thinkingRefused(typeof reasoning === 'number' && reasoning > 0 ||
       Array.isArray(raw.output) && raw.output.some(item => record(item) && item.type === 'reasoning'));
     if (raw.status === 'incomplete' && record(raw.incomplete_details) && raw.incomplete_details.reason === 'max_output_tokens')
       throw new ValidationFailure('E_READER_OUTPUT_LIMIT', 'document', usageCopy.outputLimit);
@@ -389,10 +394,10 @@ function compactVerdicts(value: Record<string, unknown>, typeIds: readonly strin
     return { type_id: id, is_type: true, rationale: positive.rationale as string, evidence: positive.evidence as readonly string[], closest_alternative: positive.closest_alternative as string | null };
   });
 }
-export function decodeReader(raw: unknown, pin: ModelPin, typeIds: readonly string[], text: string, evaluation?: ReaderEvaluationPolicy, evidencePolicy?:ReaderEvidencePolicy, contract?: ReaderContract): ReaderOutput {
+export function decodeReader(raw: unknown, pin: ModelPin, typeIds: readonly string[], text: string, evaluation?: ReaderEvaluationPolicy, evidencePolicy?:ReaderEvidencePolicy, contract?: ReaderContract, effort?: ReaderEffort): ReaderOutput {
   let selected: ReaderContract;
   try { selected = readerContract(contract); } catch { throw new ValidationFailure('E_VALIDATOR_CONFIGURATION', 'blocker', 'Unknown reader answer contract.'); }
-  const { model, value } = responseJson(raw, pin, 'reader', evaluation);
+  const { model, value } = responseJson(raw, pin, 'reader', evaluation, effort);
   if (selected === READER_COMPACT_CONTRACT) {
     schema(exact(value, ['judgements', 'positives', 'near_misses']), 'reader', 'Structured output contains unexpected fields.');
     return validateReader({ model, verdicts: compactVerdicts(value, typeIds) }, { pin: model, typeIds, text, evidencePolicy, contract });

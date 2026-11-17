@@ -45,6 +45,7 @@ function step(names: string[] = []) {
 
 async function fixture(option: 'qwen' | 'deepseek', change: (pack: ProjectPack) => void = () => {}, bindings: { ai?: boolean; deepseekKey?: boolean } = {}) {
   const pack = selectReaderModel(requireProject({ ...structuredClone(owner), typeFile: fixtures.syntheticTypeFile(2), structuralVocabulary: [] }), option);
+  delete pack.settings.inferenceWindow;
   change(pack);
   const db = migratedDatabase({ foreignKeys: false }), DB = localD1(db), bucket = memoryR2();
   const originalPut = bucket.put.bind(bucket);

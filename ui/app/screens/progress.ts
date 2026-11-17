@@ -23,7 +23,7 @@ import { computed, effect, onCleanup, untrack, type Read } from '../../../core/u
 import { STEPS, STEP_LABEL_KEYS, phraseText, progressStep } from '../../../core/ui/journey.ts';
 import { activeUiCopy } from '../../../core/ui/project-copy.ts';
 import { money, time } from '../../../core/ui/format.ts';
-import { formatRoute } from '../../../core/ui/routes.ts';
+import { formatRoute, runViewRoute } from '../../../core/ui/routes.ts';
 import { newRunDocuments } from '../../../core/ui/new-run-documents.ts';
 import type { DocView, PlanView, RunView } from '../../../core/ui/run-view.ts';
 import { readerFamilyOf, type ModelVendor } from '../../../core/config/project.ts';
@@ -64,8 +64,6 @@ interface Live {
   run: RunStore;
   view: Read<RunView | null>;
   phase: Read<Phase>;
-  /** Step 4 (send and hand over) is under way, or the run is still being read for the first time. */
-  sendPhase: Read<boolean>;
   total: Read<number | null>;
   /** Documents sent: the service's count, or this tab's while it sends (it runs ahead of the next status read). */
   sent: Read<number>;
@@ -84,7 +82,16 @@ export function progressScreen(ctx: ViewContext<RouteOf<'progress'>>): Node {
   const runId = ctx.route.peek().runId;
   const run = ctx.store.runStore(runId);
   const view = run.view;
-  const phase = computed(() => phaseOf(view()));
+  const transfer = computed(() => {
+    const local = run.send();
+    return local.kind === 'sending' || local.kind === 'handing-over' ? local : null;
+  });
+  const phase = computed(() => {
+    const recorded = view(), local = transfer();
+    if (recorded === null && local !== null) return local.kind === 'sending' ? 'sending' : 'handingOver';
+    return phaseOf(recorded);
+  });
+  const phaseKnown = computed(() => phase() !== 'loading');
 
   const handlers: PrimaryHandlers = {
     [`progress:continue-send:${runId}`]: async fb => { await ctx.controllers.send(runId).run(fb); },
@@ -101,18 +108,19 @@ export function progressScreen(ctx: ViewContext<RouteOf<'progress'>>): Node {
       : id === `progress:retry-unfinished:${runId}` ? { note: c.retryUnfinishedNote, errorContext: 'read' }
         : { errorContext: 'send' });
 
-  const total = computed(() => view()?.total ?? null);
-  const sending = computed(() => { const s = run.send(); return s.kind === 'sending' || s.kind === 'handing-over'; });
+  const total = computed(() => view()?.total ?? transfer()?.total ?? null);
+  const sending = computed(() => transfer() !== null);
   const sent = computed(() => {
-    const s = run.send(), n = view()?.uploaded ?? 0;
-    return s.kind === 'sending' ? Math.max(n, s.sent) : n;
+    const local = transfer(), recorded = view()?.uploaded ?? 0;
+    if (local === null) return recorded;
+    return local.kind === 'sending' ? Math.max(recorded, local.sent) : local.total;
   });
   const decided = computed(() => view()?.decided ?? 0);
   const counts = computed<Counts>(() => {
     const o = view()?.outcomes;
     return { filed: o?.filed ?? 0, review: o?.review ?? 0, failed: o?.couldNotProcess ?? 0 };
   }, { equals: (a, b) => a.filed === b.filed && a.review === b.review && a.failed === b.failed });
-  const sendPhase = computed(() => { const p = phase(); return p === 'sending' || p === 'handingOver' || p === 'loading'; });
+  const sendPhase = computed(() => { const p = phase(); return p === 'sending' || p === 'handingOver'; });
   const runLight = runLightOf(ctx.store, runId, ctx.journey);
   const failed = computed(() => runLight.light().kind === 'failed');
   if (run.plan.peek().state === 'idle') void run.loadPlan();
@@ -122,7 +130,7 @@ export function progressScreen(ctx: ViewContext<RouteOf<'progress'>>): Node {
     const pin = plan()?.readerModel?.pin;
     return pin === undefined ? null : readerFamilyOf(pin)?.vendor ?? null;
   });
-  const live: Live = { ctx, run, view, phase, sendPhase, total, sent, decided, counts, plan, unread, failed, sending, readerVendor };
+  const live: Live = { ctx, run, view, phase, total, sent, decided, counts, plan, unread, failed, sending, readerVendor };
 
   const title = computed(() => {
     const p = phase(), t = total();
@@ -162,12 +170,13 @@ export function progressScreen(ctx: ViewContext<RouteOf<'progress'>>): Node {
     beat(light);
   });
 
-  return h('section', { class: 'progress', testid: 'progress', attrs: { 'data-phase': phase } },
-    h('div', { class: 'step-eyebrow' }, eyebrow),
+  return h('section', { class: 'progress', testid: 'progress',
+    attrs: { 'data-phase': phase, 'aria-busy': computed(() => !phaseKnown() && run.readProblem() === null ? 'true' : null) } },
+    show(phaseKnown, () => h('div', { class: 'step-eyebrow' }, eyebrow)),
     h('h1', { class: 'h-page', attrs: { tabindex: -1 } }, words(title)),
     show(sendPhase, () => h('p', { class: 'lede' }, c.sendLede)),
     head,
-    show(sendPhase, () => sendPanel(live), () => sortBody(live)));
+    show(phaseKnown, () => show(sendPhase, () => sendPanel(live), () => sortBody(live))));
 }
 
 // ---------- Step 4: Send ----------
@@ -406,7 +415,12 @@ async function unfinishedDocuments(run: RunStore, unavailable: string): Promise<
 }
 
 function stopCard(view: Read<RunView | null>): Node {
-  const stop = computed(() => view()?.stop ?? null);
+  const stop = computed(() => {
+    const run = view();
+    if (!run?.stop || !run.decided || run.stop.link) return run?.stop ?? null;
+    return { ...run.stop, link: { href: formatRoute(runViewRoute('results', run.id)),
+      phrase: { key: 'screenProgress.viewSavedResults', args: { n: run.decided } } } };
+  });
   return show(computed(() => stop() !== null), () => errorNotice(computed(() => stop()!), 'problem', 'progress-stopped'));
 }
 
@@ -436,7 +450,7 @@ function activity(live: Live): HTMLElement {
     return computed(() => (last = run.recent().find(entry => entry.id === id) ?? last));
   };
   return h('section', { class: 'panel activity', testid: 'progress-activity' },
-    h('h3', null, c.activityTitle),
+    h('h3', null, computed(() => live.view()?.status === 'running' ? c.activityTitle : c.recordedActivity)),
     show(computed(() => run.recent().length > 0), () => h('ul', { class: 'log' },
       each(keys, byId, entry => h('li', { class: atMount.has(entry.peek().id) ? '' : 'row-in' },
         h('time', { attrs: { datetime: computed(() => new Date(entry().at).toISOString()) } }, computed(() => time(entry().at))),
@@ -476,7 +490,10 @@ function spendPane(live: Live): HTMLElement {
   const note = computed(() => {
     const s = spend();
     if (s === null) return '';
-    if (s.pendingAccounting > 0) return c.pending(s.pendingAccounting);
+    const messages = [];
+    if (s.unaccountedCalls > 0) messages.push(c.unpriced(s.unaccountedCalls));
+    if (s.pendingAccounting > 0) messages.push(c.pending(s.pendingAccounting));
+    if (messages.length) return messages.join(' ');
     return phase() === 'sorted' ? c.allReported : '';
   });
   const line = (text: Read<string>) => show(computed(() => text() !== ''), () => h('p', { class: 'hint' }, text));

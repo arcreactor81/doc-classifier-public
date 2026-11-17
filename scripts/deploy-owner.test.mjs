@@ -62,7 +62,7 @@ test('package.json has no shortcut that deploys the generic environment to the l
 });
 
 const HISTORICAL_PACK='.local/projects/validation/project.json';
-test('the owner pack keeps every behaviour-relevant field of the historical pack',{skip:existsSync(HISTORICAL_PACK)?false:'Private copy of the historical pack is absent (.local/projects/validation/project.json); nothing to compare.'},()=>{
+test('the owner pack preserves historical fields except explicitly approved model, policy and quota changes',{skip:existsSync(HISTORICAL_PACK)?false:'Private copy of the historical pack is absent (.local/projects/validation/project.json); nothing to compare.'},()=>{
  const historical=readJson(HISTORICAL_PACK),neutral=readJson(ownerPackPath('validation'));
  // The historical pack is schema version 1 and carries the retired Batch fields (2026-09-26); the comparison ignores those.
  const comparable=structuredClone(historical);
@@ -82,47 +82,53 @@ test('the owner pack keeps every behaviour-relevant field of the historical pack
  for(const key of ['readerContract','confidenceQuestionPolicy','tokenBytesRatio'])assert.equal(Object.hasOwn(historical.settings,key),false,key);
  // 6 October 2026 (DECISIONS 132): the owner moved the reader to gpt-5.4-2026-03-05 and recovery to
  // gpt-5.4-nano-2026-03-17, with their prices and the priced automatic-cache policy; the historical pack keeps the GPT-6
- // pins, their prices and no cache setting (explicit-no-cache-v1). Set aside and asserted directly; Jev is unchanged.
- assert.equal(neutral.settings.promptCachePolicy,'automatic-cache-priced-v1');assert.equal(Object.hasOwn(historical.settings,'promptCachePolicy'),false);
- // 10 October 2026 (DECISIONS 155, "drop the dates"): both are requested by name under the undated policy since then.
- assert.deepEqual([neutral.pins.reader.id,neutral.pins.reader.date,neutral.pins.reader.policy],['gpt-5.4','2026-10-10','owner_approved_undated']);
+ // pins, their prices and no cache setting (explicit-no-cache-v1). The 5 November Sol reader uses explicit no-cache; nano retains automatic cache pricing.
+ assert.equal(neutral.settings.promptCachePolicy,'explicit-no-cache-v1');assert.equal(neutral.settings.recoveryPromptCachePolicy,'automatic-cache-priced-v1');assert.equal(Object.hasOwn(historical.settings,'promptCachePolicy'),false);
+ // Named-model policy remains explicit: Sol was selected on 5 November; nano keeps its 10 October approval.
+ assert.deepEqual([neutral.pins.reader.id,neutral.pins.reader.date,neutral.pins.reader.policy],['gpt-6.1-sol','2026-11-05','owner_approved_undated']);
  assert.deepEqual([neutral.pins.recovery.id,neutral.pins.recovery.date,neutral.pins.recovery.policy],['gpt-5.4-nano','2026-10-10','owner_approved_undated']);
  assert.deepEqual([historical.pins.reader.id,historical.pins.recovery.id],['gpt-6-sol','gpt-6-luna']);
- assert.deepEqual([neutral.prices.interactive.reader.inputNanodollarsPerMillion,neutral.prices.interactive.reader.cachedInputNanodollarsPerMillion,neutral.prices.interactive.reader.outputNanodollarsPerMillion],['2500000000','250000000','15000000000']);
+ assert.deepEqual([neutral.prices.interactive.reader.inputNanodollarsPerMillion,neutral.prices.interactive.reader.cachedInputNanodollarsPerMillion,neutral.prices.interactive.reader.outputNanodollarsPerMillion],['2000000000','100000000','10000000000']);
  assert.deepEqual(neutral.prices.interactive.reader.longContext,comparable.prices.interactive.reader.longContext);
  assert.deepEqual(neutral.prices.interactive.recovery,{inputNanodollarsPerMillion:'200000000',cachedInputNanodollarsPerMillion:'20000000',outputNanodollarsPerMillion:'1250000000'});
  assert.deepEqual(neutral.prices.interactive.confidence,comparable.prices.interactive.confidence);
  // DECISIONS 134 adds an explicit reader menu and site limits; neither changes historical records or other settings.
  assert.equal(Object.hasOwn(historical.settings,'usageLimits'),false);
- assert.deepEqual(neutral.settings.usageLimits,{policy:'daily-usage-v3',maxDocumentsPerRun:60,maxRunsPerActorPerDay:3,
-  // DECISIONS 155: each name shares its pool with its old dated id, so the same UTC day's earlier usage still counts.
-  openaiTokenPools:[{id:'large',modelIds:['gpt-5.4','gpt-5.4-2026-03-05'],limitTokens:225000},{id:'small',modelIds:['gpt-5.4-mini','gpt-5.4-mini-2026-03-17','gpt-5.4-nano','gpt-5.4-nano-2026-03-17'],limitTokens:2250000}],typesafeDailyNano:'1000000000',
+ assert.equal(Object.hasOwn(neutral.settings,'inferenceWindow'),false);
+ assert.deepEqual(neutral.settings.usageLimits,{policy:'daily-usage-v4',maxDocumentsPerRun:60,maxRunsPerActorPerDay:3,
+  // Regular owner daily limits, with the approved reader options sharing the paid pool.
+  openaiTokenPools:[{id:'large',modelIds:['gpt-5.4','gpt-5.4-2026-03-05'],limitTokens:225000},{id:'small',modelIds:['gpt-5.4-mini','gpt-5.4-mini-2026-03-17'],limitTokens:2250000},{id:'paid',modelIds:['gpt-6.1-sol','gpt-5.4-nano','gpt-5.4-nano-2026-03-17','gpt-6.1-terra','gpt-6-luna'],limitNano:'48000000000'}],typesafeDailyNano:'1000000000',
   // DECISIONS 136: the experimental readers' own daily pools (Workers AI Neurons, free allocation only; DeepSeek USD).
   workersAiDailyNeurons:9000,deepseekDailyNano:'500000000',
   // DECISIONS 156 addendum: the Anthropic pool, USD 100 a day (daily-usage-v3).
   anthropicDailyNano:'100000000000'});
- assert.equal(neutral.readerModels.defaultId,'standard');
+ assert.equal(neutral.readerModels.defaultId,'sol');
  assert.deepEqual(neutral.readerModels.options.map(option=>[option.id,option.pin.id,option.pin.policy]),[
   ['standard','gpt-5.4','owner_approved_undated'],['mini','gpt-5.4-mini','owner_approved_undated'],
   ['qwen','@cf/qwen/qwen3.8-27b','owner_approved_undated'],['deepseek','deepseek-flash','owner_approved_undated'],
-  ['claude','claude-sonnet-5-5','owner_approved_undated']]);
- assert.deepEqual(neutral.readerModels.options[0].rates,neutral.prices.interactive.reader);
+  ['claude','claude-sonnet-5-5','owner_approved_undated'],['sol','gpt-6.1-sol','owner_approved_undated'],
+  ['terra','gpt-6.1-terra','owner_approved_undated'],['luna','gpt-6-luna','owner_approved_undated']]);
+ assert.deepEqual(neutral.readerModels.options.find(option=>option.id==='sol').rates,neutral.prices.interactive.reader);
  assert.deepEqual(neutral.readerModels.options[1].rates,{inputNanodollarsPerMillion:'750000000',cachedInputNanodollarsPerMillion:'75000000',outputNanodollarsPerMillion:'4500000000'});
- const {pilotSize:_added,decisionNotePolicy:_notes,unknownSpendPolicy:_spend,readerContract:_contract,confidenceQuestionPolicy:_questions,tokenBytesRatio:_ratio,promptCachePolicy:_cache,usageLimits:_usage,readerEvidencePolicy:_evidence,...neutralSettings}=neutral.settings;
+ const {pilotSize:_added,decisionNotePolicy:_notes,unknownSpendPolicy:_spend,readerContract:_contract,confidenceQuestionPolicy:_questions,confidenceContextPolicy:_context,tokenBytesRatio:_ratio,promptCachePolicy:_cache,recoveryPromptCachePolicy:_recoveryCache,inferenceWindow:_window,usageLimits:_usage,readerEvidencePolicy:_evidence,...neutralSettings}=neutral.settings;
  const {decisionNotePolicy:_oldNotes,unknownSpendPolicy:_oldSpend,readerEvidencePolicy:_oldEvidence,...historicalSettings}=comparable.settings;
  // 12 October 2026 (DECISIONS 156 addendum, "approving singapore + 1"): the owner moved the evidence policy to
  // layout-quotes-v2; the historical pack keeps whitespace-quotes-v1. Set aside and asserted directly.
  assert.equal(neutral.settings.readerEvidencePolicy,'layout-quotes-v2');assert.equal(comparable.settings.readerEvidencePolicy,'whitespace-quotes-v1');
  assert.deepEqual(neutralSettings,historicalSettings,'settings');
- for(const field of ['structuralVocabulary','limits'])assert.deepEqual(neutral[field],comparable[field],field);
+ // 4 November 2026 (DECISIONS 157): long context is explicit; keep every other limit and the historical pack intact.
+ assert.equal(neutral.settings.confidenceContextPolicy,'long-context-262k-v1');
+ assert.equal(Object.hasOwn(historical.settings,'confidenceContextPolicy'),false);
+ assert.deepEqual(neutral.limits,{...comparable.limits,confidenceStateQuestionTokens:262000,confidenceAllQuestionTokens:262000,confidenceQuestionBudgetTokens:32000});
+ assert.deepEqual(neutral.structuralVocabulary,comparable.structuralVocabulary);
  assert.deepEqual(neutral.typeFile.none_of_these,historical.typeFile.none_of_these);
- for(const field of ['id','date','policy'])assert.equal(neutral.pins.confidence[field],historical.pins.confidence[field],'confidence.'+field);
+ assert.deepEqual([neutral.pins.confidence.id,neutral.pins.confidence.date,neutral.pins.confidence.policy],['jev-1.14.0','2026-11-05','versioned']);
  const changed=Object.keys(comparable).filter(key=>JSON.stringify(key==='settings'?historicalSettings:comparable[key])!==JSON.stringify(key==='settings'?neutralSettings:neutral[key])).sort();
- assert.deepEqual(changed,['budget','id','pins','prices','productName','schemaVersion','typeFile']);
+ assert.deepEqual(changed,['budget','id','limits','pins','prices','productName','schemaVersion','typeFile']);
  // 7 October 2026 (independent review): the owner's OpenAI data line moved out of core into the pack's copy overrides
  // (presentation only; no decision, pin, prompt or price depends on it). 12 October 2026 (owner, "3.a"): it also says
  // where OpenAI processes the text.
- assert.deepEqual(neutral.copyOverrides,{'screenConfirm.readerDataNote.openai':'Shared with OpenAI in exchange for free usage. OpenAI may use it to evaluate and train its models. OpenAI chooses which country it is processed in, unless the account is set up for one region.'});
+ assert.deepEqual(neutral.copyOverrides,{'screenConfirm.readerDataNote.openai':'Shared with OpenAI. OpenAI may use it to evaluate and train its models. OpenAI chooses which country it is processed in, unless the account is set up for one region.'});
  assert.equal(Object.hasOwn(historical,'copyOverrides'),false);
  assert.deepEqual(Object.keys(neutral).sort(),[...Object.keys(historical),'readerModels','copyOverrides'].sort());
 });

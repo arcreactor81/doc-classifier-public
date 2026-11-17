@@ -74,6 +74,7 @@ test('no count is requested or accepted for these vendors, and v1 limits have no
   assert.throws(() => reservationForRequest(v1, sent, null), (error: unknown) => error instanceof ValidationFailure && error.code === 'E_DAILY_MODEL');
   // The practice pack has no limits: nothing is reserved.
   const practice = structuredClone(selected) as any; delete practice.settings.usageLimits;
+  delete practice.settings.inferenceWindow;
   assert.equal(reservationForRequest(practice, sent, null), null);
 });
 
@@ -101,4 +102,19 @@ test('a request larger than the whole daily pool is refused plainly instead of w
   const huge = request(selected, 'x'.repeat(230_000));
   assert.throws(() => reservationForRequest(selected, huge, null),
     (error: unknown) => error instanceof ValidationFailure && error.code === 'E_DAILY_REQUEST_BOUND' && error.kind === 'blocker' && /larger than/i.test(error.message));
+});
+
+test('v4 leaves the existing non-OpenAI vendor pools and reservations unchanged', () => {
+  for (const id of ['qwen', 'deepseek', 'claude']) {
+    const selected = pack(id), sent = request(selected);
+    const legacy = structuredClone(selected), limits = legacy.settings.usageLimits!;
+    legacy.settings.usageLimits = { ...limits, policy: 'daily-usage-v3',
+      workersAiDailyNeurons: 9000, deepseekDailyNano: '500000000', anthropicDailyNano: '100000000000',
+      openaiTokenPools: limits.openaiTokenPools.map(pool => ({ id: pool.id, modelIds: pool.modelIds, limitTokens: 2250000 })) };
+    const before = reservationForRequest(legacy, sent, null);
+    const changed = structuredClone(selected);
+    changed.settings.usageLimits = { ...changed.settings.usageLimits!, policy: 'daily-usage-v4',
+      workersAiDailyNeurons: 9000, deepseekDailyNano: '500000000', anthropicDailyNano: '100000000000' };
+    assert.deepEqual(reservationForRequest(changed, sent, null), before);
+  }
 });

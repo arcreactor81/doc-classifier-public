@@ -5,7 +5,7 @@ import { misfileFingerprints } from '../../../core/ui/comparison-summary.ts';
  * searchable and filterable, with the recorded evidence opened beneath its row. Search, the Show filter, the open
  * document and "Show more" live in the address (SPEC §2.4), so they survive navigation and reload.
  *
- * The step body: the eyebrow and "N documents sorted" (a stopped run says it stopped, with what stopped it); the three
+ * The step body: the result count (a stopped run says it stopped, with what stopped it); the three
  * piles (sheet stacks with their big counts; a pile filters the table to its outcome) beside the next-step panel (the
  * journey's primary, "Make folders on this computer", and the quiet actions: save a copy of the results, delete the
  * uploaded text, try the documents that could not be processed again in a new run); the Documents panel with the Show
@@ -14,7 +14,7 @@ import { misfileFingerprints } from '../../../core/ui/comparison-summary.ts';
  * It opens beneath its row rather than over the page, so the search and the list stay usable while it is open.
  */
 import './results.css';
-import { arrayShallowEqual, computed, effect, onCleanup, shallowEqual, signal, untrack, type Read } from '../../../core/ui/reactive.ts';
+import { arrayShallowEqual, computed, onCleanup, shallowEqual, signal, untrack, type Read } from '../../../core/ui/reactive.ts';
 import { buildIndex, facetCounts, filterRows, indexInput, sortRows, windowRows } from '../../../core/ui/document-index.ts';
 import { categoryNames, docFromEntry, presentRow, type CategoryNames, type PresentedRow } from '../../../core/ui/result-presenter.ts';
 import { formatRoute, LIMIT_STEP, type ShowFilter } from '../../../core/ui/routes.ts';
@@ -27,7 +27,7 @@ import type { DecisionFacts } from '../../../core/ui/rule-sentence.ts';
 import { trialReview } from '../components/trial-review.ts';
 import { closeRunAction } from '../components/close-run.ts';
 import { whenComplete } from './review-parts.ts';
-import { each, h, show } from '../view/dom.ts';
+import { each, h, match, show } from '../view/dom.ts';
 import { action } from '../view/action.ts';
 import { navigate, patchQuery } from '../router.ts';
 import { actionSlot } from '../components/action-slot.ts';
@@ -60,6 +60,7 @@ export function resultsScreen(ctx: ViewContext<RouteOf<'results'>>): Node {
   const route = ctx.route;
   const runId = route.peek().runId;
   const run = ctx.store.runStore(runId);
+  const stopped = computed(() => run.view()?.status === 'halted');
   if (run.plan.peek().state === 'idle') void run.loadPlan();
 
   whenComplete(run, () => { void run.loadResults(); });
@@ -77,7 +78,7 @@ export function resultsScreen(ctx: ViewContext<RouteOf<'results'>>): Node {
   const docs = computed(() => compactDocs() === null ? run.order().map(key => run.docs.get(key)?.()).filter((doc): doc is DocView => doc !== undefined) : [...compactDocs()!.values()]);
   const index = computed(() => {
     const n = names();
-    return n === null ? null : buildIndex(docs().map(doc => indexInput(doc, presentRow(doc, n))));
+    return n === null ? null : buildIndex(docs().map(doc => indexInput(doc, presentRow(doc, n, { runStopped: stopped() }))));
   });
   const query = computed(() => { const r = route(), comparison = run.comparison(); return { q: r.q, show: r.show, cat: r.cat,
       misfiles: comparison.state === 'ready' && comparison.value !== null ? new Set(misfileFingerprints(comparison.value)) : null }; }, { equals: shallowEqual });
@@ -110,7 +111,7 @@ export function resultsScreen(ctx: ViewContext<RouteOf<'results'>>): Node {
     return computed(() => {
       const doc = compactDocs()?.get(key) ?? run.docs.get(key)!();
       const n = names();
-      return { doc, row: n === null ? null : presentRow(doc, n) };
+      return { doc, row: n === null ? null : presentRow(doc, n, { runStopped: stopped() }) };
     });
   };
   const openDoc = computed(() => route().doc);
@@ -125,7 +126,6 @@ export function resultsScreen(ctx: ViewContext<RouteOf<'results'>>): Node {
   const overline = computed(() => (stepDone() ? c.stepDone(stepNumber, stepLabel) : copy.journey.stepOf(stepNumber, STEPS.length, stepLabel)));
   // A stopped run never finishes: its heading says it stopped (never "sorted", never "so far"), its stop is beneath it,
   // and nothing says results will appear (review F5).
-  const stopped = computed(() => view()?.status === 'halted');
   const title = computed(() => {
     const v = view();
     return v === null ? c.title : stopped() ? c.stopped(v.decided, v.total) : allDecided() ? c.sorted(v.total) : c.sortedSoFar(v.decided, v.total);
@@ -176,9 +176,10 @@ export function resultsScreen(ctx: ViewContext<RouteOf<'results'>>): Node {
       h('tr', { class: 'row', classes: { 'is-open': open }, attrs: { 'data-open': computed(() => (open() ? 'true' : 'false')) } },
         h('td', { class: 'c-doc' },
           // The name without its extension, then the extension as a pill; the link's own text stays the whole name.
-          h('a', { class: 'doc__name', attrs: { id: nameId, href } }, stem,
-            h('span', { class: 'visually-hidden' }, computed(() => doc().filename.slice(stem().length)))),
-          show(computed(() => extension() !== null), () => h('span', { class: 'ext', attrs: { 'aria-hidden': 'true' } }, computed(() => extension() ?? '')))),
+          h('span', { class: 'doc-file' },
+            h('a', { class: 'doc__name', attrs: { id: nameId, href, title: computed(() => doc().filename) } }, stem,
+              h('span', { class: 'visually-hidden' }, computed(() => doc().filename.slice(stem().length)))),
+            show(computed(() => extension() !== null), () => h('span', { class: 'ext', attrs: { 'aria-hidden': 'true' } }, computed(() => extension() ?? ''))))),
         h('td', { class: 'c-out' }, outcomePill({
           outcome: computed(() => doc().outcome), first: computed(() => doc().first), phaseLabel: computed(() => row()?.phaseLabel ?? '')
         })),
@@ -198,7 +199,7 @@ export function resultsScreen(ctx: ViewContext<RouteOf<'results'>>): Node {
   return h('section', { class: 'results', testid: 'results' },
     h('div', { class: 'step-eyebrow' }, overline),
     h('h1', { class: 'h-page', attrs: { tabindex: -1 } }, words(title)),
-    show(computed(() => view() !== null && !allDecided() && !stopped()), () => h('p', { class: 'lede' }, c.notReady)),
+    show(computed(() => view() !== null && !allDecided() && !stopped()), () => h('p', { class: 'lede' }, c.partialResults)),
     show(computed(() => stop() !== null), () => h('div', { class: 'results-notice' }, errorNotice(computed(() => stop()!), 'problem', 'results-stopped'))),
     // DECISIONS 155: the reader's reported model differs from the previous run's on the same reader (information only).
     show(computed(() => modelChanged() !== null), () => h('div', { class: 'results-notice' },
@@ -260,26 +261,33 @@ export function resultsScreen(ctx: ViewContext<RouteOf<'results'>>): Node {
 }
 
 /**
- * The open document's evidence drawer, read once per opening (the store caches decided documents): its outcome and
- * Close, the paper sheet with the reader's quotes and the two opinions (components/evidence-panel.ts `evidenceSheet`),
- * then everything that was recorded (`evidencePanel`).
+ * Keep the open document and its Close link in place as sorting proceeds. Read the evidence again only when the
+ * document's recorded revision changes. The store caches decided documents.
  */
 function evidenceFor(run: RunStore, fingerprint: string, names: CategoryNames, plan: PlanView,
   doc: Read<DocView>, closeHref: Read<string>): HTMLElement {
   const e = activeUiCopy.evidence;
-  const load = signal<EvidenceLoad>({ state: 'loading' });
-  const first = doc.peek();
-  effect(() => {
-    const abort = new AbortController();
-    run.loadEvidence(fingerprint, abort.signal).then(result => {
-      if (result.kind === 'ok') load.set({ state: 'ready', answers: result.value });
-      else load.set({ state: 'loading' });
-    }, error => { if (!abort.signal.aborted) load.set({ state: 'error', error: presentError(error, 'evidence') }); });
-    onCleanup(() => abort.abort());
-  });
-  const decision: DecisionFacts | null = first.ruleId === null ? null
-    : { ruleId: first.ruleId, typeId: first.typeId, destinationFolder: first.destinationFolder, notes: first.notes };
   const outcome = computed(() => doc().outcome);
+  const details = () => {
+    const current = doc.peek();
+    if (current.stage === 'not_sent') return h('p', { class: 'hint' }, e.notReceived);
+    const load = signal<EvidenceLoad>({ state: 'loading' });
+    const abort = new AbortController();
+    onCleanup(() => abort.abort());
+    void run.loadEvidence(fingerprint, abort.signal).then(result => {
+      if (abort.signal.aborted) return;
+      if (result.kind === 'ok') load.set({ state: 'ready', answers: result.value });
+      else load.set({ state: 'stale' });
+    }, error => { if (!abort.signal.aborted) load.set({ state: 'error', error: presentError(error, 'evidence') }); });
+    const decision: DecisionFacts | null = current.ruleId === null ? null
+      : { ruleId: current.ruleId, typeId: current.typeId, destinationFolder: current.destinationFolder, notes: current.notes };
+    const noOutcome = computed(() => run.view()?.status === 'halted' ? e.noOutcomeStopped : e.noOutcomeYet);
+    const shared = { filename: current.filename, names, threshold: plan.threshold, decision, noOutcome, load };
+    return h('div', null,
+      evidenceSheet({ ...shared, outcome, helpHref: formatRoute({ view: 'help' }) }),
+      h('p', { class: 'eyebrow doc-drawer__more' }, e.moreDetail),
+      evidencePanel({ ...shared, types: plan.typeFile.types, testid: 'results-evidence' }));
+  };
   const tagLine = computed(() => {
     const d = doc(), o = d.outcome;
     return [d.tag, o === null ? null : outcomeWord(o)].filter((part): part is string => part !== null).join(' · ');
@@ -288,10 +296,5 @@ function evidenceFor(run: RunStore, fingerprint: string, names: CategoryNames, p
     h('div', { class: 'doc-drawer__head' },
       h('span', { class: 'eyebrow' }, tagLine),
       h('a', { class: 'btn sm', attrs: { href: closeHref } }, activeUiCopy.common.close)),
-    evidenceSheet({ filename: first.filename, outcome, names, threshold: plan.threshold, decision, load,
-      helpHref: formatRoute({ view: 'help' }) }),
-    h('p', { class: 'eyebrow doc-drawer__more' }, e.moreDetail),
-    evidencePanel({
-      filename: first.filename, names, types: plan.typeFile.types, threshold: plan.threshold, decision, load, testid: 'results-evidence'
-    }));
+    match(computed(() => doc().rev), {}, details));
 }

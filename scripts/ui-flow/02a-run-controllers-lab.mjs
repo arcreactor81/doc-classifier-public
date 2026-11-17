@@ -816,7 +816,7 @@ await runScript(SCRIPT, 'SPEC §11 WP-7 (logic half): the run controllers on OPF
   await lab(page, 'confirm', 'start-8', d8, 'start');
   const start8 = await outcome(page, 'start-8', 120_000);
   const R8 = start8.value?.runId;
-  await until(() => stall.waiting === 1, 'the 14th upload to be held');
+  await until(() => stall.waiting === 3, 'the next upload group to be held');
   const sending13 = await lab(page, 'run', R8);
   check('sending reached 13 of 114 when the tab went to sleep', sending13.send.kind === 'sending' && sending13.send.sent === 13 &&
     sending13.send.total === 114, sending13.send);
@@ -825,16 +825,16 @@ await runScript(SCRIPT, 'SPEC §11 WP-7 (logic half): the run controllers on OPF
   const tab2Situation = await lab(page2, 'situation', R8);
   check('meanwhile, another tab: Continue sending there is "being sent from another tab"; its stall rules say the same',
     tab2Send.ok && tab2Send.value.kind === 'elsewhere' && tab2Situation.situation.kind === 'sending-elsewhere-this-browser' &&
-    posts(R8, 'documents', mark).length === 14, { tab2Send, situation: tab2Situation.situation });
+    posts(R8, 'documents', mark).length === 16, { tab2Send, situation: tab2Situation.situation });
   await page2.close();
   // The tab is discarded mid-send: its held upload never reaches the service.
   await openLab(page);
   stall.release();
-  await until(() => stall.requests[0]?.dropped === true, 'the held upload to be dropped');
+  await until(() => stall.requests.every(r => r.dropped === true), 'all held uploads to be dropped');
   await settle();
   const serverRun8 = fake.getRun(R8);
-  check('the service holds 13 documents; the upload in flight when the tab closed never arrived',
-    serverRun8.status === 'uploading' && serverRun8.docs.size === 13 && stall.requests.length === 1 && stall.requests[0].dropped === true,
+  check('the service holds 13 documents; uploads in flight when the tab closed never arrived',
+    serverRun8.status === 'uploading' && serverRun8.docs.size === 13 && stall.requests.length === 3 && stall.requests.every(r => r.dropped === true),
     { status: serverRun8.status, docs: serverRun8.docs.size });
   const early = await lab(page, 'situation', R8);
   check('§4.8 right after: the last upload is under 30 s old, so it reads as documents arriving (not yet a stall)',

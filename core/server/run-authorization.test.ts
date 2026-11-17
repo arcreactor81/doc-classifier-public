@@ -42,6 +42,7 @@ function fixture(status: 'uploading' | 'complete') {
 }
 
 const ROUTES: [string, string, unknown?][] = [
+  ['GET','daily-exception'],
   ['GET', 'status'], ['POST', 'start', {}], ['POST', 'close', { discardUnfinished: true }], ['GET', 'results'],
   ['POST', 'documents', UPLOAD], ['GET', ''], ['GET', 'plan'], ['GET', 'results/compact'], ['GET', 'manifest']
 ];
@@ -59,5 +60,7 @@ for (const status of ['uploading', 'complete'] as const)
       assert.equal(f.snapshot(), before);
       // The owner is answered on the same run.
       assert.equal((await f.call('owner', 'GET', 'status')).status, 200);
+      const allowance=await f.call('owner','GET','daily-exception');assert.equal(allowance.status,200);
+      assert.deepEqual(await allowance.json(),{exception:null});
     } finally { f.db.close(); }
   });

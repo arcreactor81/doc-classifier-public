@@ -44,7 +44,7 @@ await runScript('25-empty-folder-recovery', 'Empty collection recovery preserves
   check('the offered replacement folder initializes the actual one-document selection', recovered?.order.length === 1 && recovered?.selected.length === 1 && recovered?.role === 'ordinary', recovered);
   await confirm();
   check('the recovered document reaches an enabled Start with the explicit budget', !await button('confirm:start:' + id).isDisabled() &&
-    await active('[data-testid="trial-selection-count"]').innerText() === '1 of 1 documents selected for this run.');
+    await active('[data-testid="trial-selection-count"]').innerText() === '1 of 1 document selected for this run.');
   await page.reload(); await active('[data-testid="confirm-summary"]').waitFor();
   check('recovered selection and enabled Start survive reload', !await button('confirm:start:' + id).isDisabled() &&
     JSON.stringify(await selection(id)) === JSON.stringify(recovered));

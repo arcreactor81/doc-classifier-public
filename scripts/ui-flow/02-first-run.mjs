@@ -252,11 +252,12 @@ async function firstRun({ app, scheme, checks, pass }) {
     check('confirm: there is no mode choice (no radio group or select)', modeInputs === 0, modeInputs);
     const summary = (await page.locator('[data-testid="confirm-summary"]').textContent())?.trim();
     step('confirm', { summary, primary: await label(button('confirm-primary')) });
-    // Two adjacent sentences must agree: a file said to be "not sent" cannot also be counted in "N documents will be sent".
-    const sentCount = Number(/\b(\d+) documents? will be sent\b/.exec(summary ?? '')?.[1] ?? NaN);
-    const notSent = /\bis not sent\b/.test(summary ?? '') ? Number(/\b(\d+) files? could not be read\b/.exec(summary ?? '')?.[1] ?? 0) : 0;
-    check('confirm: "N documents will be sent" agrees with the file it says "is not sent"', sentCount + notSent === files.length,
-      { summary, sentCount, notSent, files: files.length });
+    const sentCount = Number(/\bText from (\d+) documents? will be sent\b/.exec(summary ?? '')?.[1] ?? NaN);
+    const unreadable = Number(/\b(\d+) files? could not be read\b/.exec(summary ?? '')?.[1] ?? 0);
+    check('confirm distinguishes text for sorting from the filename and failure sent to the site',
+      sentCount === 4 && unreadable === 1 && sentCount + unreadable === files.length &&
+      summary.includes('The site records its name and the reason.'), { summary });
+    check('the journey reports the same successful and unreadable counts', (await page.locator('body').innerText()).includes('4 of 5 files read. 1 could not be read.'));
     check('confirm: nothing was sent before "Start run"', fake.requestsTo({ method: 'POST', path: '/api/quote' }).length === 0 &&
       writes().length === 2, writes().map(r => `${r.method} ${r.path}`));
 
@@ -437,6 +438,7 @@ async function firstRun({ app, scheme, checks, pass }) {
     step('review', { labels, savedMessage, saveSlotLog, next: await label(button('review-primary')).catch(() => null),
       savedShownAt: await whereText(/review is saved/), primaryAt: await button('review-primary').boundingBox() });
     await audit('review-saved', { navigated: false });
+    check('a saved review no longer offers Undo for an unsaved answer', await page.locator('[data-testid="toast"] button').count() === 0);
     // Back to the moved copy's card (the queue's summary took the card's place once every card was answered).
     await page.locator('[data-testid="review-cards"]').focus();
     for (let i = 0; i < 4 && await cardState() !== 'moved'; i++) { await page.keyboard.press('ArrowLeft'); await page.waitForTimeout(200); }

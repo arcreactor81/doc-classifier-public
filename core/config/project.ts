@@ -1,4 +1,5 @@
 import { isFullTextInputPolicy, type ConfidenceStatePolicy } from './input-policy.ts';
+import { CONFIDENCE_CONTEXT_POLICIES, LONG_CONFIDENCE_CONTEXT, LONG_CONFIDENCE_CONTEXT_TOKENS, type ConfidenceContextPolicy } from './confidence-context.ts';
 import { DECISION_NOTE_POLICIES, type DecisionNotePolicy } from '../domain/decision.ts';
 import { validateProjectCopy } from '../ui/project-copy.ts';
 import type { TokenRates, UsageCachePolicy } from '../cost/cost.ts';
@@ -75,6 +76,8 @@ export type PromptCachePolicy = typeof PROMPT_CACHE_POLICIES[number];
 export interface ProjectSettings {
   /** Explicit installation limits; absence preserves packs that did not declare them. */
   usageLimits?: UsageLimits;
+  /** Optional frozen UTC window for sending model requests. Both ends are canonical ISO instants; endAt is exclusive. */
+  inferenceWindow?: { startAt: string; endAt: string };
   /** Stored records may omit this; requireProject rejects absence before any execution. */
   unknownSpendPolicy?: typeof UNKNOWN_SPEND_POLICIES[number];
   /** Stored records may omit this; requireProject rejects absence before any execution. */
@@ -83,12 +86,16 @@ export interface ProjectSettings {
   readerContract?: typeof READER_CONTRACTS[number];
   /** Stored records may omit this; requireProject rejects absence before any execution. */
   confidenceQuestionPolicy?: typeof CONFIDENCE_QUESTION_POLICIES[number];
+  /** Explicit long-context opt-in; historical absence keeps the standard request without the header. */
+  confidenceContextPolicy?: ConfidenceContextPolicy;
   /**
    * The OpenAI prompt-cache policy (`PROMPT_CACHE_POLICIES`). A stored pack without it recorded
    * `explicit-no-cache-v1`, the only behaviour before 6 October 2026 (read it with `promptCachePolicy`). Either way the
    * policy must suit both OpenAI pins (`permittedPin`), so a model that cannot take explicit mode must name a policy.
    */
   promptCachePolicy?: PromptCachePolicy;
+  /** Recovery-only override; absence preserves the historical shared reader/recovery policy exactly. */
+  recoveryPromptCachePolicy?: PromptCachePolicy;
   /**
    * How many bytes of a confidence request are counted as one token when category capacity is computed
    * (core/config/capacity.ts): a number of at least 1. A pack without it, and every frozen pack, reads 1, the
@@ -154,10 +161,17 @@ export interface ReaderModelOption {
  * take the existing reader-capacity rule (2,048 + 160 per verdict, from measured verdicts: mean 88, high 143 tokens)
  * and double the per-verdict share, so the cap always leaves room for the run's categories under that rule.
  */
-export interface ReaderOutputCapRule { policy: 'per-category-v1'; baseTokens: number; perCategoryTokens: number; maxTokens: number }
+export type ReaderOutputCapRule =
+  | { policy: 'per-category-v1'; baseTokens: number; perCategoryTokens: number; maxTokens: number }
+  | { policy: 'fixed-v1'; maxTokens: number };
+
+/** This separately authorized choice requires operator enrollment before any paid stage. */
+export const DEEPSEEK_LOW_OPTION = 'deepseek_low';
 
 /** The output cap a run with `categories` categories freezes for a reader with this rule. */
 export function readerOutputCap(rule: ReaderOutputCapRule, categories: number): number {
+  if (record(rule) && rule.policy === 'fixed-v1' && Number.isSafeInteger(categories) && categories >= 1 &&
+      Number.isSafeInteger(rule.maxTokens) && rule.maxTokens > 0) return rule.maxTokens;
   if (!record(rule) || rule.policy !== 'per-category-v1' ||
       ![rule.baseTokens, rule.perCategoryTokens, rule.maxTokens].every(value => Number.isSafeInteger(value) && value > 0) ||
       rule.maxTokens < rule.baseTokens || !Number.isSafeInteger(categories) || categories < 1)
@@ -213,7 +227,9 @@ export interface ProjectPack {
     readerContextTokens: number;
     confidenceRequestsPerMinute: number | null;
     confidenceStateQuestionTokens: number;
-    confidenceAllQuestionTokens: number
+    confidenceAllQuestionTokens: number;
+    /** Category-definition allocation for long context, separate from its equal provider ceilings. */
+    confidenceQuestionBudgetTokens?: number
   };
 }
 
@@ -241,7 +257,7 @@ export interface ModelFamily {
   readonly efforts: readonly ReaderEffort[];
   readonly experimental: boolean;
 }
-const openai = (family: string, pins: 'dated' | 'dated-or-alias' | 'dated-or-undated', cache: PromptCachePolicy): ModelFamily =>
+const openai = (family: string, pins: ModelFamily['pins'], cache: PromptCachePolicy): ModelFamily =>
   Object.freeze({ family, vendor: 'openai', pins, cache, efforts: Object.freeze(['low', 'medium'] as const), experimental: false });
 /**
  * The model families each role may use. OpenAI documents `prompt_cache_options` for GPT-5.6 and later only, and no
@@ -269,6 +285,9 @@ const openai = (family: string, pins: 'dated' | 'dated-or-alias' | 'dated-or-und
  */
 const MODEL_FAMILIES: Readonly<Record<'reader' | 'recovery', readonly ModelFamily[]>> = {
   reader: [
+    openai('gpt-6.1-sol', 'dated-or-undated', 'explicit-no-cache-v1'),
+    openai('gpt-6.1-terra', 'undated', 'explicit-no-cache-v1'),
+    openai('gpt-6-luna', 'undated', 'explicit-no-cache-v1'),
     openai('gpt-5.6-terra', 'dated-or-alias', 'explicit-no-cache-v1'),
     openai('gpt-6-sol', 'dated-or-alias', 'explicit-no-cache-v1'),
     openai('gpt-5.4', 'dated-or-undated', 'automatic-cache-priced-v1'),
@@ -276,7 +295,7 @@ const MODEL_FAMILIES: Readonly<Record<'reader' | 'recovery', readonly ModelFamil
     Object.freeze({ family: '@cf/qwen/qwen3.8-27b', vendor: 'cloudflare', pins: 'undated', cache: 'automatic-cache-priced-v1',
       efforts: Object.freeze(['none'] as const), experimental: true }),
     Object.freeze({ family: 'deepseek-flash', vendor: 'deepseek', pins: 'undated', cache: 'automatic-cache-priced-v1',
-      efforts: Object.freeze(['none'] as const), experimental: true }),
+      efforts: Object.freeze(['none', 'low'] as const), experimental: true }),
     Object.freeze({ family: 'claude-sonnet-5-5', vendor: 'anthropic', pins: 'undated', cache: 'automatic-cache-priced-v1',
       efforts: Object.freeze(['low', 'medium'] as const), experimental: false })
   ],
@@ -314,9 +333,9 @@ export function readerFamilyOf(modelId: string): { vendor: ModelVendor; experime
 }
 
 /**
- * A vendor's published time-of-day prices, for display only (owner's option (a), 7 October 2026, DECISIONS 136
- * addendum): Confirm says which price applies now and until when (core/ui/price-period.ts). Accounting, reservations and
- * the daily caps never read it; they count every call at the pack's peak rates. `peakUtc`: the peak windows, each on its
+ * A vendor's published time-of-day prices. Confirm displays the active period (DECISIONS 136), and an individually
+ * authorized off-peak study run checks the same period at dispatch. Reservations use the pack's full rates.
+ * `peakUtc`: the peak windows, each on its
  * UTC weekdays (0 Sunday to 6 Saturday, as `Date.getUTCDay`) from `fromHour` up to, not including, `toHour`. Every other
  * hour is off-peak. Public holidays that a vendor also prices off-peak are not tracked.
  */
@@ -325,17 +344,23 @@ export interface PricePeriods {
   readonly verifiedAt: string;
   readonly peakUtc: readonly { readonly days: readonly number[]; readonly fromHour: number; readonly toHour: number }[];
 }
+
+/** UTC half-open price periods: shared by the screen and individually enrolled off-peak runs. */
+export function peakPriceAt(periods: PricePeriods, ms: number): boolean {
+  const moment=new Date(ms), day=moment.getUTCDay(), hour=moment.getUTCHours();
+  return periods.peakUtc.some(window=>window.days.includes(day)&&hour>=window.fromHour&&hour<window.toHour);
+}
 /**
  * Kept here, beside the model families, because the hours are the vendor's, the same for every project that offers the
  * reader, and change no result: in a project pack they would be copied into every pack and every frozen run, and would
- * change pack hashes, for a line that is only shown. DeepSeek, read 7 October 2026: "Peak hours are 01:00 - 04:00 and
+ * change pack hashes when the vendor updates its schedule. DeepSeek, verified 13 November 2026: "Peak hours are 01:00 - 04:00 and
  * 06:00 - 10:00 UTC, Monday through Friday, excluding Chinese public holidays. Off-peak rates are half of the peak
  * rates", for both of its models.
  */
 const PRICE_PERIODS: Readonly<Partial<Record<ModelVendor, PricePeriods>>> = Object.freeze({
   deepseek: Object.freeze({
     source: 'https://api-docs.deepseek.com/quick_start/pricing',
-    verifiedAt: '2026-10-07',
+    verifiedAt: '2026-11-13',
     peakUtc: Object.freeze([
       Object.freeze({ days: Object.freeze([1, 2, 3, 4, 5]), fromHour: 1, toHour: 4 }),
       Object.freeze({ days: Object.freeze([1, 2, 3, 4, 5]), fromHour: 6, toHour: 10 })
@@ -343,7 +368,7 @@ const PRICE_PERIODS: Readonly<Partial<Record<ModelVendor, PricePeriods>>> = Obje
   })
 });
 
-/** The published time-of-day prices of `vendor`, or null for a vendor with one price at every hour. Display only. */
+/** The published time-of-day prices of `vendor`, or null for a vendor with one price at every hour. */
 export function vendorPricePeriods(vendor: ModelVendor): PricePeriods | null {
   return PRICE_PERIODS[vendor] ?? null;
 }
@@ -354,17 +379,19 @@ export function vendorModelIds(vendor: Exclude<ModelVendor, 'openai'>): string[]
 }
 
 /** The prompt-cache policy a pack recorded; absence is `explicit-no-cache-v1` (see ProjectSettings). */
-export function promptCachePolicy(settings: Pick<ProjectSettings, 'promptCachePolicy'>): PromptCachePolicy {
-  const value: unknown = settings.promptCachePolicy;
+export function promptCachePolicy(settings: Pick<ProjectSettings, 'promptCachePolicy' | 'recoveryPromptCachePolicy'>,
+  role: 'reader' | 'recovery' = 'reader'): PromptCachePolicy {
+  const value: unknown = role === 'recovery' && settings.recoveryPromptCachePolicy !== undefined
+    ? settings.recoveryPromptCachePolicy : settings.promptCachePolicy;
   if (value === undefined) return 'explicit-no-cache-v1';
   if (!(PROMPT_CACHE_POLICIES as readonly unknown[]).includes(value)) throw new Error('Unknown prompt cache policy.');
   return value as PromptCachePolicy;
 }
 
 /** How a role's returned usage is accounted under the pack's recorded policy (core/cost/cost.ts `actualUsageCost`). */
-export function usageCachePolicy(settings: Pick<ProjectSettings, 'promptCachePolicy'>, role: 'confidence' | 'reader' | 'recovery'): UsageCachePolicy {
+export function usageCachePolicy(settings: Pick<ProjectSettings, 'promptCachePolicy' | 'recoveryPromptCachePolicy'>, role: 'confidence' | 'reader' | 'recovery'): UsageCachePolicy {
   if (role === 'confidence') return 'not_applicable';
-  return promptCachePolicy(settings) === 'automatic-cache-priced-v1' ? 'priced' : 'disabled';
+  return promptCachePolicy(settings, role) === 'automatic-cache-priced-v1' ? 'priced' : 'disabled';
 }
 
 /** Ids a category may never use: the builder's own folders, "none of these", Windows device names, prototype names. */
@@ -517,6 +544,9 @@ export function validateProject(value: unknown): ConfigIssue[] {
         ? 'Select an explicit confidence question policy.'
         : 'Unknown confidence question policy.'
     );
+  if (record(settings) && settings.confidenceContextPolicy !== undefined &&
+      !(CONFIDENCE_CONTEXT_POLICIES as readonly unknown[]).includes(settings.confidenceContextPolicy))
+    issue('settings.confidenceContextPolicy', 'Unknown confidence context policy.');
   if (!record(settings)) issue('settings', 'Explicit settings are required.');
   else {
     for (const field of [
@@ -543,6 +573,8 @@ export function validateProject(value: unknown): ConfigIssue[] {
       );
     // An OpenAI reader takes low or medium; `none` (thinking off) only for a reader family that documents it.
     const readerFamily = record(value.pins) ? modelFamily('reader', value.pins.reader) : null;
+    if (readerFamily?.vendor === 'deepseek' && settings.readerEffort === 'low' && value.selectedReaderModel !== DEEPSEEK_LOW_OPTION)
+      issue('selectedReaderModel', 'Select the enrolled low-reasoning reader for this effort.', 'E_MODEL_POLICY');
     if (!(readerFamily ? readerFamily.efforts : ['low', 'medium']).includes(String(settings.readerEffort) as ReaderEffort))
       issue('settings.readerEffort', readerFamily && !readerFamily.efforts.includes('low')
         ? 'This reader runs with thinking off: select none.' : 'Select low or medium.');
@@ -554,11 +586,17 @@ export function validateProject(value: unknown): ConfigIssue[] {
     if (settings.promptCachePolicy !== undefined &&
         !(PROMPT_CACHE_POLICIES as readonly unknown[]).includes(settings.promptCachePolicy))
       issue('settings.promptCachePolicy', 'Unknown prompt cache policy.');
+    if (settings.recoveryPromptCachePolicy !== undefined &&
+        !(PROMPT_CACHE_POLICIES as readonly unknown[]).includes(settings.recoveryPromptCachePolicy))
+      issue('settings.recoveryPromptCachePolicy', 'Unknown recovery prompt cache policy.');
   }
   const recordedCachePolicy: unknown = record(settings)
     ? settings.promptCachePolicy === undefined ? 'explicit-no-cache-v1' : settings.promptCachePolicy
     : null;
   const knownCachePolicy = (PROMPT_CACHE_POLICIES as readonly unknown[]).includes(recordedCachePolicy);
+  const hasRecoveryCacheOverride = record(settings) && settings.recoveryPromptCachePolicy !== undefined;
+  const recordedRecoveryCachePolicy = hasRecoveryCacheOverride ? settings.recoveryPromptCachePolicy : recordedCachePolicy;
+  const knownRecoveryCachePolicy = (PROMPT_CACHE_POLICIES as readonly unknown[]).includes(recordedRecoveryCachePolicy);
   if (!record(value.pins)) issue('pins', 'Model configuration is required.');
   else for (const role of ['confidence', 'reader', 'recovery']) {
     const pin = value.pins[role];
@@ -574,9 +612,10 @@ export function validateProject(value: unknown): ConfigIssue[] {
         'E_MODEL_POLICY'
       );
     // The recorded cache policy (absence: explicit-no-cache-v1) must be one this model's requests support.
-    else if (permitted.cache !== null && knownCachePolicy && permitted.cache !== recordedCachePolicy)
+    else if (permitted.cache !== null && (role === 'recovery' ? knownRecoveryCachePolicy : knownCachePolicy) &&
+        permitted.cache !== (role === 'recovery' ? recordedRecoveryCachePolicy : recordedCachePolicy))
       issue(
-        'settings.promptCachePolicy',
+        role === 'recovery' && hasRecoveryCacheOverride ? 'settings.recoveryPromptCachePolicy' : 'settings.promptCachePolicy',
         'The ' + role + ' model does not support this prompt cache policy.',
         'E_MODEL_POLICY'
       );
@@ -600,7 +639,8 @@ export function validateProject(value: unknown): ConfigIssue[] {
       continue;
     }
     for (const role of ['confidence', 'reader', 'recovery'])
-      issues.push(...validateRates(rates[role], 'prices.' + mode + '.' + role, role, recordedCachePolicy));
+      issues.push(...validateRates(rates[role], 'prices.' + mode + '.' + role, role,
+        role === 'recovery' ? recordedRecoveryCachePolicy : recordedCachePolicy));
   }
   if (!record(value.limits))
     issue('limits', 'Explicit model limits and throughput knowledge are required.');
@@ -612,6 +652,16 @@ export function validateProject(value: unknown): ConfigIssue[] {
     ])
       if (!Number.isSafeInteger(value.limits[field]) || Number(value.limits[field]) < 1)
         issue('limits.' + field, 'A verified positive integer limit is required.');
+    if (record(settings) && settings.confidenceContextPolicy === LONG_CONFIDENCE_CONTEXT) {
+      for (const field of ['confidenceStateQuestionTokens', 'confidenceAllQuestionTokens'])
+        if (value.limits[field] !== LONG_CONFIDENCE_CONTEXT_TOKENS)
+          issue('limits.' + field, 'Long context requires the verified 262000-token ceiling.');
+      const budget = value.limits.confidenceQuestionBudgetTokens;
+      if (!Number.isSafeInteger(budget) || Number(budget) < 1 || Number(budget) > LONG_CONFIDENCE_CONTEXT_TOKENS)
+        issue('limits.confidenceQuestionBudgetTokens', 'Declare a positive question budget within the long-context ceiling.');
+    } else if (value.limits.confidenceQuestionBudgetTokens !== undefined) {
+      issue('limits.confidenceQuestionBudgetTokens', 'A separate question budget requires the long-context policy.');
+    }
     for (const field of [
       'readerRequestsPerMinute',
       'readerTokensPerMinute',
@@ -652,8 +702,17 @@ export function validateProject(value: unknown): ConfigIssue[] {
       if (!record(pin) || !nonempty(pin.id) || !nonempty(pin.date) || !nonempty(pin.reason) || !family)
         issue(path + '.pin', 'Record a permitted reader pin, date and reason.', 'E_MODEL_POLICY');
       addModel(pin);
+      const lowOption = option.id === DEEPSEEK_LOW_OPTION;
+      if (lowOption && (family?.vendor !== 'deepseek' || option.readerEffort !== 'low' ||
+          !record(option.outputCap) || option.outputCap.policy !== 'fixed-v1' || option.outputCap.maxTokens !== 16384 ||
+          value.selectedReaderModel === DEEPSEEK_LOW_OPTION && (!record(settings) || !record(settings.inferenceWindow))))
+        issue(path, 'The enrolled reader requires low reasoning, the fixed 16,384-token cap and a dated inference window.', 'E_MODEL_POLICY');
+      if (!lowOption && (record(option.outputCap) && option.outputCap.policy === 'fixed-v1' ||
+          family?.vendor === 'deepseek' && option.readerEffort !== 'none'))
+        issue(path, 'This reader choice requires its original effort and output cap policy.', 'E_MODEL_POLICY');
       if (!(PROMPT_CACHE_POLICIES as readonly unknown[]).includes(option.promptCachePolicy) ||
-          family && family.cache !== option.promptCachePolicy || recovery && recovery.cache !== option.promptCachePolicy)
+          family && family.cache !== option.promptCachePolicy || recovery &&
+          (hasRecoveryCacheOverride ? knownRecoveryCachePolicy && recovery.cache !== recordedRecoveryCachePolicy : recovery.cache !== option.promptCachePolicy))
         issue(path + '.promptCachePolicy', 'The reader and recovery pins must both support this cache policy.', 'E_MODEL_POLICY');
       // Owner decision of 7 October 2026: an experimental reader's cap fits the run; an OpenAI reader (and Claude,
       // DECISIONS 156, which is not experimental) keeps the pack cap.
@@ -707,6 +766,15 @@ export function validateProject(value: unknown): ConfigIssue[] {
   }
   if (record(settings) && settings.usageLimits !== undefined)
     issues.push(...validateUsageLimits(settings.usageLimits, [...models].map(([id, vendor]) => ({ id, vendor }))));
+  if (record(settings) && settings.inferenceWindow !== undefined) {
+    const w = settings.inferenceWindow;
+    const canonical = (v: unknown): v is string => typeof v === 'string' && Number.isFinite(Date.parse(v))
+      && new Date(v).toISOString() === v;
+    if (!settings.usageLimits || !record(w) || Object.keys(w).length !== 2 || !canonical(w.startAt) || !canonical(w.endAt)
+      || Date.parse(w.startAt) >= Date.parse(w.endAt)
+      || Math.floor((Date.parse(w.endAt) - 1) / 86400000) - Math.floor(Date.parse(w.startAt) / 86400000) > 2)
+      issue('settings.inferenceWindow', 'A bounded inference window requires daily limits and exact UTC startAt/endAt instants spanning at most three UTC dates.');
+  }
   return issues;
 }
 

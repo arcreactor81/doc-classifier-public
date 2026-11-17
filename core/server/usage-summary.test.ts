@@ -2,16 +2,53 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import owner from '../../projects/owner/project.json' with { type: 'json' };
 import { syntheticPack } from '../../scripts/fixtures/synthetic-pack.mjs';
-import { requireProject, typeVersion } from '../config/project.ts';
+import { requireProject, typeVersion, type ProjectPack } from '../config/project.ts';
 import { selectReaderModel } from '../config/model-choice.ts';
 import { localD1, migratedDatabase } from './testing/local-bindings.ts';
 import { readUsageSummary } from './usage-summary.ts';
 import { dailyRecordAllowance, requireDailyRecordAdmission, type DailyRecordKind } from './daily-allowance.ts';
+import { readDailyUsage, reserveDailyUsage } from './daily-usage.ts';
 
 const AT = '2026-10-06T12:00:00.000Z';
+
+test('usage estimates separate confidence contexts while missing historical context means standard', async () => {
+  const f = await fixture();
+  try {
+    const contextPath = '$.settings.confidenceContextPolicy';
+    for (const [id, amount] of [['legacy', '1000'], ['standard', '3000'], ['long', '9000'], ['invalid', '50000']] as const) {
+      f.add(id, 'standard', [10, 1, amount]);
+      f.db.prepare('UPDATE runs SET pack_json=json_remove(pack_json,?) WHERE id=?').run(contextPath, id);
+    }
+    for (const [id, policy] of [['standard', 'standard-v1'], ['long', 'long-context-262k-v1'], ['invalid', null]])
+      f.db.prepare('UPDATE runs SET pack_json=json_set(pack_json,?,?) WHERE id=?').run(contextPath, policy, id);
+    const legacy = structuredClone(f.pack);
+    delete legacy.settings.confidenceContextPolicy;
+    for (const confidenceContextPolicy of [undefined, 'standard-v1', 'long-context-262k-v1'] as const) {
+      const pack = structuredClone(legacy);
+      if (confidenceContextPolicy !== undefined) pack.settings.confidenceContextPolicy = confidenceContextPolicy;
+      const summary = await readUsageSummary(f.env, pack, 'person', AT);
+      if (!summary.enabled) throw Error('limits expected');
+      const estimate = summary.readerModels.find(row => row.id === 'standard')!;
+      assert.equal(estimate.sampleDocuments, confidenceContextPolicy === 'long-context-262k-v1' ? 1 : 2);
+      assert.equal(estimate.averageCostNanoPerDocument, confidenceContextPolicy === 'long-context-262k-v1' ? '9005' : '2005');
+    }
+  } finally { f.db.close(); }
+});
 async function fixture() {
   const db = migratedDatabase({ foreignKeys: false }), DB = localD1(db);
-  const pack = requireProject({ ...structuredClone(owner), typeFile: syntheticPack(1).typeFile });
+  // Freeze the legacy token-pool scenario independently of later owner-pack promotions and paid allocations.
+  const seed = { ...structuredClone(owner), typeFile: syntheticPack(1).typeFile } as unknown as ProjectPack;
+  seed.readerModels!.options = seed.readerModels!.options.filter(option => ['standard', 'mini', 'qwen', 'deepseek', 'claude'].includes(option.id));
+  seed.readerModels!.defaultId = 'standard';
+  const standard = seed.readerModels!.options.find(option => option.id === 'standard')!, mini = seed.readerModels!.options.find(option => option.id === 'mini')!;
+  seed.pins.reader = standard.pin; seed.prices.interactive.reader = standard.rates;
+  seed.settings.promptCachePolicy = standard.promptCachePolicy;
+  delete seed.settings.recoveryPromptCachePolicy;
+  seed.settings.usageLimits = { policy: 'daily-usage-v3', maxDocumentsPerRun: 60, maxRunsPerActorPerDay: 3,
+    openaiTokenPools: [{ id: 'large', modelIds: [standard.pin.id], limitTokens: 225000 },
+      { id: 'small', modelIds: [mini.pin.id, seed.pins.recovery.id], limitTokens: 2250000 }],
+    typesafeDailyNano: '1000000000', workersAiDailyNeurons: 9000, deepseekDailyNano: '500000000', anthropicDailyNano: '100000000000' };
+  const pack = requireProject(seed);
   const version = await typeVersion(JSON.stringify(pack.typeFile));
   const add = (id: string, option: string, reader: [number, number, string], recovery?: [number, number, string], type = version) => {
     const selected = selectReaderModel(pack, option);
@@ -196,5 +233,58 @@ test('the Claude reader has its own USD 100 Anthropic pool, and its estimate rea
     assert.equal(claude.sampleDocuments, 1);
     // The tightest pool decides: TypeSafe's USD 1 at 5 nanodollars a document allows far more, so Anthropic's does.
     assert.equal(claude.estimatedDocumentsPerDay, Math.floor(100_000_000_000 / 4900000));
+  } finally { f.db.close(); }
+});
+
+test('v4 displays and estimates a shared reader/recovery monetary pool in nanodollars, including pending holds', async () => {
+  const f = await fixture();
+  try {
+    const readerId = f.pack.readerModels!.options.find(option => option.id === 'standard')!.pin.id;
+    const recoveryId = f.pack.pins.recovery.id;
+    const limits = f.pack.settings.usageLimits!;
+    f.pack.settings.usageLimits = { ...limits, policy: 'daily-usage-v4',
+      workersAiDailyNeurons: 9000, deepseekDailyNano: '500000000', anthropicDailyNano: '100000000000',
+      openaiTokenPools: [...limits.openaiTokenPools.map(pool => ({ ...pool,
+        modelIds: pool.modelIds.filter(id => id !== readerId && id !== recoveryId) })).filter(pool => pool.modelIds.length),
+      { id: 'paid', modelIds: [readerId, recoveryId], limitNano: '60000' }] };
+    f.add('paid-measurement', 'standard', [100, 20, '10000'], [10, 5, '5000']);
+    const pool = { id: 'openai/paid', unit: 'nanodollars' as const, modelIds: [readerId, recoveryId] };
+    const day = await readDailyUsage(f.env.DB, pool, AT);
+    assert.equal(day.usedUnits, 15000, 'both roles count in the same monetary ledger, not 135 tokens');
+    const held = await reserveDailyUsage(f.env.DB, { attemptId: 'next-recovery', runId: 'paid-measurement', modelId: recoveryId,
+      pool, reservedUnits: 15000, limitUnits: 60000, at: AT });
+    assert.equal(held.state, 'created');
+    const result = await readUsageSummary(f.env, f.pack, 'person', AT);
+    if (!result.enabled) throw Error('limits expected');
+    const paid = result.pools.find(value => value.id === 'openai/paid')!;
+    assert.deepEqual(paid, { id: 'openai/paid', unit: 'nanodollars', limitUnits: 60000, usedUnits: 15000,
+      reservedUnits: 15000, unknownCalls: 0, blocked: false });
+    const estimate = result.readerModels.find(value => value.id === 'standard')!;
+    assert.deepEqual([estimate.sampleDocuments, estimate.averageCostNanoPerDocument, estimate.estimatedDocumentsPerDay, estimate.estimatedDocumentsRemaining],
+      [1, '15005', 4, 2]);
+    await assert.rejects(reserveDailyUsage(f.env.DB, { attemptId: 'would-exceed', runId: 'paid-measurement', modelId: readerId,
+      pool, reservedUnits: 46000, limitUnits: 60000, at: AT }), { code: 'E_DAILY_LIMIT' });
+    f.db.prepare("INSERT INTO daily_usage_reservations(attempt_id,run_id,model_id,pool,unit,day,reserved_units,limit_units,owner_nonce,created_at) VALUES('paid-measurementrecovery','paid-measurement',?,'openai/paid','nanodollars','2026-10-06',8000,60000,'known-owner',?)")
+      .run(recoveryId, AT);
+    f.db.prepare("UPDATE vendor_calls SET cost_nano=NULL WHERE attempt_id='paid-measurementrecovery'").run();
+    const unknown = await readUsageSummary(f.env, f.pack, 'person', AT);
+    if (!unknown.enabled) throw Error('limits expected');
+    const unknownPool = unknown.pools.find(value => value.id === 'openai/paid')!;
+    assert.deepEqual([unknownPool.usedUnits, unknownPool.reservedUnits, unknownPool.unknownCalls, unknownPool.blocked], [18000, 15000, 1, false]);
+    assert.equal(unknown.readerModels.find(value => value.id === 'standard')!.estimatedDocumentsRemaining, null);
+  } finally { f.db.close(); }
+});
+
+test('usage estimates match the effective recovery cache policy, including legacy shared-policy inheritance', async () => {
+  const f = await fixture();
+  try {
+    f.add('old-shared', 'standard', [100, 10, '10000'], [5, 1, '100']);
+    f.add('different-recovery', 'standard', [100, 10, '90000'], [5, 1, '900']);
+    f.db.prepare("UPDATE runs SET pack_json=json_set(pack_json,'$.settings.recoveryPromptCachePolicy','explicit-no-cache-v1') WHERE id='different-recovery'").run();
+    const selected = { ...f.pack, settings: { ...f.pack.settings, recoveryPromptCachePolicy: 'automatic-cache-priced-v1' as const } };
+    const result = await readUsageSummary(f.env, selected, 'person', AT);
+    if (!result.enabled) throw Error('limits expected');
+    const estimate = result.readerModels.find(value => value.id === 'standard')!;
+    assert.deepEqual([estimate.sampleDocuments, estimate.averageCostNanoPerDocument], [1, '10105']);
   } finally { f.db.close(); }
 });

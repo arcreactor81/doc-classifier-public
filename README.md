@@ -2,7 +2,7 @@
 
 # Doc Classifier
 
-![Licence: MIT](https://img.shields.io/badge/licence-MIT-2a7d4f) ![Unit tests on this copy: 2,726, 0 failing](https://img.shields.io/badge/tests%20on%20this%20copy-2%2C726%2C%200%20failing-2352bd) ![Accuracy test: 1.35% misfiled, 941 BBC News articles](https://img.shields.io/badge/accuracy%20test-1.35%25%20misfiled%2C%20941%20BBC%20articles-4c7fe0) ![Node 24.21](https://img.shields.io/badge/node-24.21-339933) ![Runs on Cloudflare Workers](https://img.shields.io/badge/runs%20on-Cloudflare%20Workers-f38020) ![Your files stay on your computer](https://img.shields.io/badge/your%20files-stay%20on%20your%20computer-6e7681)
+![Licence: MIT](https://img.shields.io/badge/licence-MIT-2a7d4f) ![Unit tests on this copy: 2,903, 0 failing](https://img.shields.io/badge/tests%20on%20this%20copy-2%2C903%2C%200%20failing-2352bd) ![Accuracy test: 1.35% misfiled, 941 BBC News articles](https://img.shields.io/badge/accuracy%20test-1.35%25%20misfiled%2C%20941%20BBC%20articles-4c7fe0) ![Node 24.21](https://img.shields.io/badge/node-24.21-339933) ![Runs on Cloudflare Workers](https://img.shields.io/badge/runs%20on-Cloudflare%20Workers-f38020) ![Your files stay on your computer](https://img.shields.io/badge/your%20files-stay%20on%20your%20computer-6e7681)
 
 🌐 **Live site:** <https://docs.wellshit.co.in> · sign-in is by invitation for now (ask the owner to add your email address).
 
@@ -20,17 +20,17 @@ Two unrelated AI systems judge every document. A fixed rule in code files a docu
 
 *Where this is written: [DESIGN.md §2](DESIGN.md#2-the-problem-and-the-approach), [DECISIONS 1](DECISIONS.md#1-two-independent-ai-systems-judge-every-document-code-files-only-when-both-agree) and [DECISIONS 131](DECISIONS.md#131-what-this-project-is-for-and-subtracting-before-adding).*
 
-## 👀 At a glance, 12 October 2026
+## 👀 At a glance, 17 November 2026
 
 One row per claim, and a column that says what each row means if you aren't an engineer.
 
 | | Where things stand | What that means for you |
 |---|---|---|
-| 🧩 The code | Release `ec3b171`, published here as one commit. Before it was deployed, the full check gate passed on this release's code (2,737 tests, 0 failing, and the eight local acceptance suites), and all 47 browser flows passed in Edge on 11 October. | The mechanics are checked every time the code changes ([the numbers, and where each was measured](#-what-was-tested-and-what-was-not)). |
+| 🧩 The code | Release `8219e87`, generated from the private source with a checked privacy transformation. The full check prints its unit total, builds the app and runs eight local acceptance suites. | The [test record](#-what-was-tested-and-what-was-not) distinguishes local mechanics, browser evidence and real-model results. |
 | 🎨 The app | A new interface, "The Sorting Room", replaced the whole front end on 10 October ([a look at it](#-the-app-the-sorting-room)). | What you see on the site is what this repository builds. |
 | 📈 Scale | 10,000 synthetic documents all reached an outcome on a practice Cloudflare deployment. Pretend AI services answered, so no paid call was made. | The plumbing holds at the size the product is for. The AI's answers weren't real in that test ([the chart](#the-10000-document-hosted-test)). |
-| 🎯 How well it sorts | **Measured on 941 real BBC News articles (11 October 2026), no training:** 812 filed automatically, 801 of them in the right folder and 11 in the wrong one; 128 sent to a person; 1 could not be processed. Misfile rate 1.35%, below 2.24% with 95% confidence. About one US cent per article. | When it files something on its own, it is right about 99 times in 100 on news like this, and it leaves about 1 in 7 for you. A free, cheaper reader (GPT-5.4 mini) was just as safe and left about 1 in 5. A harder test on 1,797 long research papers (12 October) misfiled 2.29% of what it filed (below 3.22% with 95% confidence), sent 1 in 5 to a person and could not process 1 in 4, mostly papers too long for the certainty judge ([the stress test](#a-harder-test-1797-long-research-papers)). Your documents may differ; measure on them with the built-in tools ([the result](#-how-well-it-sorts-941-news-articles)). |
-| 🚀 Hosted demo | The owner's site runs this release (deployed 12 October 2026). Sign-in is by invitation until the owner opens it to visitors. | Its address is the website link in this repository's About box; sign-in is by invitation ([the demo](#-try-the-hosted-demo)). |
+| 🎯 How well it sorts | The latest full comparison covered 2,032 long research papers. Flash low / 16,384 correctly filed 1,452, misfiled 32, sent 543 to review and could not process 5. Matched filing differences from Sol and Terra were inconclusive. | This is evidence on a public research-paper benchmark, not a promise for your documents. [Results, costs and limits](docs/flash-reader-comparison-2026-11-17.md). The earlier [news test](#-how-well-it-sorts-941-news-articles) remains a separate result. |
+| 🚀 Hosted demo | The ordinary menu defaults to GPT-6.1 Sol with Jev 1.14.0 long context. The study-only Flash low option is not on the ordinary menu. Sign-in remains by invitation. | Shared daily allowances apply; unlimited spending for one run does not remove the site-wide limits. Access is controlled by the owner. |
 | 📝 Licence | MIT ([LICENSE](LICENSE)). | Copy it, change it, use it, keeping the notice ([the licence section](#-licence)). |
 
 ## 🧭 The idea in one picture
@@ -87,7 +87,7 @@ This is the part most document sorters skip, and the part this project is built 
 
 ### 🤖 Judge one: Jev, a model built for judgments
 
-**What Jev is.** TypeSafe's "System One" model, pinned here to version `jev-1.13.0`. It isn't a chatbot: you can't ask it to write a paragraph. You give it a document and typed questions, and it returns typed answers: a choice from a fixed list with a probability for each option, or a yes/no with the probability of yes.
+**What Jev is.** TypeSafe's "System One" model; the owner and practice packs now pin version `jev-1.14.0` with explicit long-context handling. It isn't a chatbot: you can't ask it to write a paragraph. You give it a document and typed questions, and it returns typed answers: a choice from a fixed list with a probability for each option, or a yes/no with the probability of yes.
 
 TypeSafe's own description, in [`SKILL.md`](SKILL.md), says these models return "typed answers and probabilities rather than generating text or reasoning explanations" and are "trained for calibrated decisions".
 
@@ -115,7 +115,7 @@ Two honest caveats come with it:
 
 **Why Jev alone isn't enough.** Jev gives numbers and no reasons. A person reviewing a document needs to see *why*, and a second, unrelated system that fails in a different way catches the confident mistake a single judge can't see in itself.
 
-**What the reader is.** A large language model that reads the whole document: GPT-5.4 on the owner's site, GPT-6 Sol in the generic pack. The owner's site also offers Claude Sonnet 5.5, made by Anthropic, which was the reader in the [accuracy tests](#-how-well-it-sorts-941-news-articles). Every request to a reader or heading-recovery model goes through Cloudflare's AI Gateway, with caching off, so each answer is fresh; Jev is called directly.
+**What the reader is.** A large language model that reads the whole document. The owner's site defaults to GPT-6.1 Sol; the generic starting pack records its own model settings. The owner's site also offers Claude Sonnet 5.5, made by Anthropic, which was the reader in the [accuracy tests](#-how-well-it-sorts-941-news-articles). Reader and heading-recovery requests go through Cloudflare's AI Gateway, with response caching disabled. Provider prompt-cache policy is recorded per role: the Sol reader requests no caching, while heading recovery uses priced automatic caching. DeepSeek records its own cache usage. Jev is called directly. No other model is used as a fallback.
 
 **How one run stays on one model.** The owner's site asks for the reader by name, `gpt-5.4`, and the AI company says which exact version answered (for example a dated release of GPT-5.4). The run writes that version down from its first reply. If a later reply in the same run names a different one, the run stops, so one run never mixes two models. When a new run gets a different version from the previous run on the same reader, Results tells you.
 
@@ -197,7 +197,7 @@ On 11 October 2026, 941 real news articles went through the owner's live site: t
 
 **What it cost.** About USD 0.01 per article (USD 9.63 in all), and about two and a half minutes per batch of 59.
 
-**A cheaper second reader.** The same articles then went through with GPT-5.4 mini, OpenAI's smaller model, free on the owner's daily allowance. On its own it is clearly the weaker reader (86% right against Claude's 93.5%, p < 0.001). Behind the two-judge rule it misfiled 6 of the 753 it filed (0.8%) against Claude's 11; not proven safer, but no worse. What the cheaper reader costs is review work: it sent 17% to a person instead of 14%, and 30 of its answers were refused because their quotes were not word for word. The owner chose not to pay for further comparisons (the default GPT-5.4 and the GPT-6 family were not run); anyone can run them with the included tools at their own cost.
+**A cheaper second reader.** The same articles then went through with GPT-5.4 mini, OpenAI's smaller model, free on the owner's daily allowance. On its own it is clearly the weaker reader (86% right against Claude's 93.5%, p < 0.001). Behind the two-judge rule it misfiled 6 of the 753 it filed (0.8%) against Claude's 11; a difference that was not statistically conclusive. What the cheaper reader costs is review work: it sent 17% to a person instead of 14%, and 30 of its answers were refused because their quotes were not word for word. That October news test did not include the later GPT-6 readers. The [November follow-up](docs/flash-reader-comparison-2026-11-17.md) measures Sol, Terra and Flash on long research papers; it does not turn those results into news or client-document accuracy.
 
 **What it doesn't prove.** It is news, in five broad categories, scored against the dataset's own labels, with one reader on one day. Real filing schemes are usually finer. The full write-up, with the method, every table, the statistics and how to repeat it, is in **[docs/accuracy-test-bbc-news.md](docs/accuracy-test-bbc-news.md)**.
 
@@ -264,12 +264,29 @@ Said plainly here, so nobody finds out later.
 
 - ❌ **It doesn't read scanned pages.** Reading a scan needs OCR (optical character recognition, which turns a picture of text into text). Cloudflare's ready-made cloud conversion, Workers AI's `toMarkdown`, works on the original file, so the file itself would be uploaded. That breaks the promise that originals never leave your computer. So a scanned PDF is listed as *could not process*, with the reason: a scanned image with no text. Reading scans inside the browser is the option being weighed for later ([future direction](#-future-direction)).
 - ❌ **It doesn't read the old binary formats** `.doc` and `.ppt`, or PowerPoint speaker notes. Reading isn't yet shown to be lossless for every equation or graphic.
-- ❌ **It doesn't promise accuracy on your documents.** It was measured on news articles with two readers, Claude Sonnet 5.5 and GPT-5.4 mini ([the result](#-how-well-it-sorts-941-news-articles)), and on long research papers with Claude ([the stress test](#a-harder-test-1797-long-research-papers)); not on other kinds of documents or on the default GPT-5.4 reader. The tools to measure it on your own documents are built in ([what was tested](#-what-was-tested-and-what-was-not)).
+- ❌ **It doesn't promise accuracy on your documents.** It was measured on news articles with two readers, Claude Sonnet 5.5 and GPT-5.4 mini ([the result](#-how-well-it-sorts-941-news-articles)), and on long research papers with Claude ([the stress test](#a-harder-test-1797-long-research-papers)), followed by [Sol, Terra, Luna and Flash comparisons](docs/flash-reader-comparison-2026-11-17.md). Other kinds of documents remain unmeasured. The tools to measure it on your own documents are built in ([what was tested](#-what-was-tested-and-what-was-not)).
 - ❌ **It doesn't run in Firefox or Safari.** Building folders on your computer without uploading anything needs the browser's File System Access feature, which only Chrome and Edge offer.
 - ❌ **It doesn't learn by itself.** Every change to a category, an example or the threshold is proposed to a person and applied only by a person.
 - ❌ **It doesn't retry paid work by itself.** A document that failed stays failed until a person starts a new run for it.
 
 *Where this is written: [DESIGN.md §4](DESIGN.md#4-standing-rules) (rule 10), [§5.1](DESIGN.md#51-local-extraction-browser) and [§6](DESIGN.md#6-failure-policy).*
+
+## November follow-up: the same 2,032 papers
+
+The full Flash low-reasoning study is complete. The same saved inputs, eight category definitions, Jev check and filing rules were used. The reference is each paper's primary arXiv subject, not a human adjudication of a client's documents.
+
+| Reader | Outcomes | Correct filings | Misfiles | Review | Processing failures |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Sol | 2,032 | 1,435 | 31 | 563 | 3 |
+| Flash · low, 16,384 cap | 2,032 | 1,452 | 32 | 543 | 5 |
+
+On the 2,020 papers shared with Terra, Flash had 1,444 correct filings and 32 misfiles, versus Terra's 1,435 and 33. Terra's other 12 outcomes remain missing. These filing differences were not statistically conclusive; they do not prove equal safety. Sol was somewhat stronger on common usable reader-only answers.
+
+The new Flash arm recorded **USD 24.47** of model usage at the site's rates, including Jev, recovery and retries. DeepSeek is accounted at peak prices; this is not an invoice. Median completed-batch time was **4m 56s**, including the application workflow; median reader-attempt latency was **19.2s**. The recorded cost and timing histories are operational comparisons, not isolated model-price or inference-latency experiments.
+
+A local progress-monitor defect stopped the first pass before the next cloud run was created. It was fixed and regression-tested; only the remaining 352 never-submitted papers were processed afterward. The completed 1,680 were preserved. The normal menu and default were restored, without promoting the tested Flash option.
+
+Read the [full comparison and limitations](docs/flash-reader-comparison-2026-11-17.md), [aggregate data](docs/data/flash-reader-comparison-2026-11-17.json) and [earlier November study](docs/reader-study-2026-11-13.md).
 
 ## 🧱 Why it is built this way
 
@@ -288,11 +305,11 @@ Six choices explain most of the design.
 
 The owner runs a copy of this project for others to try, on complimentary services.
 
-**What's on the menu.** GPT-5.4 (the default) and GPT-5.4 mini, on OpenAI's free daily allowance; Qwen 3.8 27B, on Cloudflare's free Workers AI allocation; DeepSeek Flash, paid, held to USD 0.50 a day; and Claude Sonnet 5.5, paid from a credit Anthropic gave the owner, held to USD 100 a day. Jev is held to USD 1 a day. Qwen and DeepSeek are marked experimental.
+**What's on the configured menu.** GPT-6.1 Sol is the default; GPT-6.1 Terra, GPT-6 Luna, GPT-5.4 and GPT-5.4 mini are selectable. Qwen 3.8 27B and DeepSeek Flash are experimental options; Claude Sonnet 5.5 is configured separately. Availability depends on the site's credentials and remaining allowances. Sol, Terra, Luna and heading recovery share the recorded USD 48 daily OpenAI pool. The ordinary DeepSeek cap is USD 0.50 and Jev USD 1 per UTC day. The successful Flash low / 16,384 test was a separate study configuration and has not been promoted to this menu.
 
 **The limits stay on.** At most 60 documents per run, 3 new runs per person per day, and daily allowances shared by every visitor.
 
-**Use sample documents only.** On that site, text read by the OpenAI models is shared with OpenAI in exchange for the free usage, and OpenAI may use it to evaluate and train its models. Each reader option says who processes the text and whether it may be used for training.
+**Use sample documents only.** On that site, text read by the OpenAI models is shared with OpenAI, which may use it to evaluate and train its models under this site's account terms. Each reader option says who processes the text and whether it may be used for training.
 
 **Address:** the live-site link at the top of this page (also the website link in this repository's About box). Sign-in is through Cloudflare Access, Cloudflare's sign-in gate, and is by invitation for now: ask the owner to add your email address.
 
@@ -414,9 +431,9 @@ A test count is only as good as the run that produced it, so each number here sa
 
 `npm run check` is the gate: the deploy scripts run it and stop if it fails. It was measured in two places, both with Node 24.21.0 and both exiting cleanly:
 
-| What | On this public copy, 12 October 2026 | On the release code in the owner's private repository, 12 October 2026, at its deploy |
+| What | On this public copy, 17 November 2026 | On the owner's post-study release, 17 November 2026 |
 |---|---|---|
-| Unit and script tests | **2,726: 2,724 pass, 0 fail, 2 skipped** | **2,737: 2,736 pass, 0 fail, 1 skipped** |
+| Unit and script tests | **2,903: 2,901 pass, 0 fail, 2 skipped** | **2,915: 2,914 pass, 0 fail, 1 skipped** |
 | Both TypeScript checks and the UI build | passed | passed |
 | The eight acceptance suites | passed, 2,320 checks | passed, 2,320 checks |
 
@@ -428,7 +445,7 @@ The unit tests include a seeded storage fault test: 200 documents with one stora
 
 #### The browser flows
 
-`npm run check:ui` drives the real interface in Microsoft Edge against local pretend services. It is not part of the gate. On 11 October 2026 (UTC), in the private repository, all 47 flows passed in Edge 155 on this release's code, each run on its own: 19 on 7f2e8e8 and 28 on 6db25d3, whose interface code is identical. They were not run on this copy.
+`npm run check:ui` drives the real interface in Microsoft Edge against local pretend services. It is not part of the gate. The earlier full sweep passed 47 flows on the October interface. The November progress-monitor repair adds a real animated-count regression and passed all six of its checks. Those are dated, scoped receipts; the post-test release record identifies the current sweep, and a previous sweep is not a claim that every later flow ran.
 
 #### The 10,000-document hosted test
 
@@ -443,7 +460,7 @@ The product's scope is runs of 5,000 to 10,000 documents ([DECISIONS 42](DECISIO
 
 #### Real AI models
 
-Real-model runs stay within free allowances or an amount the owner approves each time (USD 1 on 10 October; on 11 October, a USD 100 credit Anthropic gave the owner, for accuracy tests). **The 10,000-document size was not run on real models, for cost reasons** (DECISIONS 137). The recorded real-model runs:
+Real-model runs use explicitly approved allowances or the site's acknowledged unlimited-run facility, with shared vendor guards still in force. Historical October work used its own free allocations and Anthropic credit; the November study had separately recorded owner authorization. **The 10,000-document size was not run on real models, for cost reasons** (DECISIONS 137). The recorded real-model runs include the November [full reader comparison](docs/flash-reader-comparison-2026-11-17.md), alongside the historical results below:
 
 - **2,040 long arXiv research papers on 12 October, with the Claude Sonnet 5.5 reader, on the owner's live site (the stress test):** 1,797 decided, 1,006 filed, 983 right, 23 misfiled (2.29%; below 3.22% with 95% confidence), 351 sent to a person, 440 could not be processed (370 too long for Jev, 66 reader quotes not word for word, 4 refused by Anthropic's network); 243 left unfinished in stopped runs. USD 98.20 recorded at list prices, from the same Anthropic credit. It included one run of 1,079 papers, read in the browser in one go, which decided 1,065 before the site's daily Claude allowance stopped it. Fixed along the way: TypeSafe's changed "too large" reply, and Anthropic's refusals of calls sent from Hong Kong (the calls to the reader models now leave through a helper placed near Singapore) ([the write-up](docs/accuracy-test-arxiv-papers.md); reading speeds in [the benchmark note](docs/local-reading-benchmark.md)).
 
@@ -453,12 +470,12 @@ Real-model runs stay within free allowances or an amount the owner approves each
 - A paired comparison of two readers on five documents on 23 September, which led to GPT-6 Sol ([docs/pins.md](docs/pins.md)).
 - **20 generated sample documents on 10 October, with GPT-5.4 asked for by name, on the owner's live site:** 17 filed, all 17 in the right folder, none misfiled, and 3 sent to a person (the two that fit no category, and one whose certainty was below 0.90). It cost USD 0.17. Every reply reported the same dated version of GPT-5.4, and the run froze it. This was a check that the live path works from start to finish, on made-up documents in three sample categories; twenty documents can't measure accuracy.
 - Earlier that day a run had stopped at once because OpenAI refused the dated model id the site then asked for. The owner chose to ask for the readers by name instead, and the site now names such a refusal as the reason a run stopped ([DECISIONS 155](DECISIONS.md#155-the-openai-readers-drop-their-dated-pins-the-sorting-room-ui-is-the-release-line-codexs-findings-taken-up)).
-- **No quality run on the default GPT-5.4 reader is recorded.** The BBC test used Claude and GPT-5.4 mini, and the research-paper test Claude only; the owner chose not to spend more on comparisons.
+- **November reader comparison:** Sol has all 2,032 eligible outcomes, Terra has 2,020 with 12 missing, and the full Flash low / 16,384 arm has all 2,032. Luna stopped early. The [full follow-up](docs/flash-reader-comparison-2026-11-17.md) keeps matched denominators and missing results explicit. No default was changed from the result.
 
 #### Not tested
 
-- How well documents other than news and research papers are classified, and how well the default GPT-5.4 reader does: the accuracy tests so far were news articles with the Claude and GPT-5.4 mini readers, and long research papers with Claude; the owner chose not to pay for more comparisons. Measure it on your own corrected documents with the bake-off, a side-by-side comparison of settings against your saved answers ([DESIGN.md §10](DESIGN.md#10-bake-off)). A test corpus is a harness, not a quality reference.
-- How to handle documents too long for the certainty judge: today they are set aside with the reason. A side-by-side test on only those papers, between a defined partial text and Clef, is planned and not run.
+- How well documents other than news and research papers are classified. November adds full Sol and Flash comparisons on long papers, but does not establish client-document quality or equivalent safety. Measure it on your own corrected documents with the bake-off, a side-by-side comparison of settings against your saved answers ([DESIGN.md §10](DESIGN.md#10-bake-off)). A test corpus is a harness, not a quality reference.
+- General quality outside the tested input range. The owner and practice packs now use Jev long context, which accepted the eligible papers in the November full-pipeline comparison. Clef remains unavailable until its full-text handling is verifiable; there is no automatic truncation or replacement model.
 - Real-model speed and cost beyond about 1,000 documents in one run, and costs beyond the free allowances and the Anthropic credit.
 - In-browser reading of 10,000 files in one go. The largest measured was 1,079 long papers in one go on the owner's test computer; the hosted 10,000-document test uploaded text extracted earlier.
 - Reading speed on any computer other than the owner's test computer ([how to measure yours](docs/local-reading-benchmark.md)).

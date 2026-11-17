@@ -9,12 +9,12 @@ import {
   runtimeDefinitions, activeDefinition
 } from './definitions.ts';
 import { dispatchRunDocuments } from './start-dispatch.ts';
+import { admitWorkflowStart } from './dispatch-pacing.ts';
 import { extractorMixPlan } from './extractor-mix.ts';
 import { documentPhase } from './document-phase.ts';
 import { readRunStopReason } from './run-stop.ts';
-import {
-  readRunStatusInput, readLastUploadAt, readComparedWith, frozenDefinitionRevisionId, campaignOf, pilotSkippedOf
-} from './run-status-read.ts';
+import { readRunStatusInput, pilotSkippedOf } from './run-status-read.ts';
+import { readRunHistory } from './run-history.ts';
 import { runStatusResponse, requestedVersion } from '../domain/run-status.ts';
 import { closeNeedsDiscard, confirmsDiscard } from './closure.ts';
 import { documentEvidence } from './document-evidence.ts';
@@ -27,7 +27,7 @@ import { readRunBudget } from '../cost/run-budget.ts';
 import type { CorrectionProposals } from '../correction/proposals.ts';
 import { actorFor } from './auth.ts';
 import { health, projectSource, requireReady } from './health.ts';
-import { Store, now, shaText, spendFromRow, unknownFromRow, type RunRow } from './store.ts';
+import { Store, now, shaText, type RunRow } from './store.ts';
 import {
   object, requireValue, exact, jsonBody,
   readOptionalJson
@@ -45,6 +45,8 @@ import { associateAcceptedWorkflow, persistRunStart, persistRunCompletion } from
 import { haltTrippedRun } from './circuit-persistence.ts';
 import { createDocumentWorkflow } from './workflow-create.ts';
 import { setEmergencyStop } from './emergency-stop.ts';
+import { requireLowRunGrant, requireScopedDispatchTime, runDailyException } from './run-daily-exception.ts';
+import { DEEPSEEK_LOW_OPTION } from '../config/project.ts';
 import { requireBakeoffExecution } from './bakeoff-execution.ts';
 import { applyReaderThreshold } from './model-calibration.ts';
 import { requireReaderReady } from './reader-readiness.ts';
@@ -82,7 +84,10 @@ async function start(
   await requireBakeoffExecution(env, store, run);
   // DECISIONS 136, addendum item 4: the backstop behind the greyed-out menu. A reader that became unusable after the run
   // was created is refused here, as at the quote and run creation, before anything is dispatched.
-  await requireReaderReady(env, JSON.parse(run.pack_json) as ProjectPack);
+  const frozen = JSON.parse(run.pack_json) as ProjectPack;
+  await requireReaderReady(env, frozen);
+  if (frozen.selectedReaderModel === DEEPSEEK_LOW_OPTION)
+    requireScopedDispatchTime(await requireLowRunGrant(env, run, frozen), Date.now());
   const docs = await store.dispatchDocuments(run.id);
   requireValue(docs.length === run.expected_count,
     'Every document must be uploaded before starting.');
@@ -124,11 +129,21 @@ async function start(
       const id = await workflowInstanceId(run.id, fingerprint);
       // A sibling can stop dispatch while the identity hash is being computed.
       if (control.stopped()) return false;
-      let accepted = false, guardFailed = false;
+      let accepted = false, guardFailed = false, admissionGranted = false;
       try {
         const result = await createDocumentWorkflow(store, { runId: run.id, fingerprint, inputHash, workflowId: id }, run, async () => {
           if (control.stopped()) return false;
-          try { await guard(env, store, run.id); }
+          try {
+            await guard(env, store, run.id);
+            // One admitted identity may finish its existing bounded native-creation verification. That is not a
+            // second document start. Every verification still rechecks the full execution guard above.
+            if (!admissionGranted) {
+              if (!await admitWorkflowStart(env.DB, {runId:run.id,fingerprint,workflowId:id,at:Date.now()})) {
+                control.pause(); return false;
+              }
+              admissionGranted = true;
+            }
+          }
           catch (error) {
             guardFailed = true; control.stop();
             const issue = failure(error);
@@ -258,44 +273,8 @@ async function handleRequest(
       return await quote(request, env, store, actor, authentication);
     if (path === '/api/runs' && request.method === 'POST')
       return await createRun(request, env, store, actor, authentication);
-    if (path === '/api/runs' && request.method === 'GET') {
-      const rows = (await env.DB.prepare(
-        'SELECT * FROM runs WHERE actor=? ORDER BY created_at DESC'
-      ).bind(actor).all<RunRow>()).results;
-      const runs = [];
-      for (const run of rows) {
-        // Step 3: counts from COUNT queries and spend from the run's counters; no document or vendor_calls scan per run.
-        const counts = await store.runCounts(run.id), spend = spendFromRow(run);
-        runs.push({
-          id: run.id,
-          status: run.status,
-          createdAt: run.created_at,
-          total: run.expected_count,
-          completed: counts.completed,
-          spendNano: spend.blended,
-          spend,
-          budget: readRunBudget(JSON.parse(run.budget_json)),
-          unaccountedCalls: unknownFromRow(run),
-          pendingAccounting: await store.pendingAccounting(run.id),
-          runtimeWait: await readRuntimeWait(store, run),
-          textHeld: !!run.text_held,
-          mode: run.mode,
-          // S4: what Home and the Runs list show without opening every run.
-          uploaded: counts.uploaded,
-          lastUploadAt: await readLastUploadAt(env, run.id),
-          definitionRevisionId: frozenDefinitionRevisionId(run),
-          comparedWith: await readComparedWith(env, run.id),
-          // Step 4: the pilot campaign this run belongs to, so Home can pair a pilot with its full run.
-          campaign: campaignOf(run),
-          // Present only for a run made under a pretend-vendor build (its run-level note says so).
-          ...runVendors(JSON.parse(run.notes_json) as string[]),
-          // Present only for a run the person started without a pilot (DECISIONS 88).
-          ...pilotSkippedOf(run),
-          ...bakeoffOf(run)
-        });
-      }
-      return response({ runs });
-    }
+    if (path === '/api/runs' && request.method === 'GET')
+      return response({ runs: await readRunHistory(env.DB, actor) });
     if (path === '/api/kill' && request.method === 'POST') {
       const raw = await jsonBody(request);
       requireValue(object(raw), 'An explicit switch state is required.');
@@ -307,6 +286,8 @@ async function handleRequest(
     if (!match)
       throw new ServerFailure('E_ROUTE', 'request', 'This API route does not exist.', 404);
     const run = await authorizeRun(store, match[1], actor), action = match[2];
+    if(action==='daily-exception' && request.method==='GET')
+      return response({exception:await runDailyException(env.DB,run.id)});
     if (!action && request.method === 'GET') {
       // ?events=0 lets a polling client skip the full event history; phases come from checkpoints.
       const withEvents = url.searchParams.get('events') !== '0';

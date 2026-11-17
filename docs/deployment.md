@@ -62,6 +62,10 @@ Only after that canary and the connected browser checks should the authorised 10
 
 ## Acceptance
 
+For a post-study release, restore the ordinary pack before publishing: remove the dated inference window and study-only menu entries, restore approved ordinary quotas, and preserve frozen runs and their usage ledgers. Record the study's aggregate data and matched comparisons without publishing originals, text, labels, filenames, raw replies or private deployment identifiers. Rebuild the public copy through `scripts/public-snapshot.mjs`; its privacy scan and its own checks are separate from the private release gate.
+
+Verify there are no active writers before migrations/deployment. Update the production and isolated practice builds through their existing guards; the practice build must retain pretend-vendor provenance and no real credentials. Once the owner requests ordinary operation, use the existing stop control and verify health/read-only screens. A used daily allowance is not a resettable counter: if prior study usage exceeds the restored quota, new inference waits for the normal UTC reset. This does not authorize ledger edits, old-run closure, a changed default/threshold or an automatic paid canary.
+
 A successful CI job is not proof of deployment, authentication, user flow or classification quality. Verify the deployed source revision, migrations, sign-in behavior, fake/live provenance and completed user journey. Preserve the owner's labels and historical run settings. Record results and any discrepancy in HANDOFF.md.
 
 ## Private mechanical scale tests

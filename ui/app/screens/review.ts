@@ -19,7 +19,7 @@
  * - The category definitions stay on screen (beside the deck on wide screens, below it otherwise, with a link).
  */
 import './review.css';
-import { computed, effect, signal, untrack, type Read } from '../../../core/ui/reactive.ts';
+import { computed, effect, onCleanup, signal, untrack, type Read } from '../../../core/ui/reactive.ts';
 import { STEPS, STEP_LABEL_KEYS, phraseText, type Phrase } from '../../../core/ui/journey.ts';
 import { NONE_OF_THESE, categoryName, categoryNames, docFromEntry, presentRow, FAILED_FOLDER, REVIEW_FOLDER, type CategoryNames } from '../../../core/ui/result-presenter.ts';
 import { formatRoute } from '../../../core/ui/routes.ts';
@@ -196,6 +196,11 @@ export function reviewScreen(ctx: Ctx): Node {
 
   // --- Answers, with the fly-out, the toast and Undo ---------------------------------------------------------------
   const undos = signal<readonly Undo[]>([]);
+  let dismissToast: (() => void) | undefined;
+  onCleanup(() => dismissToast?.());
+  effect(() => {
+    if (saved()) untrack(() => { dismissToast?.(); undos.set([]); });
+  });
   /** Set while the next card arrives after an answer, so it lands on the pile (the artifact's `.in`). */
   let arriving = false;
   const n = () => names.peek()!;
@@ -228,7 +233,7 @@ export function reviewScreen(ctx: Ctx): Node {
     arriving = true;
     advance();
     focusDeck();
-    toast(k.toast.answered(label), { label: k.undoShort, run: undoLast });
+    dismissToast = toast(k.toast.answered(label), { label: k.undoShort, run: undoLast });
   }
 
   function setMark(card: ReviewCard, value: AnswerMark | null, label: string, direction: Fly | null): void {
@@ -238,10 +243,11 @@ export function reviewScreen(ctx: Ctx): Node {
     void walk.mark([card.fingerprint], value);
     if (direction !== null) { arriving = true; forward(); }
     focusDeck();
-    toast(label, { label: k.undoShort, run: undoLast });
+    dismissToast = toast(label, { label: k.undoShort, run: undoLast });
   }
 
   function undoLast(): void {
+    if (saved.peek() || walk.editBlocked.peek() !== null) return;
     const list = undos.peek(), last = list.at(-1);
     if (last === undefined) return;
     undos.set(list.slice(0, -1));
@@ -251,7 +257,7 @@ export function reviewScreen(ctx: Ctx): Node {
     arriving = true;
     goTo(last.index);
     focusDeck();
-    toast(k.toast.undone);
+    dismissToast = toast(k.toast.undone);
   }
 
   const handlers: PrimaryHandlers = {

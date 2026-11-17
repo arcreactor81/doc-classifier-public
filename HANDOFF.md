@@ -1,6 +1,6 @@
 # HANDOFF.md
 
-This is the public hand-off file: a short, hand-written summary of where the project stands, as of the source date 2026-10-12. The owner's full dated working log stays in their private repository; it holds account and deployment details that are not published. Every decision and its reason is published in full in `DECISIONS.md`.
+This is the public hand-off file: a short, hand-written summary of where the project stands, as of the source date 2026-11-17. The owner's full dated working log stays in their private repository; it holds account and deployment details that are not published. Every decision and its reason is published in full in `DECISIONS.md`.
 
 AGENTS.md asks agents to record what they learn here. Add your own dated entries below the line at the end; do not rewrite earlier entries.
 
@@ -15,11 +15,15 @@ Start with [`README.md`](README.md) (the overview), [`AGENTS.md`](AGENTS.md) (wh
 ## State of the project
 
 - **Finished scope.** The agreed list in DECISIONS 137 is the release scope: the guided journey with review cards and a trial before a large run, a per-run reader choice, per-site usage limits, and the storage rework (DECISIONS 133 to 136).
-- **Readers.** The owner's shared demo offers a curated menu: GPT-5.4 (the default) and GPT-5.4 mini, with GPT-5.4 nano for heading recovery; Qwen 3.8 27B on Cloudflare Workers AI and DeepSeek Flash, both labelled experimental. Jev is pinned to an exact version. Since 10 October 2026 the OpenAI readers and heading recovery are requested by name (`gpt-5.4`, `gpt-5.4-mini`, `gpt-5.4-nano`); each run freezes the exact version OpenAI reports, stops if a later reply in the run reports another, and Results say when the version differs from the previous run (DECISIONS 155). Each pack names its models in `projects/<name>/project.json`; see [`docs/pins.md`](docs/pins.md). People who deploy their own copy choose their own models and use their own keys.
+- **Readers.** The ordinary owner/practice menus default to GPT-6.1 Sol, with Jev 1.14.0 long context and GPT-5.4 nano heading recovery. The configured alternatives are in the project packs; availability also depends on credentials and shared daily limits. The November low/16,384 Flash configuration was study-only and was not promoted. Named models freeze the returned identity for each run, and a within-run change halts it. Historical frozen packs keep their own settings. See [`docs/pins.md`](docs/pins.md).
 - **Interface.** The front end is "The Sorting Room" (10 October 2026): screens, shell and styles in `ui/app/`, every user-visible string in `core/ui/copy-*.ts`. Its "How it decides" page calls the real rule code (`core/domain/decision.ts`) and the real quote check.
 - **Scale.** Runs of 10,000 documents were tested on a practice deployment with pretend model services, which make no paid model call. [`docs/scale-test-history.md`](docs/scale-test-history.md) records every attempt, what stopped it and what was changed. The latest attempt brought all 10,000 documents to an outcome and was then closed. This size was not run on real models, for cost reasons (DECISIONS 137).
 - **Quality.** The local tests check the mechanics, not how well documents are classified. Measure quality on your own corrected documents with the bake-off in `DESIGN.md` §10.
 - **Project packs.** `projects/generic/` is the unconfigured starting pack to copy for your own project. `projects/owner/` is the owner's shared demo, with its site limits. `projects/practice/` is the scale-test pack, without the demo's limits.
+
+## Latest measured comparison
+
+The [17 November full Flash study](docs/flash-reader-comparison-2026-11-17.md) has 2,032 outcomes: 1,452 correct filings, 32 misfiles, 543 reviews and five processing failures. Same-input Sol/Terra comparisons, missing outcomes, recorded costs and timing limitations are explicit. The reference is the primary public subject, not adjudicated client truth; no configuration or threshold was promoted. [Aggregate data](docs/data/flash-reader-comparison-2026-11-17.json) is included without source text, document identifiers or raw responses. Earlier dated tests remain separate records.
 
 ## How to run it
 

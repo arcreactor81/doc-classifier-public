@@ -1,5 +1,6 @@
 import { ANTHROPIC_VERSION, requestVendor, vendorEndpoint, verifyModelPolicy, type FrozenVendorRequest, type RequestVendor, type VendorRole, type ReaderEvaluationPolicy } from './requests.ts';
 import { ValidationFailure } from './validate.ts';
+import { confidenceContextPolicy, LONG_CONFIDENCE_CONTEXT, LONG_CONFIDENCE_CONTEXT_HEADER } from '../config/confidence-context.ts';
 import { edgeRefusal, gatewayCacheHit, gatewayEnvelope, gatewayTarget, type OutboundRoute } from './gateway.ts';
 import { nonGlobalInference, reportedTokens } from '../cost/cost.ts';
 import { confidenceTooLargeRefusal } from '../cost/spend-admission.ts';
@@ -203,6 +204,9 @@ async function executeAttempts<T>(request: FrozenVendorRequest, policy: RetryPol
   const viaHttp = vendor !== 'cloudflare';
   // Capture primitive values once: caller mutation can never alter a retry.
   const { role, model, body } = request;
+  const contextPolicy = confidenceContextPolicy(request.confidenceContextPolicy);
+  if (request.confidenceContextPolicy !== undefined && role !== 'confidence')
+    throw new ValidationFailure('E_PROJECT_CONFIG', 'blocker', 'Confidence context policy is only valid for the confidence check.');
   const modelPolicy = { ...request.modelPolicy };
   if (modelPolicy.id !== model) throw new ValidationFailure('E_MODEL_POLICY', 'blocker', 'Request model and policy differ.');
   verifyModelPolicy(modelPolicy, model, role, evaluation);
@@ -239,6 +243,8 @@ async function executeAttempts<T>(request: FrozenVendorRequest, policy: RetryPol
         const credential: Record<string, string> = !credentialed ? {} : vendor === 'anthropic'
           ? { 'x-api-key': secret!, 'anthropic-version': ANTHROPIC_VERSION } : { authorization: `Bearer ${secret}` };
         const headers: Record<string, string> = { ...credential, 'content-type': 'application/json' };
+        if (role === 'confidence' && contextPolicy === LONG_CONFIDENCE_CONTEXT)
+          headers[LONG_CONFIDENCE_CONTEXT_HEADER] = 'true';
         // The vendor URL and the vendor's own headers; the route decides how they are sent (core/vendors/gateway.ts sendRouted).
         const response = await deps.fetch(endpoint, { method: 'POST', headers, body, redirect: 'manual' }, route);
         status = response.status;

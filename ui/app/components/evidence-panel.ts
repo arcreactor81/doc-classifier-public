@@ -29,6 +29,7 @@ import { errorNotice } from './notice.ts';
 export type EvidenceAnswers = Pick<EvidenceView, 'confidence' | 'reader' | 'failure'>;
 export type EvidenceLoad =
   | { state: 'loading' }
+  | { state: 'stale' }
   | { state: 'ready'; answers: EvidenceAnswers }
   | { state: 'error'; error: UiErrorView };
 
@@ -41,6 +42,7 @@ export interface EvidencePanelSpec {
   threshold: number;
   /** The recorded decision (rule, category, notes); null while the document has no outcome. */
   decision: DecisionFacts | null;
+  noOutcome?: Read<string>;
   load: Read<EvidenceLoad>;
   testid?: string;
 }
@@ -68,6 +70,7 @@ export function evidencePanel(spec: EvidencePanelSpec): HTMLElement {
   },
   match(state, {
     loading: () => h('p', { class: 'ev-loading' }, e.loading),
+    stale: () => h('p', { class: 'hint' }, e.readUpdatedEvidence),
     error: () => {
       const load = spec.load.peek();
       return load.state === 'error' ? errorNotice(load.error, 'problem') : document.createTextNode('');
@@ -96,8 +99,8 @@ function answersView(answers: EvidenceAnswers, spec: EvidencePanelSpec): HTMLEle
   const decision = spec.decision;
   const rule = decision?.ruleId ?? null;
   const readerYes = reader === null ? [] : reader.verdicts.filter(verdict => verdict.is_type).map(verdict => verdict.type_id);
-  const overline = failure !== null || rule === 'R0' ? e.whyFailed : rule === 'R1' ? e.whyFiled : e.whyToYou;
-  const lead = decision === null ? e.noOutcomeYet : ruleSentence(decision, { confidence, reader }, spec.threshold, spec.names);
+  const overline = failure !== null || rule === 'R0' ? e.whyFailed : rule === null ? e.recordedEvidence : rule === 'R1' ? e.whyFiled : e.whyToYou;
+  const lead = decision === null ? spec.noOutcome ?? e.noOutcomeYet : ruleSentence(decision, { confidence, reader }, spec.threshold, spec.names);
   const parts: Node[] = [
     h('div', { class: 'ev-lead' }, h('p', { class: 'overline' }, overline), h('p', { class: 'ev-lead__text' }, lead))
   ];
@@ -258,6 +261,7 @@ export interface EvidenceSheetSpec {
   names: CategoryNames;
   threshold: number;
   decision: DecisionFacts | null;
+  noOutcome?: Read<string>;
   load: Read<EvidenceLoad>;
   /** Where "How this was decided" goes (the Help page). */
   helpHref: string;
@@ -314,7 +318,7 @@ export function evidenceSheet(spec: EvidenceSheetSpec): HTMLElement {
   });
   const why = computed(() => {
     const a = answers();
-    if (spec.decision === null) return e.noOutcomeYet;
+    if (spec.decision === null) return spec.noOutcome?.() ?? e.noOutcomeYet;
     return a === null ? '' : ruleSentence(spec.decision, { confidence: a.confidence, reader: a.reader }, spec.threshold, spec.names);
   });
   const verdict = (label: string, what: Read<string>, value: Read<string>, tone: Read<string>) =>

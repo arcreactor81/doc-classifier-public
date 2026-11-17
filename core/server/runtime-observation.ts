@@ -26,17 +26,27 @@ function readObservationError(raw: string | null): RuntimeWait['observationError
   return { code: 'E_RUNTIME_OBSERVATION', message: error.message, at: error.at };
 }
 
-/** Pure D1 projection; a cached null avoids another query for ordinary runs. Never inspects native state. */
-export async function readRuntimeWait(store: Store, run: RunRow): Promise<RuntimeWait | null> {
-  if (run.status !== 'running' || run.runtime_pending_deadline_ms === null) return null;
+/** A cached null avoids another query for ordinary runs. Never inspects native state. */
+export function hasRuntimeWait(run: Pick<RunRow,'status'|'runtime_pending_deadline_ms'>): boolean {
+  if (run.status !== 'running' || run.runtime_pending_deadline_ms === null) return false;
   if (!Number.isSafeInteger(run.runtime_pending_deadline_ms)) throw unreadable();
+  return true;
+}
+
+export async function readRuntimeWait(store: Store, run: RunRow): Promise<RuntimeWait | null> {
+  if (!hasRuntimeWait(run)) return null;
   const rows = (await store.env.DB.prepare("SELECT * FROM runtime_interruptions WHERE run_id=? AND state='pending'")
-    .bind(run.id).all<RuntimeInterruptionRow>()).results.map(validateRuntimeRow);
+    .bind(run.id).all<RuntimeInterruptionRow>()).results;
+  return runtimeWaitFromRows(rows);
+}
+
+export function runtimeWaitFromRows(rows: readonly RuntimeInterruptionRow[]): RuntimeWait | null {
   // A same-instance entry can resolve the last pending row after the caller read its run snapshot.
   if (!rows.length) return null;
   let error: RuntimeWait['observationError'] = null;
   let first = Infinity, deadline = Infinity, next = Infinity;
   for (const row of rows) {
+    validateRuntimeRow(row);
     first = Math.min(first, row.first_observed_ms); deadline = Math.min(deadline, row.deadline_ms);
     next = Math.min(next, row.deadline_ms, Math.max(row.next_check_ms, row.lease_until_ms ?? 0));
     const candidate = readObservationError(row.observation_error_json);

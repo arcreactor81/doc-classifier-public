@@ -36,7 +36,7 @@ test('each permitted reader family names its vendor, its request efforts and whe
   assert.deepEqual(modelFamily('reader', undated(QWEN)), { family: QWEN, vendor: 'cloudflare', pins: 'undated',
     cache: 'automatic-cache-priced-v1', efforts: ['none'], experimental: true });
   assert.deepEqual(modelFamily('reader', undated(DEEPSEEK)), { family: DEEPSEEK, vendor: 'deepseek', pins: 'undated',
-    cache: 'automatic-cache-priced-v1', efforts: ['none'], experimental: true });
+    cache: 'automatic-cache-priced-v1', efforts: ['none','low'], experimental: true });
   const gpt = modelFamily('reader', { id: 'gpt-5.4-2026-03-05', policy: 'versioned' });
   assert.equal(gpt?.vendor, 'openai'); assert.equal(gpt?.experimental, false); assert.deepEqual(gpt?.efforts, ['low', 'medium']);
   assert.equal(modelFamily('recovery', { id: 'gpt-5.4-nano-2026-03-17', policy: 'versioned' })?.vendor, 'openai');
@@ -47,17 +47,20 @@ test('each permitted reader family names its vendor, its request efforts and whe
   assert.equal(readerFamilyOf('unknown-model'), null);
 });
 
-test('the owner menu offers GPT-5.4 (default), mini, then the two experimental readers with their exact pins and labels', () => {
+test('the owner menu retains existing readers and adds the approved Sol default with exact pins and labels', () => {
   assert.deepEqual(validateProject(configured()), []);
   const menu = owner.readerModels;
-  assert.equal(menu.defaultId, 'standard');
-  assert.deepEqual(menu.options.map((option: { id: string; label: string; pin: { id: string; policy: string } }) => [option.id, option.label, option.pin.id, option.pin.policy]), [
+  assert.equal(menu.defaultId, 'sol');
+  assert.deepEqual(menu.options.filter((option:{id:string})=>option.id!=='deepseek_low').map((option: { id: string; label: string; pin: { id: string; policy: string } }) => [option.id, option.label, option.pin.id, option.pin.policy]), [
     ['standard', 'GPT-5.4', 'gpt-5.4', 'owner_approved_undated'],
     ['mini', 'GPT-5.4 mini', 'gpt-5.4-mini', 'owner_approved_undated'],
     ['qwen', 'Qwen 3.8 27B (Cloudflare)', QWEN, 'owner_approved_undated'],
     ['deepseek', 'DeepSeek Flash', DEEPSEEK, 'owner_approved_undated'],
     // DECISIONS 156: the Claude reader follows (core/config/claude-reader.test.ts).
-    ['claude', 'Claude Sonnet 5.5', 'claude-sonnet-5-5', 'owner_approved_undated']
+    ['claude', 'Claude Sonnet 5.5', 'claude-sonnet-5-5', 'owner_approved_undated'],
+    ['sol', 'GPT-6.1 Sol', 'gpt-6.1-sol', 'owner_approved_undated'],
+    ['terra', 'GPT-6.1 Terra', 'gpt-6.1-terra', 'owner_approved_undated'],
+    ['luna', 'GPT-6 Luna', 'gpt-6-luna', 'owner_approved_undated']
   ]);
   for (const id of ['qwen', 'deepseek']) {
     const option = menu.options.find((value: { id: string }) => value.id === id);
@@ -83,8 +86,8 @@ test('Qwen is priced at Cloudflare\'s published Neuron rates, and DeepSeek at it
 
 test('the owner daily limits add 9,000 Workers AI Neurons and USD 0.50 of DeepSeek per UTC day', () => {
   const limits = owner.settings.usageLimits;
-  // daily-usage-v3 (DECISIONS 156 addendum) keeps every v2 pool and adds Anthropic's.
-  assert.equal(limits.policy, 'daily-usage-v3');
+  // The monetary OpenAI pool preserves the existing experimental vendor limits.
+  assert.equal(limits.policy, 'daily-usage-v4');
   assert.equal(limits.workersAiDailyNeurons, 9000, '90% of the free 10,000');
   assert.equal(limits.deepseekDailyNano, '500000000');
   // The two experimental readers are in no OpenAI token pool.
@@ -131,13 +134,17 @@ test('an experimental option must declare thinking off; an OpenAI option may not
 
 test('a reader on Workers AI or DeepSeek needs the daily-usage-v2 pools; v1 limits are refused for them', () => {
   const pack = configured() as any;
-  pack.settings.usageLimits = { ...pack.settings.usageLimits, policy: 'daily-usage-v1' };
+  pack.settings.usageLimits = { ...pack.settings.usageLimits, policy: 'daily-usage-v1',
+    openaiTokenPools: [{ id: 'legacy', modelIds: ['gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano', 'gpt-6.1-sol'], limitTokens: 2250000 }] };
   delete pack.settings.usageLimits.workersAiDailyNeurons; delete pack.settings.usageLimits.deepseekDailyNano;
   delete pack.settings.usageLimits.anthropicDailyNano;
   const issues = validateProject(pack).filter(issue => issue.path.startsWith('settings.usageLimits'));
   assert.ok(issues.length >= 2, JSON.stringify(issues));
   // v1 stays valid for a pack whose readers are all OpenAI.
   pack.readerModels.options = pack.readerModels.options.filter((option: { id: string }) => ['standard', 'mini'].includes(option.id));
+  const standard=pack.readerModels.options[0];pack.readerModels.defaultId='standard';
+  pack.pins.reader=structuredClone(standard.pin);pack.prices.interactive.reader=structuredClone(standard.rates);
+  pack.settings.promptCachePolicy=standard.promptCachePolicy;
   assert.deepEqual(validateProject(pack), []);
 });
 
@@ -198,6 +205,22 @@ test('a frozen experimental choice must carry exactly its per-run cap; the cap r
   ]) { const pack = configured(); change(pack); assert.ok(validateProject(pack).some(issue => issue.path.startsWith('readerModels')), String(change)); }
 });
 
+test('a frozen low Flash option keeps its dated scope and fixed cap, independently of the ordinary menu', () => {
+  const source=configured(), ordinary=source.readerModels!.options.find(o=>o.id==='deepseek')!;
+  const low={...ordinary,id:'deepseek_low',label:'DeepSeek Flash (low reasoning)',readerEffort:'low' as const,
+    outputCap:{policy:'fixed-v1' as const,maxTokens:16384}};
+  source.readerModels!.options=source.readerModels!.options.filter(o=>o.id!=='deepseek_low').concat(low);
+  source.settings.inferenceWindow={startAt:'2026-11-13T00:00:00.000Z',endAt:'2026-11-14T00:00:00.000Z'};
+  const selected=selectReaderModel(source,low.id);
+  assert.deepEqual([selected.pins.reader.id,selected.settings.readerEffort,selected.settings.readerMaxOutputTokens],
+    [ordinary.pin.id,'low',16384]);
+  assert.deepEqual(selected.prices.interactive.reader,ordinary.rates);
+  assert.throws(()=>requireProject({...selected,settings:{...selected.settings,inferenceWindow:undefined}}));
+  assert.throws(()=>requireProject({...selected,settings:{...selected.settings,readerMaxOutputTokens:4608}}));
+  assert.throws(()=>requireProject({...selected,selectedReaderModel:'deepseek'}));
+  assert.deepEqual(requireProject(JSON.parse(JSON.stringify(selected))),selected);
+});
+
 test('selection is made from the unselected pack only: a recorded experimental choice cannot be re-chosen as another', () => {
   const qwen = selectReaderModel(configured(), 'qwen');
   assert.throws(() => selectReaderModel(qwen, 'standard'), /reader/i);
@@ -228,6 +251,7 @@ test('an experimental reader is never the menu default; a run that chose one per
     pack.readerModels.defaultId = id; pack.pins.reader = structuredClone(option.pin);
     pack.prices.interactive.reader = structuredClone(option.rates); pack.limits.readerContextTokens = option.contextTokens;
     pack.settings.readerEffort = option.readerEffort;
+    pack.settings.promptCachePolicy = option.promptCachePolicy;
     pack.settings.readerMaxOutputTokens = readerOutputCap(option.outputCap, pack.typeFile.types.length);
     assert.deepEqual(validateProject(pack).map(issue => [issue.code, issue.path, issue.detail]),
       [['E_MODEL_POLICY', 'readerModels.defaultId', EXPERIMENTAL_DEFAULT]], id);
@@ -235,12 +259,12 @@ test('an experimental reader is never the menu default; a run that chose one per
   }
   // A default carrying a per-run cap rule is refused as well (beside the existing refusal of that rule on an OpenAI option).
   const capped = configured() as any;
-  capped.readerModels.options[index('standard')].outputCap = structuredClone(owner.readerModels.options[index('qwen')].outputCap);
+  capped.readerModels.options[index(capped.readerModels.defaultId)].outputCap = structuredClone(owner.readerModels.options[index('qwen')].outputCap);
   assert.ok(validateProject(capped).some(issue => issue.path === 'readerModels.defaultId' && issue.detail === EXPERIMENTAL_DEFAULT));
   // A stored run pack whose selected reader is experimental keeps the OpenAI default and loads unchanged.
   for (const id of ['qwen', 'deepseek']) {
     const stored = JSON.parse(JSON.stringify(selectReaderModel(configured(), id)));
-    assert.equal(stored.selectedReaderModel, id); assert.equal(stored.readerModels.defaultId, 'standard');
+    assert.equal(stored.selectedReaderModel, id); assert.equal(stored.readerModels.defaultId, 'sol');
     assert.deepEqual(validateProject(stored), [], id);
     assert.doesNotThrow(() => requireProject(stored), id);
   }

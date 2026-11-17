@@ -99,6 +99,7 @@ export const shellCopy = {
   /** The rail's words for each step status (visually hidden beside the label; colour is never the only cue). */
   stepStatus: {
     upcoming: 'not available yet',
+    available: 'available to view',
     current: 'current step',
     done: 'done',
     attention: 'needs attention',
@@ -112,7 +113,8 @@ export const shellCopy = {
   strip: {
     decided: (d: number, t: number) => `${d} of ${t} decided`,
     sent: (d: number, t: number) => `${d} of ${t} sent`,
-    read: (d: number, t: number) => `${d} of ${t} read`
+    read: (settled: number, total: number, failed = 0) =>
+      `${settled - failed} of ${total} read` + (failed ? ` · ${failed} unreadable` : '')
   },
 
   /** The stage while a page waits for what it needs (the shell is never cleared). */

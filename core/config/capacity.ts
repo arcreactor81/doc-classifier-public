@@ -6,6 +6,7 @@
 import { buildConfidenceRequest } from '../vendors/requests.ts';
 import { buildConfidenceState } from '../digest/confidence-state.ts';
 import type { ProjectPack, TypeFile } from './project.ts';
+import { confidenceContextPolicy, confidenceQuestionTokens } from './confidence-context.ts';
 
 /** The reader answer formats (`settings.readerContract`). A pack without the setting answers in the exact format. */
 export const EXACT_READER_CONTRACT = 'reader-exact-evidence-v2';
@@ -99,7 +100,7 @@ export function confidenceCapacity(pack: ProjectPack, typeFile: TypeFile): Capac
     throw configuration('settings.confidenceQuestionPolicy', 'Unknown confidence question layout.');
   const all = positive(pack.limits.confidenceAllQuestionTokens, 'limits.confidenceAllQuestionTokens');
   const state = positive(pack.limits.confidenceStateQuestionTokens, 'limits.confidenceStateQuestionTokens');
-  const budget = all - state;
+  const budget = confidenceQuestionTokens(pack);
   const ratio = setting(pack, 'tokenBytesRatio', 1);
   if (typeof ratio !== 'number' || !Number.isFinite(ratio) || ratio < 1)
     throw configuration('settings.tokenBytesRatio', 'A number of at least 1 is required.');
@@ -128,7 +129,7 @@ export function confidenceCapacity(pack: ProjectPack, typeFile: TypeFile): Capac
   const measured = low > 0 ? `${size(low)} bytes, ${tokens(low)} tokens, for the first ${low}` : 'the first definition alone does not fit';
   return {
     limit: low,
-    formula: `${policy}: largest n <= ${typeFile.types.length} whose ${policy === GROUPED_CONFIDENCE_POLICY ? 'Choice and each Noul question' : 'questions'} fit ${all} - ${state} = ${budget} tokens at ceil(bytes / ${ratio}); n = ${low} (${measured})`
+    formula: `${policy}: largest n <= ${typeFile.types.length} whose ${policy === GROUPED_CONFIDENCE_POLICY ? 'Choice and each Noul question' : 'questions'} fit ${confidenceContextPolicy(pack.settings.confidenceContextPolicy) === 'standard-v1' ? `${all} - ${state} = ${budget}` : `${budget} explicitly allocated of ${all}`} tokens at ceil(bytes / ${ratio}); n = ${low} (${measured})`
   };
 }
 

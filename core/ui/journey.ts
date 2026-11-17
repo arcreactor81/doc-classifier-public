@@ -30,7 +30,7 @@ import type { SendSituation } from './upload-status.ts';
 
 export type StepId = 'folder' | 'read' | 'confirm' | 'send' | 'sort' | 'results' | 'build' | 'review';
 export type ChapterId = 'files' | 'start' | 'sorting' | 'folders';
-export type StepStatus = 'upcoming' | 'current' | 'done' | 'attention' | 'blocked' | 'skipped';
+export type StepStatus = 'upcoming' | 'available' | 'current' | 'done' | 'attention' | 'blocked' | 'skipped';
 /** The views the journey can send the person to. `improve` is the optional area after the numbered path. */
 export type ViewId = 'files' | 'confirm' | 'progress' | 'results' | 'build' | 'review' | 'improve' | 'fallback';
 /** What is mounted for this subject. The two category views show the rail from the Improve area (`?from=<runId>`). */
@@ -288,7 +288,7 @@ function draftRow(f: JourneyFacts, d: NonNullable<JourneyFacts['draft']>): Row {
     return { rule: 'J9', current: 'confirm', status: 'blocked', now: P('journey.now.setupBlocked', { reason }), action: null,
       view: 'confirm', currentReason: P('journey.reason.setup') };
   }
-  return { rule: 'J10', current: 'confirm', status: 'current', now: P('journey.now.readyToConfirm', { total: d.total }),
+  return { rule: 'J10', current: 'confirm', status: 'current', now: P('journey.now.readyToConfirm', { total: d.total, failed: d.failed }),
     action: act(P('screenConfirm.start'), `confirm:start:${id}`), view: 'confirm' };
 }
 
@@ -497,9 +497,12 @@ export function journey(f: JourneyFacts): JourneyView {
   const row = selectRow(f);
   const index = STEPS.indexOf(row.current);
   const steps = STEPS.map((id, i): JourneyStep => {
-    const status: StepStatus = row.allDone || i < index ? 'done' : i === index ? row.status : row.after ?? 'upcoming';
+    // A stopped run never reaches completion, but its saved outcomes remain inspectable on Results. Availability
+    // is not completion: keep Send/Sort current and leave Make folders/Review gated by the stopped-run reason.
+    const inspectable = row.rule === 'J15' && id === 'results';
+    const status: StepStatus = inspectable ? 'available' : row.allDone || i < index ? 'done' : i === index ? row.status : row.after ?? 'upcoming';
     const unavailable = status === 'upcoming' || status === 'blocked';
-    const reason = !unavailable ? null
+    const reason = inspectable ? row.afterReason ?? null : !unavailable ? null
       : i === index ? row.currentReason ?? upcomingReason(id, f)
       : row.afterReason ?? upcomingReason(id, f);
     const href = unavailable && i !== index ? null : stepHref(id, f);

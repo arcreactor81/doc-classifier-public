@@ -9,7 +9,8 @@
  *   holding it makes this call `elsewhere`; nothing is sent from here.
  * - Each document the service does not hold is uploaded once, in quote order, with the body rebuilt from its stored
  *   record exactly as at Confirm. A document the service already holds is never sent again. Nothing is retried: a
- *   dropped connection stops the loop (`dropped`) and a refused document stops it for good (`rejected`: Discard).
+ *   dropped connection stops new uploads (`dropped`) and a refused document stops them for good (`rejected`: Discard).
+ *   The controller records acknowledgements from other requests already in flight before reporting an error.
  * - Hand-over needs no local text: when every document is uploaded (the run is `uploading` with uploaded = total, or
  *   `running` with documents not yet handed over) Continue sending runs only the `/start` loop, in any browser signed
  *   in as the owner. Each `/start` is preceded by a fresh status read; a failed one is never repeated.
@@ -27,6 +28,7 @@ import {
   DocumentRejectedError, ElsewhereError, NO_REPORT, NoLocalTextError, workTracker, type StepReport
 } from '../../../core/ui/run-controls.ts';
 import { prepareLocalRun } from '../../../core/local/preflight.ts';
+import { uploadBatches } from '../../../core/local/upload-batches.ts';
 import { getProject, startDispatch, uploadDocument } from '../api/endpoints.ts';
 import { readLocalForRun, writeSendRejected, readDraftBakeoff, readBakeoffCreated } from '../persist/local-keys.ts';
 import { bakeoffArm, prepareFrozenBakeoff } from '../../../core/ui/bakeoff-local.ts';
@@ -92,8 +94,8 @@ function createSendController(ctx: ControllerContext, registry: ControllerRegist
     return fetched.value;
   }
 
-  const dropped = (error: unknown, filename: string | null, report: StepReport): SendOutcome => {
-    const view = presentError(error, 'send', filename === null ? {} : { filename });
+  const dropped = (error: unknown, filename: string | null, report: StepReport,
+    view = presentError(error, 'send', filename === null ? {} : { filename })): SendOutcome => {
     run.send.set({ kind: 'dropped', at: Date.now(), filename, error: view });
     report.problem(error, 'send');
     return { kind: 'dropped', error: view };
@@ -153,26 +155,28 @@ function createSendController(ctx: ControllerContext, registry: ControllerRegist
         if (item.local.state === 'extracted') await local.put({ ...item.local, state: 'uploaded' });
       }
       show(null);
-      for (const index of queue.toSend) {
+      const issues = await uploadBatches(queue.toSend, async index => {
         const item = prepared[index];
-        const filename = item.quote.originalFilename;
-        try {
-          await uploadDocument(runId, item.upload);
-        } catch (error) {
-          if (uploadFailureKind(error) === 'rejected') {
-            const rejection = new DocumentRejectedError(filename, error);
-            const view = presentError(rejection, 'send');
-            // Remembered across reloads: the run then offers Discard only (acceptance sweep RS-1).
-            writeSendRejected(runId, { filename, error: view, at: Date.now() });
-            run.send.set({ kind: 'rejected', filename, error: view });
-            report.problem(rejection, 'send');
-            return { kind: 'rejected', filename, error: view };
-          }
-          return dropped(error, filename, report);
-        }
+        await uploadDocument(runId, item.upload);
         if (item.local.state === 'extracted') await local.put({ ...item.local, state: 'uploaded' });
         sent++;
         show(Date.now());
+      });
+      if (issues.length) {
+        // A terminal refusal survives reload even if another upload in this group lost its acknowledgement.
+        const refused = issues.find(issue => uploadFailureKind(issue.error) === 'rejected');
+        const first = refused ?? issues[0];
+        const filename = prepared[first.index].quote.originalFilename;
+        const error = refused ? new DocumentRejectedError(filename, first.error) : first.error;
+        const view = presentError(error, 'send', { filename });
+        if (issues.length > 1) view.technical.otherUploads = issues.filter(issue => issue !== first).map(issue => ({
+          filename: prepared[issue.index].quote.originalFilename, error: presentError(issue.error, 'send').technical
+        }));
+        if (!refused) return dropped(error, filename, report, view);
+        writeSendRejected(runId, { filename, error: view, at: Date.now() });
+        run.send.set({ kind: 'rejected', filename, error: view });
+        report.problem(error, 'send');
+        return { kind: 'rejected', filename, error: view };
       }
     } finally {
       local.close();

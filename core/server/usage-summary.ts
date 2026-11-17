@@ -1,6 +1,7 @@
-import { modelFamily, readerOutputCap, typeVersion, vendorModelIds, type ProjectPack } from '../config/project.ts';
+import { modelFamily, promptCachePolicy, readerOutputCap, typeVersion, vendorModelIds, type ProjectPack } from '../config/project.ts';
+import { confidenceContextPolicy } from '../config/confidence-context.ts';
 import { capsExempt } from '../config/definitions.ts';
-import { ANTHROPIC_POOL_ID, DEEPSEEK_POOL_ID, NANODOLLARS_PER_NEURON, TYPESAFE_POOL_ID, WORKERS_AI_POOL_ID, hasVendorPools, tokenPoolForModel, utcUsageDay } from '../config/usage-limits.ts';
+import { ANTHROPIC_POOL_ID, DEEPSEEK_POOL_ID, NANODOLLARS_PER_NEURON, TYPESAFE_POOL_ID, WORKERS_AI_POOL_ID, hasAnthropicPool, hasVendorPools, normalizeOpenaiPool, tokenPoolForModel, utcUsageDay } from '../config/usage-limits.ts';
 import { outbound } from '../vendors/outbound.ts';
 import { actorRunCount, readDailyUsage, type DailyPool } from './daily-usage.ts';
 import { dailyRecordAllowance, dailyRecordCount, type DailyRecordKind } from './daily-allowance.ts';
@@ -25,7 +26,7 @@ export type UsageSummary = { enabled: false } | {
   actorReferencesToday: number; maxReferencesPerActorPerDay: number;
   pools: UsagePoolSummary[]; readerModels: ReaderUsageEstimate[];
 };
-interface Sample { readerTokens: number; readerNano: number; recoveryTokens: number; confidenceNano: number; totalNano: number }
+interface Sample { readerTokens: number; readerNano: number; recoveryTokens: number; recoveryNano: number; confidenceNano: number; totalNano: number }
 const validCount = (v: unknown): v is number => Number.isSafeInteger(v) && Number(v) >= 0;
 const bad = () => new ServerFailure('E_DAILY_USAGE_STORAGE', 'blocker', usageCopy.storage);
 
@@ -37,14 +38,18 @@ export async function readUsageSummary(
   if (!limits) return { enabled: false };
   const date = utcUsageDay(at);
   const configured: { pool: DailyPool; limitUnits: number }[] = [
-    ...limits.openaiTokenPools.map(pool => ({ pool: { id: 'openai/' + pool.id, unit: 'tokens' as const, modelIds: pool.modelIds }, limitUnits: pool.limitTokens })),
+    ...limits.openaiTokenPools.map(pool => {
+      const normalized = normalizeOpenaiPool(pool);
+      if (normalized.unit === 'nanodollars' && limits.policy !== 'daily-usage-v4') throw bad();
+      return { pool: { id: normalized.id, unit: normalized.unit, modelIds: normalized.modelIds }, limitUnits: normalized.limitUnits };
+    }),
     { pool: { id: TYPESAFE_POOL_ID, unit: 'nanodollars', modelIds: [pack.pins.confidence.id] }, limitUnits: Number(limits.typesafeDailyNano) },
     ...(hasVendorPools(limits) ? [
       { pool: { id: WORKERS_AI_POOL_ID, unit: 'nanodollars' as const, modelIds: vendorModelIds('cloudflare') }, limitUnits: limits.workersAiDailyNeurons * NANODOLLARS_PER_NEURON },
       { pool: { id: DEEPSEEK_POOL_ID, unit: 'nanodollars' as const, modelIds: vendorModelIds('deepseek') }, limitUnits: Number(limits.deepseekDailyNano) }
     ] : []),
     // DECISIONS 156 addendum: the Anthropic pool of daily-usage-v3.
-    ...(limits.policy === 'daily-usage-v3' ? [
+    ...(hasAnthropicPool(limits) ? [
       { pool: { id: ANTHROPIC_POOL_ID, unit: 'nanodollars' as const, modelIds: vendorModelIds('anthropic') }, limitUnits: Number(limits.anthropicDailyNano) }
     ] : [])
   ];
@@ -75,15 +80,19 @@ export async function readUsageSummary(
   const recorded = pack.readerModels?.options.find(option => option.id === (pack.selectedReaderModel ?? pack.readerModels?.defaultId));
   if (recorded?.outputCap !== undefined) throw bad();
   const options = pack.readerModels?.options.map(option => ({ id: option.id, pin: option.pin, effort: option.readerEffort ?? pack.settings.readerEffort,
-    cap: option.outputCap === undefined ? pack.settings.readerMaxOutputTokens : readerOutputCap(option.outputCap, pack.typeFile.types.length) }))
-    ?? [{ id: pack.pins.reader.id, pin: pack.pins.reader, effort: pack.settings.readerEffort, cap: pack.settings.readerMaxOutputTokens }];
+    cap: option.outputCap === undefined ? pack.settings.readerMaxOutputTokens : readerOutputCap(option.outputCap, pack.typeFile.types.length),
+    cachePolicy: option.promptCachePolicy }))
+    ?? [{ id: pack.pins.reader.id, pin: pack.pins.reader, effort: pack.settings.readerEffort, cap: pack.settings.readerMaxOutputTokens,
+      cachePolicy: promptCachePolicy(pack.settings, 'reader') }];
   const settings = pack.settings;
   const readerModels: ReaderUsageEstimate[] = [];
   for (const option of options) {
+    const recoveryCachePolicy = promptCachePolicy({ ...settings, promptCachePolicy: option.cachePolicy }, 'recovery');
     const samples = (await env.DB.prepare(`
       SELECT SUM(CASE WHEN v.role='reader' THEN v.token_units ELSE 0 END) AS readerTokens,
         SUM(CASE WHEN v.role='reader' THEN v.nano_units ELSE 0 END) AS readerNano,
         SUM(CASE WHEN v.role='recovery' THEN v.token_units ELSE 0 END) AS recoveryTokens,
+        SUM(CASE WHEN v.role='recovery' THEN v.nano_units ELSE 0 END) AS recoveryNano,
         SUM(CASE WHEN v.role='confidence' THEN v.nano_units ELSE 0 END) AS confidenceNano,
         SUM(v.nano_units) AS totalNano
       FROM daily_vendor_usage v JOIN runs r ON r.id=v.run_id
@@ -94,17 +103,26 @@ export async function readUsageSummary(
         AND json_extract(r.pack_json,'$.settings.readerEffort')=?
         AND json_extract(r.pack_json,'$.settings.readerMaxOutputTokens')=?
         AND json_extract(r.pack_json,'$.settings.readerContract')=?
+        AND CASE WHEN json_type(r.pack_json,'$.settings.promptCachePolicy') IS NULL THEN 'explicit-no-cache-v1'
+          ELSE json_extract(r.pack_json,'$.settings.promptCachePolicy') END=?
+        AND CASE WHEN json_type(r.pack_json,'$.settings.recoveryPromptCachePolicy') IS NULL
+          THEN CASE WHEN json_type(r.pack_json,'$.settings.promptCachePolicy') IS NULL THEN 'explicit-no-cache-v1'
+            ELSE json_extract(r.pack_json,'$.settings.promptCachePolicy') END
+          ELSE json_extract(r.pack_json,'$.settings.recoveryPromptCachePolicy') END=?
         AND json_extract(r.pack_json,'$.settings.recoveryEffort')=?
         AND json_extract(r.pack_json,'$.settings.recoveryMaxOutputTokens')=?
         AND json_extract(r.pack_json,'$.settings.confidenceQuestionPolicy')=?
         AND json_extract(r.pack_json,'$.settings.confidenceStatePolicy')=?
+        AND CASE WHEN json_type(r.pack_json,'$.settings.confidenceContextPolicy') IS NULL THEN 'standard-v1'
+          ELSE json_extract(r.pack_json,'$.settings.confidenceContextPolicy') END=?
         AND EXISTS(SELECT 1 FROM json_each(r.notes_json) WHERE value='N_FAKE_VENDORS')=?
       GROUP BY r.id,d.fingerprint
       HAVING SUM(CASE WHEN v.nano_units IS NULL OR (v.role!='confidence' AND v.token_units IS NULL) THEN 1 ELSE 0 END)=0
         AND SUM(CASE WHEN v.role='reader' THEN 1 ELSE 0 END)>0
     `).bind(version, option.pin.id, option.pin.policy, pack.pins.recovery.id, pack.pins.confidence.id,
-      option.effort, option.cap, settings.readerContract!, settings.recoveryEffort,
+      option.effort, option.cap, settings.readerContract!, option.cachePolicy, recoveryCachePolicy, settings.recoveryEffort,
       settings.recoveryMaxOutputTokens, settings.confidenceQuestionPolicy!, settings.confidenceStatePolicy,
+      confidenceContextPolicy(settings.confidenceContextPolicy),
       outbound.vendors === 'fake' ? 1 : 0).all<Sample>()).results;
     if (!Array.isArray(samples) || samples.some(sample => Object.values(sample).some(value => !validCount(value)))) throw bad();
     const estimate: ReaderUsageEstimate = { id: option.id, model: option.pin.id, sampleDocuments: samples.length,
@@ -112,20 +130,21 @@ export async function readUsageSummary(
     if (samples.length === 0) { readerModels.push(estimate); continue; }
     const totals = samples.reduce((sum, row) => ({ readerTokens: sum.readerTokens + BigInt(row.readerTokens),
       readerNano: sum.readerNano + BigInt(row.readerNano),
-      recoveryTokens: sum.recoveryTokens + BigInt(row.recoveryTokens), confidenceNano: sum.confidenceNano + BigInt(row.confidenceNano),
-      totalNano: sum.totalNano + BigInt(row.totalNano) }), { readerTokens: 0n, readerNano: 0n, recoveryTokens: 0n, confidenceNano: 0n, totalNano: 0n });
+      recoveryTokens: sum.recoveryTokens + BigInt(row.recoveryTokens), recoveryNano: sum.recoveryNano + BigInt(row.recoveryNano), confidenceNano: sum.confidenceNano + BigInt(row.confidenceNano),
+      totalNano: sum.totalNano + BigInt(row.totalNano) }), { readerTokens: 0n, readerNano: 0n, recoveryTokens: 0n, recoveryNano: 0n, confidenceNano: 0n, totalNano: 0n });
     const n = BigInt(samples.length);
     estimate.averageCostNanoPerDocument = ((totals.totalNano + n - 1n) / n).toString();
     // The reader's own pool: OpenAI tokens, or the Workers AI / DeepSeek / Anthropic nanodollar pool of its vendor.
     const vendor = modelFamily('reader', option.pin)?.vendor ?? 'openai';
-    const recoveryPool = tokenPoolForModel(limits, pack.pins.recovery.id);
-    const readerPool = vendor === 'openai' ? tokenPoolForModel(limits, option.pin.id) : null;
-    if (!recoveryPool || vendor === 'openai' && !readerPool) throw bad();
+    const recoveryEntry = tokenPoolForModel(limits, pack.pins.recovery.id);
+    const readerEntry = vendor === 'openai' ? tokenPoolForModel(limits, option.pin.id) : null;
+    if (!recoveryEntry || vendor === 'openai' && !readerEntry) throw bad();
+    const recoveryPool = normalizeOpenaiPool(recoveryEntry), readerPool = readerEntry ? normalizeOpenaiPool(readerEntry) : null;
     const consumption = new Map<string, bigint>([[TYPESAFE_POOL_ID, totals.confidenceNano]]);
     for (const [id, amount] of [
-      vendor === 'openai' ? ['openai/' + readerPool!.id, totals.readerTokens] as const
+      vendor === 'openai' ? [readerPool!.id, readerPool!.unit === 'tokens' ? totals.readerTokens : totals.readerNano] as const
         : [vendor === 'cloudflare' ? WORKERS_AI_POOL_ID : vendor === 'anthropic' ? ANTHROPIC_POOL_ID : DEEPSEEK_POOL_ID, totals.readerNano] as const,
-      ['openai/' + recoveryPool.id, totals.recoveryTokens] as const])
+      [recoveryPool.id, recoveryPool.unit === 'tokens' ? totals.recoveryTokens : totals.recoveryNano] as const])
       consumption.set(id, (consumption.get(id) ?? 0n) + amount);
     const dayBounds: bigint[] = [], remainingBounds: bigint[] = [];
     let unknown = false;

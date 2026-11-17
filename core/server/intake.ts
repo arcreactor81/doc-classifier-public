@@ -1,7 +1,7 @@
 import { response } from './api.ts';
 import { readReferenceHead, validateReferenceLineage } from './feedback.ts';
-import { effectiveProject, requireCapacity } from './definitions.ts';
-import { typeVersion, type ProjectPack, requireProject } from '../config/project.ts';
+import { effectiveProject, requireCapacity, requireEditor } from './definitions.ts';
+import { DEEPSEEK_LOW_OPTION, typeVersion, type ProjectPack, requireProject } from '../config/project.ts';
 import { authorizeRunBudget, readRunBudget } from '../cost/run-budget.ts';
 import { buildConfidenceState } from '../digest/confidence-state.ts';
 import { VENDOR_PROMPTS, readerPromptVersion } from '../vendors/requests.ts';
@@ -24,6 +24,7 @@ import { readerCalibrationGuard, readerCalibrationCopy, sameTrialReader } from '
 import { requireRunAdmission, runAdmissionPredicate } from './daily-usage.ts';
 import { dailyRecordPredicate, requireDailyRecordAdmission } from './daily-allowance.ts';
 import { requireReaderReady } from './reader-readiness.ts';
+import { usageCopy } from '../ui/copy-usage.ts';
 
 /** Every person-facing sentence of the pilot bypass (DECISIONS 88), in one place. */
 export const skipPilotCopy = Object.freeze({
@@ -253,6 +254,7 @@ export async function quote(
     requireValue(selectedReaderModel !== undefined, 'Choose a reader model before confirming this run.');
   const pack = experiment?.pack ?? await effectiveProject(env, projectSource, { selectedReaderModel });
   if (experiment) requireValue(selectedReaderModel === pack.selectedReaderModel, 'The reader model is frozen for this comparison.');
+  if (pack.selectedReaderModel === DEEPSEEK_LOW_OPTION) requireEditor(env, actor, usageCopy.studyReaderEditor);
   // DECISIONS 136: a reader whose binding or key this deployment lacks is refused before anything is recorded.
   await requireReaderReady(env, pack);
   // Git packs and revisions activated under earlier settings bypass the editor's capacity check.
@@ -467,6 +469,7 @@ export async function createRun(
     requireValue(typeof estimate.selectedReaderModel === 'string', 'The confirmation does not name a reader choice. Confirm the run again.');
   const pack = experiment?.pack ?? await effectiveProject(env, projectSource, { selectedReaderModel: estimate.selectedReaderModel as string | undefined });
   if (experiment) requireValue(estimate.selectedReaderModel === pack.selectedReaderModel, 'The reader model is frozen for this comparison.');
+  if (pack.selectedReaderModel === DEEPSEEK_LOW_OPTION) requireEditor(env, actor, usageCopy.studyReaderEditor);
   await requireReaderReady(env, pack);
   // A confirmation stored before Batch mode was retired must not create a Batch run on this release.
   if (quote.mode !== 'interactive') throw new ServerFailure('E_RUN_MODE', 'request',

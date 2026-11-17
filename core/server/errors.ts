@@ -144,6 +144,7 @@ export const serverCopy = {
   storageReadUnconfirmed: 'A saved record of this document could not be read after repeated brief storage interruptions. Nothing was repeated.',
   documentOutcomeUnconfirmed: 'The document outcome could not be verified in storage. Existing results are preserved for review.',
   runPersistenceUnconfirmed: 'The run state could not be verified in storage. Keep its saved records for review.',
+  dispatchPacingUnconfirmed: 'The start-rate check could not be confirmed. Keep this run and its records.',
   workflowAssociationUnconfirmed: 'The accepted document workflow could not be confirmed in storage. It has not been created again.',
   workflowDispatchUnconfirmed: 'We could not confirm that a document had started processing. The run has stopped.',
   textDeletionUnconfirmed: 'The saved record of removed text could not be confirmed. Try finishing the close again.',

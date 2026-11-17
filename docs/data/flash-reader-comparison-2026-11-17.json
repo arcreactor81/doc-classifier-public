@@ -1,0 +1,100 @@
+{
+  "asOf": "2026-11-17",
+  "inventory": 2040,
+  "eligible": 2032,
+  "excludedBeforeInference": 8,
+  "configuration": {
+    "confidence": "jev-1.14.0",
+    "confidenceContextPolicy": "long-context-262k-v1",
+    "reader": "deepseek-flash",
+    "readerEffort": "low",
+    "readerOutputCap": 16384,
+    "threshold": 0.9,
+    "categoryCount": 8
+  },
+  "arms": {
+    "sol": {
+      "outcomes": 2032,
+      "correctFilings": 1435,
+      "misfiles": 31,
+      "review": 563,
+      "processingFailures": 3,
+      "missing": 0
+    },
+    "terra": {
+      "outcomes": 2020,
+      "correctFilings": 1435,
+      "misfiles": 33,
+      "review": 537,
+      "processingFailures": 15,
+      "missing": 12
+    },
+    "flashLow": {
+      "outcomes": 2032,
+      "correctFilings": 1452,
+      "misfiles": 32,
+      "review": 543,
+      "processingFailures": 5,
+      "missing": 0
+    }
+  },
+  "comparisons": {
+    "solFlash": {
+      "matchedPapers": 2032,
+      "correctFilings": {
+        "earlier": 1435,
+        "flash": 1452,
+        "earlierOnly": 51,
+        "flashOnly": 68,
+        "exploratoryTwoSidedP": 0.14213202807505854
+      },
+      "misfiles": {
+        "earlier": 31,
+        "flash": 32,
+        "earlierOnly": 4,
+        "flashOnly": 5,
+        "exploratoryTwoSidedP": 1
+      }
+    },
+    "terraFlash": {
+      "matchedPapers": 2020,
+      "correctFilings": {
+        "earlier": 1435,
+        "flash": 1444,
+        "earlierOnly": 42,
+        "flashOnly": 51,
+        "exploratoryTwoSidedP": 0.40692436804613447
+      },
+      "misfiles": {
+        "earlier": 33,
+        "flash": 32,
+        "earlierOnly": 5,
+        "flashOnly": 4,
+        "exploratoryTwoSidedP": 1
+      }
+    }
+  },
+  "performance": {
+    "sealedBatches": 34,
+    "medianBatchSeconds": 295.50350000000003,
+    "medianCreateToObservedCompleteSeconds": 165.0125,
+    "readerAttempts": 2103,
+    "extraReaderCalls": 71,
+    "readerMedianLatencyMs": 19191,
+    "readerP95LatencyMs": 38399
+  },
+  "newFlashStudyCostNano": {
+    "openai": "517841200",
+    "deepseek": "21550138236",
+    "typesafe": "2398143678",
+    "blended": "24466123114"
+  },
+  "caveats": [
+    "Primary arXiv subjects are reference labels, not adjudicated client truth.",
+    "Each arm reran Jev independently.",
+    "Paired comparisons require identical fingerprints and upload hashes.",
+    "Exploratory p-values are unadjusted; no noninferiority margin was declared.",
+    "DeepSeek is accounted at recorded peak rates; costs are not invoices.",
+    "Completed-batch medians exclude the interrupted local read and investigation interval."
+  ]
+}

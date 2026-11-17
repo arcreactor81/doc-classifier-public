@@ -18,6 +18,10 @@ export const usageCopy = {
     blocked: 'A daily allowance is used up for today. New requests that need it wait until it resets.'
   },
   storage: 'The daily usage record could not be verified. No new model request was sent.',
+  inferenceWindow: 'This request is outside the approved testing dates. No new model request was sent.',
+  invalidRunAllowance: 'The spending authorization for this run could not be verified.',
+  studyReaderEditor: 'This reader setting is available to the study operator.',
+  offPeakWindow: 'This request is outside the off-peak period approved for this run.',
   unknown: 'Usage for an earlier request in this daily pool is unknown. New requests are stopped for this UTC day; recorded work is preserved.',
   bound: 'A model reported more usage than was reserved. Further requests in this daily pool are stopped; the reported usage is preserved.',
   daily: 'This request would exceed what is left of the site\'s daily allowance. This run has stopped. The allowance resets at 00:00 UTC; a new run must be started explicitly.',

@@ -337,8 +337,11 @@ export function presentError(error: unknown, context: ErrorContext, hints: Error
  */
 export function presentStopReason(stop: StopReasonWire): UiErrorView {
   const killed = stop.code === 'E_KILL_SWITCH', copy = uiCopy.errors.stop;
-  const headline = hasJargon(stop.headline) ? (killed ? copy.killedHeadline : copy.headline) : stop.headline;
+  const unconfirmed = stop.code === 'E_CHECKPOINT_FAIL';
+  const headline = unconfirmed ? copy.unconfirmedFailure :
+    hasJargon(stop.headline) ? (killed ? copy.killedHeadline : copy.headline) : stop.headline;
   const action = killed ? phrase('errors.stop.killed')
+    : unconfirmed ? phrase('errors.stop.inspectFailure')
     : unusableAction(stop.action) ? phrase('errors.stop.generic') : verbatim(stop.action);
   return {
     headline,

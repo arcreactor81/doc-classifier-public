@@ -9,8 +9,10 @@ const mini={id:'mini',label:'GPT-5.4 mini',pin:{id:'gpt-5.4-mini-2026-03-17',pol
   rates:{inputNanodollarsPerMillion:'750000000',cachedInputNanodollarsPerMillion:'75000000',outputNanodollarsPerMillion:'4500000000'},
   promptCachePolicy:'automatic-cache-priced-v1',contextTokens:400000};
 function fixture():ProjectPack {
-  return structuredClone({...owner,typeFile:fixtures.syntheticTypeFile(2),structuralVocabulary:[],readerModels:{defaultId:'standard',options:[
-    {id:'standard',label:'GPT-5.4',pin:owner.pins.reader,rates:owner.prices.interactive.reader,promptCachePolicy:owner.settings.promptCachePolicy,contextTokens:owner.limits.readerContextTokens},mini]}});
+  const standard=owner.readerModels.options.find((option:{id:string})=>option.id==='standard');
+  return structuredClone({...owner,pins:{...owner.pins,reader:standard.pin},prices:{...owner.prices,interactive:{...owner.prices.interactive,reader:standard.rates}},
+    settings:{...owner.settings,promptCachePolicy:standard.promptCachePolicy},typeFile:fixtures.syntheticTypeFile(2),structuralVocabulary:[],
+    readerModels:{defaultId:'standard',options:[standard,mini]}});
 }
 
 test('a reader menu validates every pin, cached price, context and default before it can be offered',()=>{

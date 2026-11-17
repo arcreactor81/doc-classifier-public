@@ -142,6 +142,8 @@ export const errorsCopy = {
 
   /** A stopped run (StopCard). The recorded headline is shown verbatim where it is plain. */
   stop: {
+    unconfirmedFailure: "An error occurred, and the site couldn't confirm that it had saved the details. It stopped the run to avoid repeating the step.",
+    inspectFailure: 'Check the technical details before deciding whether to start a new run.',
     killedHeadline: 'The emergency stop halted this run.',
     killed: "This run can't be continued. Start a new run when new runs are allowed again.",
     generic: 'Documents that already have an outcome keep it. A stopped run has no results file.',

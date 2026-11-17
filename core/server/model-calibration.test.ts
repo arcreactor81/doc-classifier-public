@@ -5,9 +5,10 @@ import { migratedDatabase, localD1 } from './testing/local-bindings.ts';
 import { activateDefinition, createDefinitionDraft, definitionState, effectiveProject } from './definitions.ts';
 import { typeVersion, type ProjectPack } from '../config/project.ts';
 import { syntheticPack } from '../../scripts/fixtures/synthetic-pack.mjs';
-import { applyReaderThreshold, readerCalibrationGuard, sameTrialReader } from './model-calibration.ts';
+import { applyReaderThreshold, readerCalibrationGuard, sameTrialReader, withReaderCalibration } from './model-calibration.ts';
 
 const OWNER = 'editor';
+const LONG = 'long-context-262k-v1' as const;
 const BASE: ProjectPack = syntheticPack(2, { settings: { promptCachePolicy: 'explicit-no-cache-v1' } });
 const SOL = BASE.pins.reader;
 const TERRA = { ...SOL, id: 'gpt-5.6-terra' };
@@ -254,6 +255,72 @@ test('trial reader matching preserves legacy reads but never borrows unknown or 
   assert.equal(sameTrialReader(SEED, JSON.stringify({ ...BASE, pins: { ...BASE.pins, reader: TERRA } })), false);
   assert.equal(sameTrialReader(SEED, JSON.stringify({ settings: { pilotSize: 25 } })), false);
   assert.throws(() => sameTrialReader(SEED, JSON.stringify({ pins: { reader: { id: 7, policy: 'versioned' } } })), { code: 'E_READER_CALIBRATION' });
+});
+
+test('trial checks never cross confidence contexts, while absent and explicit standard remain equivalent', () => {
+  const standard = { ...SEED, settings: { ...SEED.settings, confidenceContextPolicy: 'standard-v1' as const } };
+  const long = { ...SEED, settings: { ...SEED.settings, confidenceContextPolicy: LONG } };
+  assert.equal(sameTrialReader(standard, JSON.stringify(SEED)), true);
+  assert.equal(sameTrialReader(SEED, JSON.stringify(standard)), true);
+  assert.equal(sameTrialReader(long, JSON.stringify(SEED)), false);
+  assert.equal(sameTrialReader(SEED, JSON.stringify(long)), false);
+  assert.equal(sameTrialReader(long, JSON.stringify(long)), true);
+  assert.equal(sameTrialReader(BASE, JSON.stringify(long)), false);
+  assert.throws(() => sameTrialReader(long, JSON.stringify({ ...long, settings: { confidenceContextPolicy: null } })), { code: 'E_READER_CALIBRATION' });
+});
+
+test('long context has its own calibration identity and admission fence, without changing legacy keys', async () => {
+  const f = await fixture();
+  try {
+    await f.correction(SOL, .95);
+    const standard = await f.selected('sol');
+    const explicit = await withReaderCalibration(f.env.DB, { ...standard, settings: { ...standard.settings, confidenceContextPolicy: 'standard-v1' } });
+    assert.equal(explicit.readerCalibrationKey, standard.readerCalibrationKey);
+    const longPack = { ...standard, settings: { ...standard.settings, confidenceContextPolicy: LONG } };
+    const long = await withReaderCalibration(f.env.DB, longPack);
+    assert.deepEqual([long.definitionThreshold, long.definitionThresholdStatus], [.9, 'untested']);
+    assert.notEqual(long.readerCalibrationKey, standard.readerCalibrationKey);
+    assert.throws(() => readerCalibrationGuard(longPack, f.version), { code: 'E_READER_CALIBRATION' });
+    const guard = readerCalibrationGuard(long, f.version)!;
+    const matches = () => f.db.prepare('SELECT (' + guard.sql + ') AS matches').get(...guard.params)!.matches;
+    assert.equal(matches(), 1);
+    await f.correction(SOL, .97); assert.equal(matches(), 1, 'standard evidence does not invalidate the long-context fence');
+    const own = await f.correction(SOL, .93, undefined, false);
+    own.pack = long;
+    f.db.prepare('UPDATE runs SET pack_json=? WHERE id=?').run(JSON.stringify(long), own.runId);
+    assert.equal((await f.apply(own, .93)).thresholdStatus, 'provisional');
+    assert.equal(matches(), 0, 'own new evidence invalidates the old long-context fence');
+    const checked = await withReaderCalibration(f.env.DB, longPack);
+    assert.deepEqual([checked.definitionThreshold, checked.definitionThresholdStatus], [.93, 'provisional']);
+    assert.equal((await f.selected('sol')).definitionThreshold, .97);
+  } finally { f.db.close(); }
+});
+
+test('a threshold application cannot attribute a standard source to long-context evidence', async () => {
+  const f = await fixture();
+  try {
+    const source = await f.correction(SOL, .96, undefined, false), standard = await f.selected('sol');
+    source.pack = await withReaderCalibration(f.env.DB, { ...standard, settings: { ...standard.settings, confidenceContextPolicy: LONG } });
+    await assert.rejects(f.apply(source, .96), { code: 'E_READER_CALIBRATION_STALE' });
+    assert.equal(f.db.prepare('SELECT COUNT(*) n FROM threshold_history').get()!.n, 0);
+  } finally { f.db.close(); }
+});
+
+test('concurrent applications under different confidence contexts keep independent history fences', async () => {
+  const f = await fixture();
+  try {
+    const standard = await f.correction(SOL, .95, undefined, false), long = await f.correction(SOL, .93, undefined, false);
+    const selected = await f.selected('sol');
+    long.pack = await withReaderCalibration(f.env.DB, { ...selected, settings: { ...selected.settings, confidenceContextPolicy: LONG } });
+    f.db.prepare('UPDATE runs SET pack_json=? WHERE id=?').run(JSON.stringify(long.pack), long.runId);
+    const gate = pauseApplication(f.env), pending = f.apply(long, .93);
+    await gate.atWrite;
+    try { assert.equal((await f.apply(standard, .95)).thresholdStatus, 'provisional'); }
+    finally { gate.release(); }
+    assert.equal((await pending).thresholdStatus, 'provisional');
+    assert.equal((await f.selected('sol')).definitionThreshold, .95);
+    assert.equal((await withReaderCalibration(f.env.DB, long.pack)).definitionThreshold, .93);
+  } finally { f.db.close(); }
 });
 
 test('the public selected-project and explicit-apply routes retain per-reader scope', async () => {

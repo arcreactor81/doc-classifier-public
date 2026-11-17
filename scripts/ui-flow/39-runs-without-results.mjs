@@ -92,7 +92,8 @@ await runScript(SCRIPT, 'Review F5: a discarded or stopped run never reads as pe
     return shown;
   };
   const go = async (page, hash) => { await page.evaluate(next => { location.hash = next; }, hash); };
-  const nothingPending = shown => !/sorted so far/i.test(shown.body) && !shown.body.includes(resultsCopy.notReady);
+  const nothingPending = shown => !/sorted so far/i.test(shown.body) &&
+    !shown.body.includes(resultsCopy.notReady) && !shown.body.includes(resultsCopy.partialResults);
 
   // --- A discarded run: Results by bookmark, Review typed, Build typed, Back to Review --------------------------------
   const session = await openApp(app, { hash: `#/run/${discardedId}/results` });

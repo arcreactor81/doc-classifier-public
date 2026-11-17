@@ -12,6 +12,7 @@ import { readerOptionReadiness, requireReaderReady } from './reader-readiness.ts
  */
 const pack = requireProject({ ...structuredClone(owner), typeFile: syntheticPack(1).typeFile }) as ProjectPack;
 // The AI binding serves both the Workers AI reader (`run`) and the AI Gateway route of every reader (`gateway`).
+const extraLowRow = (state:unknown[]) => pack.readerModels?.options.some(o=>o.id==='deepseek_low') ? [['deepseek_low', ...state]] : [];
 const gatewayHandle = () => ({ run: async () => new Response('{}') });
 const ai = { run: async () => new Response('{}'), gateway: gatewayHandle };
 /** A binding that can reach the gateway but not run Workers AI models: only Qwen is affected. */
@@ -22,7 +23,7 @@ const gateway = { AI_GATEWAY_ID: 'default' };
 
 test('every option is ready when its vendor\'s binding and key are present', async () => {
   const rows = await readerOptionReadiness({ ...gateway, AI: ai, DEEPSEEK_API_KEY: key('present'), ANTHROPIC_API_KEY: key('present') }, pack);
-  assert.deepEqual(rows.map(row => [row.id, row.ready, row.blockers.length]), [['standard', true, 0], ['mini', true, 0], ['qwen', true, 0], ['deepseek', true, 0], ['claude', true, 0]]);
+  assert.deepEqual(rows.map(row => [row.id, row.ready, row.blockers.length]), [['standard', true, 0], ['mini', true, 0], ['qwen', true, 0], ['deepseek', true, 0], ['claude', true, 0], ['sol', true, 0], ['terra', true, 0], ['luna', true, 0], ...extraLowRow([true,0])]);
 });
 
 test('a binding that cannot run Workers AI blocks only Qwen; a missing, empty or unreadable DeepSeek key blocks only DeepSeek', async () => {
@@ -33,7 +34,7 @@ test('a binding that cannot run Workers AI blocks only Qwen; a missing, empty or
   assert.ok(noAi.every(row => !row.ready && row.blockers[0].code === 'E_AI_GATEWAY_CONFIG'));
   for (const missing of [{}, { DEEPSEEK_API_KEY: key(null) }, { DEEPSEEK_API_KEY: key('  ') }, { DEEPSEEK_API_KEY: key(new Error('unreadable')) }]) {
     const rows = await readerOptionReadiness({ ...gateway, AI: ai, ANTHROPIC_API_KEY: key('present'), ...missing }, pack);
-    assert.deepEqual(rows.filter(row => !row.ready).map(row => [row.id, row.blockers[0].code]), [['deepseek', 'E_VENDOR_KEY']]);
+    assert.deepEqual(rows.filter(row => !row.ready).map(row => [row.id, row.blockers[0].code]), [['deepseek', 'E_VENDOR_KEY'], ...extraLowRow(['E_VENDOR_KEY'])]);
   }
 });
 
@@ -59,7 +60,7 @@ test('starting a run with an unavailable reader is refused plainly; the other re
   await assert.rejects(requireReaderReady(env, selectReaderModel(pack, 'qwen')), (error: unknown) =>
     (error as { code?: string; kind?: string; status?: number }).code === 'E_READER_UNAVAILABLE' && (error as { kind?: string }).kind === 'request' &&
     /Qwen 3\.8 27B \(Cloudflare\) is not available/.test((error as Error).message));
-  for (const id of ['standard', 'mini', 'deepseek', 'claude']) await requireReaderReady(env, selectReaderModel(pack, id));
+  for (const id of ['standard', 'mini', 'deepseek', 'claude', 'sol', 'terra', 'luna']) await requireReaderReady(env, selectReaderModel(pack, id));
   // A pack without a menu has nothing to check.
   await requireReaderReady({}, syntheticPack(1) as ProjectPack);
 });
@@ -67,7 +68,7 @@ test('starting a run with an unavailable reader is refused plainly; the other re
 test('an undated option without expectedModel reports its model name as not locked (owners, 7 and 10 October 2026)', async () => {
   const rows = await readerOptionReadiness({ ...gateway, AI: ai, DEEPSEEK_API_KEY: key('present'), ANTHROPIC_API_KEY: key('present') }, pack);
   // DECISIONS 155: GPT-5.4 and mini are requested by name, so each run freezes the name it reports, as for the others.
-  assert.deepEqual(rows.map(row => [row.id, row.modelLocked]), [['standard', false], ['mini', false], ['qwen', false], ['deepseek', false], ['claude', false]]);
+  assert.deepEqual(rows.map(row => [row.id, row.modelLocked]), [['standard', false], ['mini', false], ['qwen', false], ['deepseek', false], ['claude', false], ['sol', false], ['terra', false], ['luna', false], ...extraLowRow([false])]);
   const dated = structuredClone(pack); dated.readerModels!.options[0].pin = { ...dated.readerModels!.options[0].pin, id: 'gpt-5.4-2026-03-05', policy: 'versioned' };
   assert.equal((await readerOptionReadiness({}, dated)).find(row => row.id === 'standard')!.modelLocked, true, 'a dated snapshot is locked');
   const locked = structuredClone(pack); locked.readerModels!.options.find(option => option.id === 'qwen')!.expectedModel = '@cf/qwen/qwen3.8-27b';

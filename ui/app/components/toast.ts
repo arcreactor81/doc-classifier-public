@@ -11,7 +11,7 @@ const STAY_WITH_ACTION_MS = 4200;
 
 let current: HTMLElement | null = null;
 
-export function toast(message: string, act?: { label: string; run: () => void }): void {
+export function toast(message: string, act?: { label: string; run: () => void }): () => void {
   current?.remove();
   // ui-rules: non-operational button: the toast's own action calls back into the screen (Undo), nothing is sent here
   const button = act === undefined ? null : h('button', { class: 'toast-act', attrs: { type: 'button' }, on: { click: () => { el.remove(); act.run(); } } }, act.label);
@@ -22,4 +22,5 @@ export function toast(message: string, act?: { label: string; run: () => void })
   // Finished or cancelled, the toast goes: it is never left on screen by a clock that stopped.
   const leave = () => { el.remove(); if (current === el) current = null; };
   void clock.finished.then(leave, leave);
+  return leave;
 }

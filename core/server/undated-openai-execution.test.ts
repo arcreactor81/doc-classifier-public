@@ -7,7 +7,7 @@ import { installOutbound } from '../vendors/outbound.ts';
 import { createFakeVendorFetch } from '../vendors/fake-vendors.ts';
 import { OPENAI_RESPONSES_ENDPOINT, buildReaderRequest, buildRecoveryRequest } from '../vendors/requests.ts';
 import { selectReaderModel } from '../config/model-choice.ts';
-import { requireProject, type ProjectPack } from '../config/project.ts';
+import { requireProject, promptCachePolicy, type ProjectPack } from '../config/project.ts';
 import { authorizeRunBudget } from '../cost/run-budget.ts';
 import { actualUsageCost } from '../cost/cost.ts';
 import { readDailyUsage } from './daily-usage.ts';
@@ -21,11 +21,16 @@ import ownerPack from '../../projects/owner/project.json' with { type: 'json' };
  */
 const fake = createFakeVendorFetch();
 let reported: string | null | undefined;
+let pricedRecovery = false;
 installOutbound(async (url, init, context) => {
   const response = await fake(url, init, context);
-  if (String(url) !== OPENAI_RESPONSES_ENDPOINT || reported === undefined) return response;
+  if (String(url) !== OPENAI_RESPONSES_ENDPOINT || reported === undefined && !pricedRecovery) return response;
   const body = await response.json() as Record<string, unknown>;
-  if (reported === null) delete body.model; else body.model = reported;
+  if (reported === null) delete body.model; else if (reported !== undefined) body.model = reported;
+  if (pricedRecovery && JSON.parse(String(init?.body)).model === 'gpt-5.4-nano') {
+    const usage = body.usage as { input_tokens: number; input_tokens_details: { cached_tokens: number } };
+    usage.input_tokens_details.cached_tokens = Math.min(1, usage.input_tokens);
+  }
   return new Response(JSON.stringify(body), { status: response.status, headers: response.headers });
 });
 const AT = () => new Date().toISOString();
@@ -34,8 +39,12 @@ const step = () => ({ do: async (_name: string, _options: unknown, callback: () 
   sleepUntil: async (_name: string, until: number) => { await new Promise(resolve => setTimeout(resolve, Math.max(0, until - Date.now()) + 1)); }
 }) as unknown as ConstructorParameters<typeof Runner>[3];
 
-async function fixture(option = 'standard') {
-  const pack: ProjectPack = selectReaderModel(requireProject({ ...structuredClone(ownerPack as unknown as ProjectPack), typeFile: fixtures.syntheticTypeFile(2), structuralVocabulary: [] }), option);
+async function fixture(option = 'standard', withoutSiteLimits = false) {
+  const source = { ...structuredClone(ownerPack as unknown as ProjectPack), typeFile: fixtures.syntheticTypeFile(2), structuralVocabulary: [] };
+  // Exercise the model-identity contract independently of the temporary study's wall clock.
+  delete source.settings.inferenceWindow;
+  if (withoutSiteLimits) delete source.settings.usageLimits;
+  const pack: ProjectPack = selectReaderModel(requireProject(source), option);
   const db = migratedDatabase({ foreignKeys: false }), DB = localD1(db), bucket = memoryR2();
   const originalPut = bucket.put.bind(bucket);
   bucket.put = (async (key: string, body: unknown, options: unknown) => originalPut(key,
@@ -55,15 +64,35 @@ async function fixture(option = 'standard') {
   };
   const reader = (body = 'Synthetic source line.') => buildReaderRequest({ pin: pack.pins.reader, typeFile: pack.typeFile, text: body,
     effort: pack.settings.readerEffort, maxOutputTokens: pack.settings.readerMaxOutputTokens, contract: pack.settings.readerContract,
-    cachePolicy: pack.settings.promptCachePolicy });
+    cachePolicy: promptCachePolicy(pack.settings, 'reader') });
   const recovery = (body = 'Synthetic heading') => buildRecoveryRequest({ pin: pack.pins.recovery, text: body, effort: pack.settings.recoveryEffort,
-    maxOutputTokens: pack.settings.recoveryMaxOutputTokens, cachePolicy: pack.settings.promptCachePolicy });
-  addRun('run'); reported = undefined;
+    maxOutputTokens: pack.settings.recoveryMaxOutputTokens, cachePolicy: promptCachePolicy(pack.settings, 'recovery') });
+  addRun('run'); reported = undefined; pricedRecovery = false;
   return { db, DB, pack, addRun, runner, reader, recovery };
 }
 const fp = (n: number) => n.toString(16).padStart(64, 'd');
 const identities = (db: ReturnType<typeof migratedDatabase>) =>
   db.prepare('SELECT run_id,role,model_requested,model_reported FROM run_model_identities ORDER BY run_id,role').all().map(row => ({ ...row }));
+
+test('Sol and nano keep separate request-cache controls and accounting inside one execution run', async () => {
+  const f = await fixture('sol', true);
+  try {
+    const reader = f.reader(), recovery = f.recovery();
+    assert.deepEqual(JSON.parse(reader.body).prompt_cache_options, { mode: 'explicit' });
+    assert.equal(Object.hasOwn(JSON.parse(recovery.body), 'prompt_cache_options'), false);
+    pricedRecovery = true;
+    await (await f.runner('run', fp(1))).vendor(reader, f.pack, x => x);
+    await (await f.runner('run', fp(2))).vendor(recovery, f.pack, x => x);
+    const calls = f.db.prepare('SELECT role,model_requested,cost_nano,usage_json FROM vendor_calls ORDER BY rowid').all();
+    assert.deepEqual(calls.map(call => call.model_requested), ['gpt-6.1-sol', 'gpt-5.4-nano']);
+    for (const call of calls) {
+      const role = call.role as 'reader' | 'recovery', usage = JSON.parse(String(call.usage_json));
+      assert.equal(call.cost_nano, actualUsageCost(usage, f.pack.prices.interactive[role], role === 'reader' ? 'disabled' : 'priced'));
+      if (role === 'recovery') assert.equal(usage.input_tokens_details.cached_tokens, 1);
+    }
+    assert.deepEqual(identities(f.db).map(row => row.model_reported), ['gpt-6.1-sol', 'gpt-5.4-nano']);
+  } finally { pricedRecovery = false; f.db.close(); }
+});
 
 test('GPT-5.4 by name: the run freezes the snapshot OpenAI reports, and the same string later passes', async () => {
   const f = await fixture();

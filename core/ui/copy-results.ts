@@ -36,11 +36,14 @@ export const resultsCopy = {
   title: 'Results',
   /** The overline once the step is behind the person ("Step 6 done · Results"); `journey.stepOf` otherwise. */
   stepDone: (n: number, label: string) => `Step ${n} done · ${label}`,
-  sorted: (n: number) => `${n} ${plural(n, 'document', 'documents')} sorted`,
-  sortedSoFar: (decided: number, total: number) => `${decided} of ${total} documents sorted so far`,
+  sorted: (n: number) => `Results for ${n} ${plural(n, 'document', 'documents')}`,
+  sortedSoFar: (decided: number, total: number) => `Results for ${decided} of ${total} ${plural(total, 'document', 'documents')}`,
   notReady: 'Results appear here once every document has an outcome.',
+  partialResults: 'Outcomes appear here as documents finish. You can save the complete results once every document has an outcome and the run is complete.',
   /** A stopped run's heading (it never finishes, so neither "sorted" nor "so far"); the stop notice is beneath it. */
   stopped: (decided: number, total: number) => `Stopped: ${decided} of ${total} ${plural(total, 'document has', 'documents have')} an outcome`,
+  notCompleted: 'Not completed',
+  stoppedBeforeOutcome: (stage: string) => `The run stopped before this document had an outcome. Last recorded step: ${stage}.`,
   /**
    * Owner decision of 10 October 2026 (DECISIONS 155): the model behind this run's reader is not the one the previous
    * run on the same reader reported. `reader` is the menu label (or the requested model name when the plan is not read).

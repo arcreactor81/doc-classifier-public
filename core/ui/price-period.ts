@@ -3,7 +3,7 @@
  * 2026: shown beside DeepSeek on Confirm). Display only: nothing counted, reserved or capped reads it. Pure: the caller
  * passes the browser's clock; the schedule is `vendorPricePeriods` (core/config/project.ts), in whole UTC hours.
  */
-import type { PricePeriods } from '../config/project.ts';
+import { peakPriceAt as peakAt, type PricePeriods } from '../config/project.ts';
 import { dateShort, timeShort } from './format.ts';
 
 const HOUR_MS = 3_600_000;
@@ -15,11 +15,6 @@ function readable(periods: PricePeriods): void {
       whole(window.fromHour, 0, 23) && whole(window.toHour, 1, 24) && window.fromHour < window.toHour &&
       Array.isArray(window.days) && window.days.length > 0 && window.days.every((day: unknown) => whole(day, 0, 6))))
     throw new RangeError('The published price hours are not readable.');
-}
-
-function peakAt(periods: PricePeriods, ms: number): boolean {
-  const moment = new Date(ms), day = moment.getUTCDay(), hour = moment.getUTCHours();
-  return periods.peakUtc.some(window => window.days.includes(day) && hour >= window.fromHour && hour < window.toHour);
 }
 
 /**

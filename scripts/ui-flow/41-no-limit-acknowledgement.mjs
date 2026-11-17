@@ -92,13 +92,28 @@ await runScript(SCRIPT, 'The no-limit acknowledgement survives the first prepara
     (await savedSelection(localId))?.selectedReaderModel === undefined);
   check('setup: "Run with no spending limit" and the acknowledgement are both ticked while the preparation waits',
     await tickThenFinishPreparation(hold));
-  await until(async () => (await savedSelection(localId))?.selectedReaderModel === 'standard', 'the default reader saved by the preparation');
+  await until(async () => (await savedSelection(localId))?.selectedReaderModel === owner.readerModels.defaultId, 'the default reader saved by the preparation');
   const afterFirst = { ack: await ack.isChecked(), noLimit: await noLimit.isChecked(), start: await startReady(), changedSentences: await changedSentence.count() };
   evidence.afterFirstPreparation = afterFirst;
   check('the acknowledgement is still ticked when the first preparation finishes', afterFirst.ack && afterFirst.noLimit, afterFirst);
   check('Start run is offered without ticking again', afterFirst.start, afterFirst);
   check('no "something changed" sentence is shown, because nothing the person was shown has changed', afterFirst.changedSentences === 0, afterFirst);
   evidence.afterFirstShot = await screenshot(page, SCRIPT + '-after-first-preparation');
+
+  const readerAction = 'confirm:reader:' + localId + ':' + owner.readerModels.defaultId;
+  const usageReads = () => fake.requestsTo({ method: 'GET', path: '/api/usage' }).length;
+  const readsBefore = usageReads();
+  await page.locator('button[data-op="' + readerAction + '"]').click();
+  await page.locator('[data-feedback="' + readerAction + '"][data-state="done"]').waitFor();
+  check('pressing the reader already marked Chosen preserves the acknowledgement and the ready Start action',
+    await ack.isChecked() && await startReady());
+  check('the unchanged reader does not trigger another daily-usage read', usageReads() === readsBefore);
+  const another = owner.readerModels.options.find(o => o.id !== owner.readerModels.defaultId && o.pin.id.startsWith('gpt-'));
+  const changeAction = 'confirm:reader:' + localId + ':' + another.id;
+  await page.locator('button[data-op="' + changeAction + '"]').click();
+  await page.locator('[data-feedback="' + changeAction + '"][data-state="done"]').waitFor();
+  check('a different reader still requires a fresh spending acknowledgement', !await ack.isChecked() && !await startReady());
+  await ackLabel.click();
 
   // --- The draft store's contract (this draft has not started; a second store reads the same saved selection) ----------
   const contract = await page.evaluate(async id => {
@@ -125,6 +140,9 @@ await runScript(SCRIPT, 'The no-limit acknowledgement survives the first prepara
   // --- The person changes the selection: the acknowledgement is cleared ------------------------------------------------
   if (!await ack.isChecked()) await ackLabel.click();
   const trialBox = page.locator('[data-testid="trial-selection"] input[type="checkbox"]:not([data-trial-document])').first();
+  check('a trial can include the full selection and explains the charge for a later full run',
+    (await page.locator('.trial-selection__trial').innerText()).includes('A later full run will read and charge for them again.') &&
+    await page.locator('[data-testid="trial-selection-count"]').innerText() === '1 of 1 document selected for this run.');
   await trialBox.click();
   check('choosing a small trial (the person\'s own change of selection) clears the acknowledgement', !await ack.isChecked());
   await trialBox.click();
@@ -159,7 +177,7 @@ await runScript(SCRIPT, 'The no-limit acknowledgement survives the first prepara
   const second = await confirmWithPreparationHeld({ forgetSelection: true });
   check('setup: the second draft has no saved selection when its preparation starts', await savedSelection(second.localId) === null);
   check('setup: both boxes ticked while that preparation waits', await tickThenFinishPreparation(second.hold));
-  await until(async () => (await savedSelection(second.localId))?.selectedReaderModel === 'standard', 'the first selection and default reader saved');
+  await until(async () => (await savedSelection(second.localId))?.selectedReaderModel === owner.readerModels.defaultId, 'the first selection and default reader saved');
   const afterSecond = { ack: await ack.isChecked(), start: await startReady(), changedSentences: await changedSentence.count() };
   evidence.afterSecondPreparation = afterSecond;
   check('with no saved selection the acknowledgement is also still ticked, Start run is offered, and nothing is said to have changed',

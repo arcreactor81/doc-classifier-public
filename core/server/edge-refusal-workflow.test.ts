@@ -79,6 +79,7 @@ const LIMITED = { mode: 'limited', limits: { blended: '1000000000', openai: null
 
 function claudePack(policy?: ProjectPack['settings']['unknownSpendPolicy']): ProjectPack {
   const raw = structuredClone(ownerPack) as unknown as ProjectPack;
+  delete raw.settings.inferenceWindow;
   if (policy) raw.settings = { ...raw.settings, unknownSpendPolicy: policy };
   const pack = selectReaderModel(requireProject({ ...raw, typeFile: fixtures.syntheticTypeFile(2), structuralVocabulary: [] }), 'claude');
   categoryIds = pack.typeFile.types.map(type => type.id);

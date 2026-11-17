@@ -78,7 +78,7 @@ export const homeCopy = {
   workspace: {
     title: 'Your workspace',
     hint: 'Your runs on this site',
-    sorted: 'Documents sorted',
+    sorted: 'Documents with results',
     acrossRuns: (n: number) => (n === 1 ? 'in 1 run' : `across ${n} runs`),
     filedAuto: 'Filed automatically',
     inRun: (name: string) => `in ${name}`,
@@ -103,6 +103,8 @@ export const homeCopy = {
   noRuns: 'No runs yet.',
 
   runsTitle: 'Runs',
+  readingRuns: 'Reading your run history…',
+  readRunsAgain: 'Read run history again',
   runsLead: 'Every run keeps the categories and settings it started with. Open one to see where it stands and what comes next.',
   runsEmpty: 'Your first run starts with a folder.',
   drafts: 'New runs not started yet',
@@ -115,6 +117,7 @@ export const homeCopy = {
   allDone: (total: number) => `All ${total} steps done`,
   outcomes: (done: number, total: number) => `${done} of ${total} have an outcome`,
   sent: (n: number, total: number) => `${n} of ${total} sent`,
+  handedOver: (n: number, total: number) => `${n} of ${total} handed over to sorting`,
 
   /** The card's sentence: where the run is, and what comes next. */
   now: {

@@ -4,7 +4,8 @@
  *
  * - Statuses (colour is never the only cue: a glyph and visually hidden words say it too): `upcoming` (a ring and the
  *   step number; not a link, `aria-disabled`, its reason shown on focus and hover), `current` (`aria-current="step"`,
- *   a link), `done` (a check), `attention` (a "!" ring), `blocked` (a lock), `skipped` (a dash; no row emits it since
+ *   a link), `available` (a link to inspect saved outcomes without advancing the run), `done` (a check),
+ *   `attention` (a "!" ring), `blocked` (a lock), `skipped` (a dash; no row emits it since
  *   the Improve step became an optional area, the mark is kept for the status).
  * - Below 640 px: "Step 4 of 8 · Send" and four chapter pips.
  * - Before the first run while categories are not set up, the rail is one line: "Before your first run: set up

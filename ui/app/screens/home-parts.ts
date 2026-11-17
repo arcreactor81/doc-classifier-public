@@ -19,13 +19,15 @@ import type { Light, LightKind, LightWord } from '../../../core/ui/live-light.ts
 import type { UiCopy } from '../../../core/ui/project-copy.ts';
 import type { RunSummaryView } from '../../../core/ui/wire.ts';
 import { continueLabel } from '../../../core/ui/home-continue.ts';
-import type { ActionSpec } from '../view/action.ts';
+import { action, type ActionSpec } from '../view/action.ts';
+import { failureOf } from '../../../core/ui/presented-error.ts';
 import { each, h, show } from '../view/dom.ts';
 import { glyph, type GlyphName } from '../view/glyphs.ts';
 import { actionSlot } from '../components/action-slot.ts';
 import { runCard, STEP_COUNT, type CardState } from '../components/run-card.ts';
 import { words } from '../components/words.ts';
 import { sheetsScene } from '../components/sheets-scene.ts';
+import { errorNotice } from '../components/notice.ts';
 import type { AppStore, RunLocalRecords } from '../state/types.ts';
 
 export interface NamedRun { run: RunSummaryView; ordinal: number }
@@ -39,6 +41,23 @@ export function watchedRuns(store: AppStore): Read<readonly NamedRun[] | null> {
     if ((list.state === 'loading' || list.state === 'error') && list.previous !== null) return named(list.previous);
     return null;
   });
+}
+
+/** Explain the first history read, or a failed refresh. A previous list remains available while reading again. */
+export function runHistoryFeedback(store: AppStore, copy: UiCopy): Node {
+  const loading = computed(() => {
+    const list = store.runList();
+    return list.state === 'idle' || list.state === 'loading' && list.previous === null;
+  });
+  const problem = computed(() => { const list = store.runList(); return list.state === 'error' ? list.error : null; });
+  const fragment = document.createDocumentFragment();
+  fragment.append(
+    show(loading, () => h('p', { class: 'hint', testid: 'run-history-loading', attrs: { role: 'status' } }, copy.home.readingRuns)),
+    show(computed(() => problem() !== null), () => h('div', null,
+      errorNotice(computed(() => problem()!), 'problem', 'run-history-error'),
+      action({ id: 'runs:read-history', label: copy.home.readRunsAgain, kind: 'quiet', errorContext: 'read',
+        run: async () => { if (await store.loadRunList() === null) throw failureOf(store.runList.peek()); } }))));
+  return fragment;
 }
 
 function named(runs: readonly RunSummaryView[]): NamedRun[] {
@@ -88,17 +107,23 @@ export function cardFacts(copy: UiCopy, entry: NamedRun, local: RunLocalRecords 
   const at = (step: StepId, state: CardState, light: Light, now: string, line: string): RunCardFacts =>
     ({ step: stepNumber(step), state, light, now, line,
       yours: state === 'failed' || (state === 'still' && (line === c.arena.waiting || line === c.arena.runtimeWait)) });
+  const undispatched = r.undispatched;
+  const handover = undispatched !== undefined && undispatched > 0;
   switch (r.status) {
     case 'uploading':
       return at('send', 'live', stillLight('live', 'sending'), c.now.sending(r.uploaded, r.total), c.sent(r.uploaded, r.total));
     case 'running':
-      if (r.runtimeWait) return at('sort', 'still', stillLight('waiting', 'waiting'),
+      if (r.runtimeWait) return at(handover ? 'send' : 'sort', 'still', stillLight('waiting', 'waiting'),
         now >= Date.parse(r.runtimeWait.deadlineAt) ? c.now.runtimeOverdue : c.now.runtimeWait, c.arena.runtimeWait);
+      if (r.uploaded === r.total && handover) {
+        const line = c.handedOver(r.total - undispatched, r.total);
+        return at('send', 'live', stillLight('live', 'handingOver'), line, line);
+      }
       return r.uploaded < r.total
         ? at('send', 'live', stillLight('live', 'handingOver'), c.now.sending(r.uploaded, r.total), c.sent(r.uploaded, r.total))
         : at('sort', 'live', stillLight('live', 'working'), c.now.sorting(r.completed, r.total), c.outcomes(r.completed, r.total));
     case 'halted':
-      return at(r.uploaded < r.total ? 'send' : 'sort', 'failed', stillLight('failed', 'stopped'), c.now.stopped(r.completed, r.total), c.arena.stopped);
+      return at(r.uploaded < r.total || handover ? 'send' : 'sort', 'failed', stillLight('failed', 'stopped'), c.now.stopped(r.completed, r.total), c.arena.stopped);
     case 'closing':
       return r.completed === r.total
         ? at('results', 'still', stillLight('waiting', 'closing'), c.now.deletingText, c.arena.closing)

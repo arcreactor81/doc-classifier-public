@@ -146,6 +146,27 @@ test('undecided documents show their stage label and nothing else; the default n
   }
 });
 
+test('unfinished stopped documents explain their last step without inventing an outcome or changing recorded facts', () => {
+  for (const stage of STAGES) {
+    const doc = { ...docOf(DECISIONS.R1), stage, outcome: null, first: false, reasonCode: null, ruleId: null };
+    const saved = structuredClone(doc);
+    const row = presentRow(doc, NAMES, { stageLabel, runStopped: true });
+    assert.equal(row.phaseLabel, 'Not completed');
+    assert.equal(row.reason, `The run stopped before this document had an outcome. Last recorded step: ${stageLabel(stage)}.`);
+    assert.equal(row.outcomeLabel, null);
+    assert.equal(row.outcomeGlyph, null);
+    assert.equal(row.placeLabel, null);
+    assert.equal(row.firstLabel, null);
+    assert.deepEqual(doc, saved);
+    assert.equal(presentRow(doc, NAMES, { stageLabel, runStopped: false }).phaseLabel, stageLabel(stage));
+  }
+  for (const decision of Object.values(DECISIONS)) {
+    const doc = docOf(decision);
+    assert.deepEqual(presentRow(doc, NAMES, { stageLabel, runStopped: true }), presentRow(doc, NAMES, { stageLabel }),
+      'recorded outcomes keep exactly the same presentation');
+  }
+});
+
 test('category names: website names first, then the type file; reserved and new folders by name', () => {
   assert.deepEqual(NAMES, { cat_alpha: 'Procedures', cat_beta: 'Explainer decks', none_of_these: 'None of these' });
   assert.deepEqual(categoryNames(TYPE_FILE, null), { cat_alpha: 'Procedures', cat_beta: 'Explainers', none_of_these: 'None of these' });

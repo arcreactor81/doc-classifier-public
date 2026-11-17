@@ -66,7 +66,8 @@ test('the DeepSeek request: Responses API with JSON schema, thinking off, an out
 
 test('an experimental reader is built only with its thinking control and a positive cap; frozen bytes are stable', () => {
   for (const pin of [QWEN, DEEPSEEK]) {
-    for (const effort of ['low', 'medium', 'high', '']) expectFailure(() => reader(pin as typeof QWEN, effort), 'E_READER_CONFIGURATION');
+    const unsupported = pin === QWEN ? ['low', 'medium', 'high', ''] : ['medium', 'high', ''];
+    for (const effort of unsupported) expectFailure(() => reader(pin as typeof QWEN, effort), 'E_READER_CONFIGURATION');
     for (const cap of [0, -1, 1.5]) expectFailure(() => buildReaderRequest({ pin, typeFile, text, effort: 'none', maxOutputTokens: cap }), 'E_READER_CONFIGURATION');
     assert.equal(reader(pin as typeof QWEN).body, reader(pin as typeof QWEN).body);
     assert.ok(Object.isFrozen(reader(pin as typeof QWEN)));
@@ -112,6 +113,23 @@ test('thinking that did not turn off is a halt: the frozen reader configuration 
   expectFailure(() => decodeReader(reasoningItem, DEEPSEEK, ids, text, undefined, 'whitespace-quotes-v1'), 'E_READER_THINKING', 'blocker');
   // Zero reasoning tokens, and an empty reasoning field, are thinking off.
   assert.equal(decodeReader(chatReply({}, { reasoning_content: null }, { completion_tokens_details: { reasoning_tokens: 0 } }), QWEN, ids, text, undefined, 'whitespace-quotes-v1').model, QWEN.id);
+});
+
+test('low Flash accepts its reasoning while keeping the same message, evidence and output limit checks', () => {
+  const low = (raw: unknown) => decodeReader(raw, DEEPSEEK, ids, text, undefined, 'whitespace-quotes-v1', undefined, 'low');
+  const raw = responsesReply({}, { output_tokens_details: { reasoning_tokens: 12 } });
+  const reasoning = { type: 'reasoning', id: 'r', content: [{type: 'reasoning_text', text: 'Synthetic reasoning.'}] };
+  const completed = {...raw, output: [reasoning, ...raw.output]};
+  assert.deepEqual(low(completed), decodeReader(responsesReply(), DEEPSEEK, ids, text, undefined, 'whitespace-quotes-v1'));
+  expectFailure(() => low({...completed, output: [reasoning]}), 'E_READER_SCHEMA', 'document');
+  expectFailure(() => low({...completed, output: [...completed.output, ...raw.output]}), 'E_READER_SCHEMA', 'document');
+  expectFailure(() => low({...completed, status: 'incomplete', incomplete_details: {reason:'max_output_tokens'}}), 'E_READER_OUTPUT_LIMIT', 'document');
+  const wire=JSON.parse(reader(DEEPSEEK,'low').body), baseline=JSON.parse(reader(DEEPSEEK).body);
+  assert.deepEqual(wire,{...baseline,reasoning:{effort:'low'},max_output_tokens:16384});
+  expectFailure(()=>buildReaderRequest({pin:DEEPSEEK,typeFile,text,effort:'low',maxOutputTokens:4608,
+    cachePolicy:'automatic-cache-priced-v1'}), 'E_READER_CONFIGURATION');
+  const wrongEvidence=JSON.parse(JSON.stringify(completed).replace('Synthetic source line.','Absent source line.'));
+  assert.throws(()=>low(wrongEvidence), (e:unknown)=>e instanceof ValidationFailure && e.kind==='document');
 });
 
 test('the DeepSeek reply is read like a Responses reply; incomplete or empty output is a schema failure', () => {

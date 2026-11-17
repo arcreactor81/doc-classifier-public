@@ -79,7 +79,8 @@ test('ordinary historical runs do not acquire a comparison build requirement or 
     f.env.BUILD_COMMIT = 'another-build'; f.log.length = 0;
     await requireBakeoffExecution(f.env, f.store, f.run);
     await guard(f.env, f.store, f.run.id);
-    assert.equal(f.log.some(sql => /bakeoff/.test(sql)), false);
+    assert.equal(f.log.length,1);
+    assert.equal(f.log.some(sql => /\b(?:FROM|JOIN)\s+bakeoff(?:s|_arms|_documents)\b/i.test(sql)), false);
   } finally { f.db.close(); }
 });
 

@@ -202,6 +202,18 @@ test('the stopped-run card: verbatim plain headline, a plain action, the emergen
   assert.equal(action(generic), e.stop.generic);
 });
 
+test('a failure whose record could not be confirmed has a plain stop reason and preserves the original details', () => {
+  const raw = { code:'E_CHECKPOINT_FAIL', kind:'blocker' as const, headline:'The stage failure could not be confirmed in storage.',
+    action:'Keep the run and inspect its records.', details:{ firstObservedAt:'2026-01-02T12:34:56.000Z' } };
+  const shown = presentStopReason(raw);
+  assert.notEqual(shown.headline, raw.headline);
+  assert.match(shown.headline, /couldn.t confirm.*saved/i);
+  assert.match(action(shown) ?? '', /before.*new run/i);
+  assert.equal(shown.technical.serverHeadline, raw.headline);
+  assert.equal(shown.technical.serverAction, raw.action);
+  assert.deepEqual(shown.technical.details, raw.details);
+});
+
 test('health blockers: one plain line each, naming who can act', () => {
   const sortingOff = blockerLine('E_MODEL_CALLS_DISABLED');
   assert.equal(sortingOff.headline, 'Sorting is switched off for this app.');

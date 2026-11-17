@@ -2,10 +2,19 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { localD1, memoryR2, migratedDatabase } from './testing/local-bindings.ts';
 import { Store } from './store.ts';
-import { readRunStatusInput } from './run-status-read.ts';
+import { frozenRunPolicies, readRunStatusInput } from './run-status-read.ts';
 import { documentPhase } from './document-phase.ts';
 import { authorizeRunBudget } from '../cost/run-budget.ts';
 import { syntheticPack } from '../../scripts/fixtures/synthetic-pack.mjs';
+
+test('frozen confidence context provenance preserves absence and rejects malformed recorded values', () => {
+  const read = (settings: unknown) => frozenRunPolicies({ pack_json: JSON.stringify({ settings }) });
+  assert.equal(Object.hasOwn(read({}), 'confidenceContextPolicy'), false);
+  for (const confidenceContextPolicy of ['standard-v1', 'long-context-262k-v1'])
+    assert.deepEqual(read({ confidenceContextPolicy }), { confidenceContextPolicy });
+  for (const confidenceContextPolicy of [null, '', 'future-v1', 1, {}])
+    assert.throws(() => read({ confidenceContextPolicy }));
+});
 
 // The status poll reads checkpoint names only for dispatched unfinished documents. Every document's phase must equal
 // the phase derived from ALL of its checkpoints, as the poll computed it before.

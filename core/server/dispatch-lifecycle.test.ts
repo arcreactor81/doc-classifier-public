@@ -10,6 +10,7 @@ import { syntheticPack } from '../../scripts/fixtures/synthetic-pack.mjs';
 import { workflowInstanceId } from './workflow-identity.ts';
 import { RUNTIME_OBSERVE_TIMEOUT_MS } from './runtime-interruption.ts';
 import { createDocumentWorkflow } from './workflow-create.ts';
+import {admitWorkflowStart} from './dispatch-pacing.ts';
 import { serverCopy } from './errors.ts';
 import { DOCUMENT_STORAGE_FAILURE_CODES } from '../domain/storage-codes.ts';
 import { associateAcceptedWorkflow } from './run-persistence.ts';
@@ -88,6 +89,45 @@ function fixture() {
   };
   return { db, env, store, creation, request, add };
 }
+
+test('Start paces a sixty-document run across time windows without waiting for any document outcome',async t=>{
+ let clock=Date.parse('2026-11-06T12:00:00.000Z');t.mock.method(Date,'now',()=>clock);
+ const f=fixture(),ids:string[]=[];
+ try{
+  f.db.prepare("UPDATE runs SET expected_count=60 WHERE id='run'").run();
+  for(let i=0;i<60;i++)await f.add(i.toString(16).padStart(64,'0'),i+1);
+  f.creation.createBatch=async values=>{ids.push(values[0].id!);return [{id:values[0].id!}];};
+  const first=await f.request('start','POST',{});assert.equal(first.status,200);assert.deepEqual(first.body,{started:16,pending:44,status:'running'});
+  const waiting=await f.request('start','POST',{});assert.deepEqual(waiting.body,{started:0,pending:44,status:'running'});
+  for(const [started,pending] of [[16,28],[16,12],[12,0]]){
+   clock+=10000;const next=await f.request('start','POST',{});assert.equal(next.status,200);assert.deepEqual(next.body,{started,pending,status:'running'});
+  }
+  assert.equal(ids.length,60);assert.equal(new Set(ids).size,60);assert.equal(vendorCalls,0);
+  assert.equal(f.db.prepare("SELECT COUNT(*) AS n FROM documents WHERE decision_json IS NOT NULL").get()!.n,0,'no completed or stuck document holds the next time window');
+  assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM workflow_dispatch_admissions').get()!.n,60);
+ }finally{f.db.close();}
+});
+
+test('an admitted identity finishes its existing bounded creation verification even if the next time window is full',async t=>{
+ let clock=Date.parse('2026-11-06T12:00:00.000Z');t.mock.method(Date,'now',()=>clock);
+ const f=fixture();let calls=0;
+ try{
+  await f.add();
+  f.db.prepare("INSERT INTO quotes(id,actor,created_at,mode,type_version,pack_hash,request_json,estimate_json) VALUES('qp','peer','2026-11-06','interactive','types','pack','[]','{}')").run();
+  f.db.prepare("INSERT INTO runs(id,actor,status,created_at,mode,expected_count,threshold,threshold_justification,type_version,pack_json,budget_json,quote_id) SELECT 'peer','peer','running',created_at,mode,16,threshold,threshold_justification,type_version,pack_json,budget_json,'qp' FROM runs WHERE id='run'").run();
+  for(let i=0;i<16;i++)f.db.prepare("INSERT INTO documents(run_id,fingerprint,tag,original_filename,status,input_hash) VALUES('peer',?,?,?,'uploaded','synthetic')").run(String(i),'p'+i,'synthetic-'+i);
+  f.creation.createBatch=async values=>{
+   calls++;if(calls===1){clock+=10000;
+    for(let i=0;i<16;i++)assert.equal(await admitWorkflowStart(f.env.DB,{runId:'peer',fingerprint:String(i),workflowId:'peer-'+i,at:clock}),true);
+    return [];
+   }
+   return [{id:values[0].id!}];
+  };
+  const result=await f.request('start','POST',{});
+  assert.equal(result.status,200);assert.deepEqual(result.body,{started:1,pending:0,status:'running'});assert.equal(calls,2);
+  assert.equal(f.db.prepare("SELECT COUNT(*) AS n FROM workflow_dispatch_admissions WHERE run_id='run'").get()!.n,1,'verification is not a new document admission');
+ }finally{f.db.close();}
+});
 
 // Cloudflare documents createBatch as idempotent: an existing ID is skipped and excluded from its result.
 // The original create primitive instead rejects that ID, reproducing BF-01 before the repair.

@@ -286,6 +286,13 @@ export function judgeWrite(state, request) {
     if (!body || typeof body !== 'object' || Object.keys(body).sort().join() !== 'budget,quoteId') return refuse('create', 'unexpected run creation fields');
     if (state.quoteId !== null && body.quoteId !== state.quoteId) return refuse('create', 'the run creation names another quote');
     const budget = body.budget, limits = budget?.limits ?? {};
+    if (state.unlimited === true) {
+      if (!state.quoteId || body.quoteId !== state.quoteId || budget?.mode !== 'unlimited'
+        || budget.unlimitedAcknowledged !== true || Object.keys(budget).sort().join() !== 'limits,mode,unlimitedAcknowledged'
+        || Object.keys(limits).sort().join() !== 'blended,openai,typesafe' || !Object.values(limits).every(v => v === null))
+        return refuse('create', 'the run differs from the acknowledged no-limit choice');
+      return { allow: true, kind: 'create', reason: 'one expressly acknowledged run with no spending limit' };
+    }
     if (budget?.mode !== 'limited') return refuse('create', 'the run has no spending limit');
     if (String(limits.blended) !== String(state.runLimitNano)) return refuse('create', `the run limit is ${limits.blended} nanodollars, not ${state.runLimitNano}`);
     const others = Object.entries(limits).filter(([key, value]) => key !== 'blended' && !nullish(value));
@@ -314,14 +321,14 @@ export function judgeWrite(state, request) {
  * One look at the run while it is watched. `status` is the run's entry in GET /api/runs (or null if missing).
  * Returns {action: 'continue' | 'done' | 'stop', reason}.
  */
-export function statusDecision({ status, runLimitNano, blocked = 0, pageErrors = 0, timedOut = false }) {
+export function statusDecision({ status, runLimitNano, unlimited = false, blocked = 0, pageErrors = 0, timedOut = false }) {
   if (blocked) return { action: 'stop', reason: 'a write the test does not expect was blocked' };
   if (pageErrors) return { action: 'stop', reason: 'the page reported an error' };
   if (!status) return { action: 'stop', reason: 'the created run is missing from the run list' };
   if (status.status === 'halted') return { action: 'stop', reason: 'the run halted' };
   if (['closing', 'closed'].includes(status.status)) return { action: 'stop', reason: `the run is ${status.status}, which this test never asks for` };
   if (status.unaccountedCalls > 0) return { action: 'stop', reason: 'a model call of unknown cost was recorded' };
-  if (BigInt(status.spend?.blended ?? 0) > BigInt(runLimitNano)) return { action: 'stop', reason: 'recorded spending is above the run limit' };
+  if (!unlimited && BigInt(status.spend?.blended ?? 0) > BigInt(runLimitNano)) return { action: 'stop', reason: 'recorded spending is above the run limit' };
   if (status.status === 'complete' && status.pendingAccounting === 0) return { action: 'done', reason: 'complete, spending settled' };
   if (timedOut) return { action: 'stop', reason: 'the run did not finish within the batch time limit' };
   return { action: 'continue', reason: status.status };
@@ -416,6 +423,7 @@ export function preflightChecks({ health, project, usage, build, reader, readerP
   }
   const categories = compareCategories(typeFile, health?.project?.types, health?.project?.displayNames ?? {});
   check('the active categories are categories.json (ids and names)', categories.ok, { expected: categories.expected, active: categories.active });
+  check('the complete type definitions match categories.json', JSON.stringify(project?.typeFile) === JSON.stringify(typeFile));
   const pilotSize = project?.settings?.pilotSize;
   check('the site states its trial size', Number.isSafeInteger(pilotSize) && pilotSize > 0, { pilotSize: pilotSize ?? null });
   if (usage?.enabled) {

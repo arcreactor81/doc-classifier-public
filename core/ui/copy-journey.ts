@@ -104,8 +104,12 @@ export const journeyCopy = {
       `${n} ${plural(n, 'file has', 'files have')} the same content as another file. Remove the extra copies, then look again.`,
     intentPending: "We couldn't confirm whether this run was created.",
     setupBlocked: (reason: string) => `Setup needs attention before this run can start: ${reason}`,
-    readyToConfirm: (total: number) =>
-      `${total} ${plural(total, 'file is', 'files are')} read. Nothing is sent until you select Start run.`,
+    readyToConfirm: (total: number, failed = 0) => {
+      const read = total - failed;
+      const summary = failed ? `${read} of ${total} files read. ${failed} could not be read.`
+        : `${total} ${plural(total, 'file is', 'files are')} read.`;
+      return summary + ' Nothing is sent until you select Start run.';
+    },
     openingRun: 'This run has started. Opening it…',
     sending: (uploaded: number, total: number) =>
       `Sending from this browser: ${uploaded} of ${total}. Keep this page open until all ${total} are handed over.`,

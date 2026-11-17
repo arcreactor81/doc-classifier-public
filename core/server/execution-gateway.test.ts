@@ -95,6 +95,7 @@ function step() {
 
 async function fixture(option: string, bindings: { gatewayId?: boolean; limited?: boolean; policy?: ProjectPack['settings']['unknownSpendPolicy'] } = {}) {
   const raw = structuredClone(owner);
+  delete raw.settings.inferenceWindow;
   // A run frozen on an earlier unknown-spend policy keeps it (the owner pack ships the current one).
   if (bindings.policy) raw.settings = { ...raw.settings, unknownSpendPolicy: bindings.policy };
   const pack = selectReaderModel(requireProject({ ...raw, typeFile: fixtures.syntheticTypeFile(2), structuralVocabulary: [] }), option);

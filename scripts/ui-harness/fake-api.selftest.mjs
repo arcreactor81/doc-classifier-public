@@ -928,7 +928,12 @@ test('reader menu fixture preserves the selected model through project, quote an
  const created=await call(fake,'POST','/api/runs',{quoteId:quoted.value.quoteId,budget:LIMITED});assert.equal(created.status,201);
  const plan=(await call(fake,'GET','/api/runs/'+created.value.runId+'/plan')).value;
  assert.equal(plan.selectedReaderModel,'mini');assert.deepEqual(plan.readerModel,quoted.value.readerModel);
- const usage=(await call(fake,'GET','/api/usage')).value;assert.equal(usage.enabled,true);assert.equal(usage.readerModels.length,4);
+ const usage=(await call(fake,'GET','/api/usage')).value;assert.equal(usage.enabled,true);
+ assert.deepEqual(usage.readerModels.map(row=>row.id),owner.readerModels.options.map(option=>option.id));
+ const paid=owner.settings.usageLimits.openaiTokenPools.find(pool=>pool.id==='paid');
+ assert.deepEqual(usage.pools.find(pool=>pool.id==='openai/paid'), {
+   id:'openai/paid',unit:'nanodollars',limitUnits:Number(paid.limitNano),usedUnits:0,reservedUnits:0,unknownCalls:0,blocked:false
+ });
  // The three daily allowances: the one price check just made, none saved, under ten times the owner pack's three runs a day.
  assert.deepEqual([usage.actorQuotesToday,usage.maxQuotesPerActorPerDay,usage.actorCorrectionsToday,usage.maxCorrectionsPerActorPerDay,usage.actorReferencesToday,usage.maxReferencesPerActorPerDay],[1,30,0,30,0,30]);
  assert.ok(usage.readerModels.every(row=>row.sampleDocuments===0&&row.estimatedDocumentsPerDay===null&&row.averageCostNanoPerDocument===null));

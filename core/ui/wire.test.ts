@@ -119,6 +119,10 @@ test('definitions: revisions are typed and type files are the validated original
 test('run list: R9 plus the S4 summary fields, which are required', () => {
   const row = { id: RUN, status: 'complete', createdAt: '2026-09-25T13:58:00.000Z', total: 114, completed: 114, spendNano: '420000000', spend: { blended: '420000000', openai: '300000000', typesafe: '120000000' }, budget: { version: 1, mode: 'limited', limits: { blended: '5000000000', openai: null, typesafe: null }, unlimitedAcknowledged: false, actor: 'account-id', timestamp: '2026-09-25T13:58:00.000Z' }, unaccountedCalls: 0, pendingAccounting: 0, textHeld: true, mode: 'interactive', uploaded: 114, lastUploadAt: '2026-09-25T14:02:00.000Z', definitionRevisionId: 'rev-1', comparedWith: { referenceId: 'ref-1', sourceRunId: 'run-9' } };
   const [summary] = readRunList({ runs: [row] });
+  assert.equal(Object.hasOwn(summary, 'undispatched'), false, 'A legacy history response cannot supply a hand-over count.');
+  assert.equal(readRunList({runs:[{...row,undispatched:0}]})[0].undispatched,0);
+  throwsShape(() => readRunList({runs:[{...row,undispatched:-1}]}),'runs[0].undispatched');
+  throwsShape(() => readRunList({runs:[{...row,undispatched:1}]}),'runs[0].undispatched');
   assert.deepEqual(summary.budget, { mode: 'limited', limits: { blended: '5000000000', openai: null, typesafe: null }, unlimitedAcknowledged: false });
   assert.deepEqual(summary.comparedWith, { referenceId: 'ref-1', sourceRunId: 'run-9' });
   assert.equal('actor' in summary.budget, false, 'the signer is not carried into the view');
@@ -202,6 +206,11 @@ test('results: the current file, an older cached file without later fields, and 
   assert.equal(now.spending?.knownSubtotal.blended, '10');
   assert.equal(now.entries[1].vendorOutputs?.confidence, null);
   const old = readResults(older);
+  assert.equal(Object.hasOwn(old, 'confidenceContextPolicy'), false);
+  for (const confidenceContextPolicy of ['standard-v1', 'long-context-262k-v1'])
+    assert.equal(readResults({ ...current, confidenceContextPolicy }).confidenceContextPolicy, confidenceContextPolicy);
+  for (const confidenceContextPolicy of [null, '', 'future-v1', 1])
+    throwsShape(() => readResults({ ...current, confidenceContextPolicy }), 'confidenceContextPolicy', 'results');
   assert.deepEqual([old.runNotes, old.spending, old.displayNames, old.definitionRevisionId, old.thresholdJustification, old.unknownSpendPolicy],
     [null, null, null, null, null, null], 'fields a cached older file lacks read as null, never as a default');
   const { vendorOutputs, notes, outlineRecovered, ...earliest } = entry(1, R1);

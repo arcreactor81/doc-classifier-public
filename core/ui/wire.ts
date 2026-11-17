@@ -386,13 +386,15 @@ export interface RecordedRunMetadata {
   pilotSkipped?: true;
   readerContract?: 'reader-exact-evidence-v2' | 'reader-compact-verdicts-v1';
   confidenceQuestionPolicy?: 'confidence-single-request-v1' | 'confidence-grouped-nouls-v1';
+  confidenceContextPolicy?: 'standard-v1' | 'long-context-262k-v1';
 }
 function recordedRunMetadata(s: Shape, o: Rec, path: string): RecordedRunMetadata {
   return {
     ...(s.has(o, 'bakeoff') ? { bakeoff: bakeoffProvenanceOf(s, s.object(o, 'bakeoff', path), join(path, 'bakeoff')) } : {}),
     ...(s.has(o, 'pilotSkipped') ? { pilotSkipped: s.exactly(o, 'pilotSkipped', path, true as const) } : {}),
     ...(s.has(o, 'readerContract') ? { readerContract: s.literal(o, 'readerContract', path, ['reader-exact-evidence-v2', 'reader-compact-verdicts-v1'] as const) } : {}),
-    ...(s.has(o, 'confidenceQuestionPolicy') ? { confidenceQuestionPolicy: s.literal(o, 'confidenceQuestionPolicy', path, ['confidence-single-request-v1', 'confidence-grouped-nouls-v1'] as const) } : {})
+    ...(s.has(o, 'confidenceQuestionPolicy') ? { confidenceQuestionPolicy: s.literal(o, 'confidenceQuestionPolicy', path, ['confidence-single-request-v1', 'confidence-grouped-nouls-v1'] as const) } : {}),
+    ...(s.has(o, 'confidenceContextPolicy') ? { confidenceContextPolicy: s.literal(o, 'confidenceContextPolicy', path, ['standard-v1', 'long-context-262k-v1'] as const) } : {})
   };
 }
 function bakeoffProvenanceOf(s: Shape, o: Rec, path: string): NonNullable<RecordedRunMetadata['bakeoff']> {
@@ -763,6 +765,8 @@ export interface RunSummaryView extends RecordedRunMetadata {
   textHeld: boolean;
   /** S4. */
   uploaded: number;
+  /** Uploaded, unfinished documents without a workflow. Older run-list responses omit it. */
+  undispatched?: number;
   /** S4. */
   lastUploadAt: string | null;
   /** S4; null in git mode. */
@@ -773,7 +777,7 @@ export interface RunSummaryView extends RecordedRunMetadata {
 
 function runSummaryOf(s: Shape, value: unknown, path: string): RunSummaryView {
   const o = s.record(value, path);
-  return {
+  const summary: RunSummaryView = {
     ...recordedRunMetadata(s, o, path),
     ...(s.has(o, 'campaign') ? { campaign: s.nullable(o, 'campaign', path, (v, p) => campaignOf(s, v, p)) } : {}),
     ...(s.has(o, 'vendors') ? { vendors: s.literal(o, 'vendors', path, ['live', 'fake'] as const) } : {}),
@@ -790,10 +794,14 @@ function runSummaryOf(s: Shape, value: unknown, path: string): RunSummaryView {
     pendingAccounting: s.count(o, 'pendingAccounting', path),
     textHeld: s.boolean(o, 'textHeld', path),
     uploaded: s.count(o, 'uploaded', path),
+    ...(s.has(o, 'undispatched') ? { undispatched: s.count(o, 'undispatched', path) } : {}),
     lastUploadAt: s.nullableText(o, 'lastUploadAt', path),
     definitionRevisionId: s.nullableText(o, 'definitionRevisionId', path),
     comparedWith: s.nullable(o, 'comparedWith', path, (item, at) => comparedWithOf(s, item, at))
   };
+  if (summary.undispatched !== undefined && summary.undispatched > summary.uploaded - summary.completed)
+    s.fail(join(path, 'undispatched'), 'cannot exceed the number of unfinished uploads');
+  return summary;
 }
 
 export function readRunList(raw: unknown): RunSummaryView[] {

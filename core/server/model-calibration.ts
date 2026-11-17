@@ -1,5 +1,6 @@
 import { appliedThresholdStatus, type ThresholdStatus } from '../config/definitions.ts';
 import { MODEL_PIN_POLICIES, typeVersion, type ProjectPack } from '../config/project.ts';
+import { confidenceContextPolicy, type ConfidenceContextPolicy } from '../config/confidence-context.ts';
 import { ServerFailure } from './errors.ts';
 import { INITIAL_JUSTIFICATION } from './threshold-basis.ts';
 
@@ -17,6 +18,13 @@ const unit = (value: unknown): value is number => typeof value === 'number' && N
 const fail = (): never => { throw new ServerFailure('E_READER_CALIBRATION', 'blocker', readerCalibrationCopy.unreadable); };
 function parse(value: string): unknown { try { return JSON.parse(value); } catch { return fail(); } }
 
+function contextOf(pack: unknown): ConfidenceContextPolicy {
+  if (!object(pack) || pack.settings !== undefined && !object(pack.settings)) return fail();
+  try { return confidenceContextPolicy(object(pack.settings) ? pack.settings.confidenceContextPolicy : undefined); }
+  catch { return fail(); }
+}
+const scopedCalibration = (pack: ProjectPack) => pack.readerModels !== undefined || contextOf(pack) !== 'standard-v1';
+
 /** Missing historical identity is unknown; malformed present identity is never treated as absence. */
 function readerIdentity(pack: unknown): { id: string; policy: string } | null {
   if (!object(pack)) return fail();
@@ -31,11 +39,13 @@ function readerIdentity(pack: unknown): { id: string; policy: string } | null {
   return { id: pin.id as string, policy: pin.policy as string };
 }
 
-/** Legacy targets retain their historical carry rule. A menu target requires explicit matching reader pins. */
+/** Standard legacy targets retain their carry rule; contexts never mix, and menus/long context require matching pins. */
 export function sameTrialReader(targetPack: unknown, sourcePackJson: string): boolean {
   if (!object(targetPack)) return fail();
-  if (targetPack.readerModels === undefined) return true;
-  const target = readerIdentity(targetPack), source = readerIdentity(parse(sourcePackJson));
+  const sourcePack = parse(sourcePackJson), context = contextOf(targetPack);
+  if (context !== contextOf(sourcePack)) return false;
+  if (targetPack.readerModels === undefined && context === 'standard-v1') return true;
+  const target = readerIdentity(targetPack), source = readerIdentity(sourcePack);
   if (!target) return fail();
   return source !== null && source.id === target.id && source.policy === target.policy;
 }
@@ -72,28 +82,32 @@ const scopePredicate = (scope: Scope) => scope.kind === 'revision'
   ? "json_extract(r.pack_json,'$.definitionRevisionId')=?"
   : "r.type_version=? AND json_extract(r.pack_json,'$.definitionRevisionId') IS NULL";
 const historyFrom = ' FROM threshold_history h JOIN corrections c ON c.id=h.correction_id JOIN runs r ON r.id=c.run_id ';
+const contextPredicate = "CASE WHEN json_type(r.pack_json,'$.settings.confidenceContextPolicy') IS NULL THEN 'standard-v1' ELSE json_extract(r.pack_json,'$.settings.confidenceContextPolicy') END=?";
 const ownHistoryPredicate = (scope: Scope) => scopePredicate(scope) +
-  " AND json_extract(r.pack_json,'$.pins.reader.id')=? AND json_extract(r.pack_json,'$.pins.reader.policy')=?";
+  " AND json_extract(r.pack_json,'$.pins.reader.id')=? AND json_extract(r.pack_json,'$.pins.reader.policy')=? AND " + contextPredicate;
 const latestHistory = (scope: Scope) => '(SELECT h.id' + historyFrom + 'WHERE ' + ownHistoryPredicate(scope) + ' ORDER BY h.rowid DESC LIMIT 1)';
-const keyFor = (scope: Scope, pin: Identity, historyId: string | null) =>
-  JSON.stringify(['reader-calibration-v1', scope.kind, scope.version, pin.id, pin.policy, historyId]);
+const keyFor = (scope: Scope, pin: Identity, historyId: string | null, context: ConfidenceContextPolicy) =>
+  JSON.stringify(context === 'standard-v1'
+    ? ['reader-calibration-v1', scope.kind, scope.version, pin.id, pin.policy, historyId]
+    : ['reader-calibration-v2', scope.kind, scope.version, pin.id, pin.policy, context, historyId]);
 
 function snapshotHistory(pack: ProjectPack, scope: Scope, pin: Identity): string | null {
   if (!text(pack.readerCalibrationKey)) return fail();
   const value = parse(pack.readerCalibrationKey);
-  if (!Array.isArray(value) || value.length !== 6 || value[0] !== 'reader-calibration-v1' ||
+  const context = contextOf(pack), standard = context === 'standard-v1', historyIndex = standard ? 5 : 6;
+  if (!Array.isArray(value) || value.length !== historyIndex + 1 || value[0] !== (standard ? 'reader-calibration-v1' : 'reader-calibration-v2') ||
       value[1] !== scope.kind || value[2] !== scope.version || value[3] !== pin.id || value[4] !== pin.policy ||
-      !(value[5] === null || text(value[5]))) return fail();
-  return value[5];
+      !standard && value[5] !== context || !(value[historyIndex] === null || text(value[historyIndex]))) return fail();
+  return value[historyIndex];
 }
 
 /** Final quote/run admission fence, beside the existing active category revision check. No writes. */
 export function readerCalibrationGuard(pack: ProjectPack, typeVersionHash: string): { sql: string; params: (string | null)[] } | null {
-  if (pack.readerModels === undefined) return null;
+  if (!scopedCalibration(pack)) return null;
   const scope = scopeOf(pack, typeVersionHash), pin = readerIdentity(pack);
   if (!pin) return fail();
   const historyId = snapshotHistory(pack, scope, pin);
-  return { sql: latestHistory(scope) + ' IS ?', params: [scope.version, pin.id, pin.policy, historyId] };
+  return { sql: latestHistory(scope) + ' IS ?', params: [scope.version, pin.id, pin.policy, contextOf(pack), historyId] };
 }
 
 async function histories(db: D1Database, scope: Scope): Promise<HistoryRow[]> {
@@ -124,8 +138,9 @@ async function lineage(db: D1Database, revisionId: string): Promise<RevisionRow[
 const initial = (justification = INITIAL_JUSTIFICATION): ReaderCalibration =>
   ({ threshold: .9, status: 'untested', justification, historyId: null, hasOwnEvidence: false });
 
-/** Replay only explicit applications attributable to this pin; never copy the shared active threshold. */
+/** Replay only explicit applications attributable to this pin and context; never copy the shared active threshold. */
 export async function readReaderCalibration(db: D1Database, pack: ProjectPack, typeVersionHash?: string): Promise<ReaderCalibration> {
+  const context = contextOf(pack);
   const scope = scopeOf(pack, typeVersionHash ?? await typeVersion(JSON.stringify(pack.typeFile))), pin = readerIdentity(pack);
   if (!pin) throw new ServerFailure('E_READER_CALIBRATION', 'blocker', readerCalibrationCopy.missingReader);
   const revisions = scope.kind === 'revision' ? await lineage(db, scope.version) : null;
@@ -149,7 +164,7 @@ export async function readReaderCalibration(db: D1Database, pack: ProjectPack, t
         if (!identity) return fail();
         snapshotHistory(recorded as unknown as ProjectPack, stageScope, identity);
       }
-      if (!identity || identity.id !== pin.id || identity.policy !== pin.policy) continue;
+      if (contextOf(recorded) !== context || !identity || identity.id !== pin.id || identity.policy !== pin.policy) continue;
       const status = appliedThresholdStatus(value, { threshold: row.threshold, correctionId: row.correction_id });
       value = { threshold: row.threshold, status, justification: row.correction_id, historyId: row.id, hasOwnEvidence: true };
     }
@@ -157,15 +172,15 @@ export async function readReaderCalibration(db: D1Database, pack: ProjectPack, t
   return value;
 }
 
-/** Selectors call this only for declared menus; frozen legacy packs keep their original reading behavior. */
+/** Menus and long-context opt-ins get scoped calibration; standard legacy packs keep their original reading behavior. */
 export async function withReaderCalibration(db: D1Database, pack: ProjectPack): Promise<ProjectPack> {
-  if (pack.readerModels === undefined) return pack;
+  if (!scopedCalibration(pack)) return pack;
   const version = await typeVersion(JSON.stringify(pack.typeFile)), scope = scopeOf(pack, version), pin = readerIdentity(pack);
   if (!pin) return fail();
   const calibration = await readReaderCalibration(db, pack, version);
   return { ...pack, definitionThreshold: calibration.threshold, definitionThresholdStatus: calibration.status,
     definitionThresholdJustification: calibration.justification,
-    readerCalibrationKey: keyFor(scope, pin, calibration.historyId) };
+    readerCalibrationKey: keyFor(scope, pin, calibration.historyId, contextOf(pack)) };
 }
 
 /** A category activation must not inherit a calibration application that arrived after its review read. */
@@ -183,18 +198,19 @@ export async function applyReaderThreshold(db: D1Database, pack: ProjectPack, so
   input: { correctionId: string; actor: string; threshold: number; direction: 'raise' | 'lower' }) {
   const scope = scopeOf(pack, source.typeVersion), pin = readerIdentity(pack);
   if (!pin) throw new ServerFailure('E_READER_CALIBRATION', 'blocker', readerCalibrationCopy.missingReader);
-  if (pack.readerModels !== undefined || pack.readerCalibrationKey !== undefined) snapshotHistory(pack, scope, pin);
+  if (scopedCalibration(pack) || pack.readerCalibrationKey !== undefined) snapshotHistory(pack, scope, pin);
   if (!unit(input.threshold)) return fail();
   const current = await readReaderCalibration(db, pack, source.typeVersion);
   const status = appliedThresholdStatus(current, { threshold: input.threshold, correctionId: input.correctionId });
   const category = scope.kind === 'revision' ? ' AND EXISTS(SELECT 1 FROM definition_active WHERE id=1 AND revision_id=?)' : '';
   const result = await db.prepare('INSERT INTO threshold_history(id,correction_id,actor,created_at,threshold,direction) SELECT ?,?,?,?,?,? WHERE ' +
     latestHistory(scope) + ' IS ?' + category +
-    ' AND EXISTS(SELECT 1 FROM corrections c JOIN runs r ON r.id=c.run_id WHERE c.id=? AND c.run_id=? AND r.actor=?)' +
+    ' AND EXISTS(SELECT 1 FROM corrections c JOIN runs r ON r.id=c.run_id WHERE c.id=? AND c.run_id=? AND r.actor=? AND ' +
+      ownHistoryPredicate(scope) + ')' +
     ' AND NOT EXISTS(SELECT 1 FROM threshold_history WHERE correction_id=? AND direction=?)')
     .bind(crypto.randomUUID(), input.correctionId, input.actor, new Date().toISOString(), input.threshold, input.direction,
-      scope.version, pin.id, pin.policy, current.historyId, ...(scope.kind === 'revision' ? [scope.version] : []),
-      input.correctionId, source.runId, input.actor, input.correctionId, input.direction).run();
+      scope.version, pin.id, pin.policy, contextOf(pack), current.historyId, ...(scope.kind === 'revision' ? [scope.version] : []),
+      input.correctionId, source.runId, input.actor, scope.version, pin.id, pin.policy, contextOf(pack), input.correctionId, input.direction).run();
   if (result.meta.changes !== 1) throw new ServerFailure('E_READER_CALIBRATION_STALE', 'request', readerCalibrationCopy.changed, 409);
   return { applied: true, threshold: input.threshold, thresholdStatus: status, correctionId: input.correctionId };
 }

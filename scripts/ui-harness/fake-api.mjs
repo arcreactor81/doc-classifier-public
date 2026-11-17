@@ -1,5 +1,5 @@
 import { selectReaderModel, readerModelIdentity } from '../../core/config/model-choice.ts';
-import { utcUsageDay } from '../../core/config/usage-limits.ts';
+import { hasAnthropicPool, hasVendorPools, normalizeOpenaiPool, utcUsageDay } from '../../core/config/usage-limits.ts';
 import { usageCopy } from '../../core/ui/copy-usage.ts';
 import { readPilot, readPilotVerdict, readPilotConfirmation } from '../../core/ui/trial-wire.ts';
 /**
@@ -657,14 +657,17 @@ export class FakeApi {
       maxCorrectionsPerActorPerDay: dailyRecordAllowance(limits),
       actorReferencesToday: [...this.state.references.values()].filter(saved => saved.confirmedBy === this.state.actor && today(saved.createdAt)).length,
       maxReferencesPerActorPerDay: dailyRecordAllowance(limits),
-      pools: [...limits.openaiTokenPools.map(pool => ({ id: pool.id, unit: 'tokens', limitUnits: pool.limitTokens, usedUnits: 0, reservedUnits: 0, unknownCalls: 0, blocked: false })),
+      pools: [...limits.openaiTokenPools.map(pool => {
+        const { id, unit, limitUnits } = normalizeOpenaiPool(pool);
+        return { id, unit, limitUnits, usedUnits: 0, reservedUnits: 0, unknownCalls: 0, blocked: false };
+      }),
         { id: 'typesafe', unit: 'nanodollars', limitUnits: Number(limits.typesafeDailyNano), usedUnits: 0, reservedUnits: 0, unknownCalls: 0, blocked: false },
         // DECISIONS 136: the Workers AI pool in Neurons and the DeepSeek pool in nanodollars, as the service reports them.
-        ...(limits.policy === 'daily-usage-v2' || limits.policy === 'daily-usage-v3' ? [
+        ...(hasVendorPools(limits) ? [
           { id: 'workers-ai', unit: 'neurons', limitUnits: limits.workersAiDailyNeurons, usedUnits: 0, reservedUnits: 0, unknownCalls: 0, blocked: false },
           { id: 'deepseek', unit: 'nanodollars', limitUnits: Number(limits.deepseekDailyNano), usedUnits: 0, reservedUnits: 0, unknownCalls: 0, blocked: false }] : []),
         // DECISIONS 156 addendum: the Anthropic pool of daily-usage-v3.
-        ...(limits.policy === 'daily-usage-v3' ? [
+        ...(hasAnthropicPool(limits) ? [
           { id: 'anthropic', unit: 'nanodollars', limitUnits: Number(limits.anthropicDailyNano), usedUnits: 0, reservedUnits: 0, unknownCalls: 0, blocked: false }] : [])],
       readerModels: (this.state.seed.readerModels?.options ?? []).map(option => ({ id: option.id, model: option.pin.id, sampleDocuments: 0,
         averageCostNanoPerDocument: null, estimatedDocumentsPerDay: null, estimatedDocumentsRemaining: null }))
@@ -1045,7 +1048,8 @@ export class FakeApi {
           pendingAccounting: run.pendingAccounting, textHeld: run.textHeld, mode: run.mode,
           runtimeWait: run.status === 'running' ? clone(run.runtimeWait ?? null) : null,
           // S4
-          uploaded: docs.length, lastUploadAt: this.#lastUploadAt(run),
+          uploaded: docs.length, undispatched: docs.filter(d => d.status !== 'complete' && d.workflowId === null).length,
+          lastUploadAt: this.#lastUploadAt(run),
           definitionRevisionId: run.pack.definitionRevisionId ?? null, comparedWith: this.#comparedWith(run)
         };
       });

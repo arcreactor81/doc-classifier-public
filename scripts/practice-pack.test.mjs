@@ -4,10 +4,12 @@ import { readFileSync } from 'node:fs';
 import owner from '../projects/owner/project.json' with { type: 'json' };
 import { validateFakeDeployArguments } from './deploy-fake.mjs';
 
-test('the private scale-test pack differs only in identity and absence of shared-demo quotas', () => {
+test('the private scale-test pack excludes the temporary owner study and shared-demo quotas', () => {
   const practice = JSON.parse(readFileSync(new URL('../projects/practice/project.json', import.meta.url), 'utf8'));
   const expected = structuredClone(owner);
   expected.id = 'practice'; delete expected.settings.usageLimits;
+  delete expected.settings.inferenceWindow;
+  expected.readerModels.options = expected.readerModels.options.filter(option => option.id !== 'deepseek_low');
   assert.deepEqual(practice, expected);
   const cap = owner.settings.usageLimits.maxDocumentsPerRun;
   assert.ok(Number.isInteger(cap) && cap >= 1, 'the real site remains capped');

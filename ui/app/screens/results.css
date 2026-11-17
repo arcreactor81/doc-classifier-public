@@ -78,7 +78,9 @@
   .results .t th:nth-child(2) { width: 200px; }
   .results .t th:nth-child(3) { width: 17%; }
   .results .t th:nth-child(5) { width: 96px; }
-  .results .t td.c-doc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .results .t .doc-file { display: flex; align-items: baseline; min-width: 0; }
+  .results .t .doc__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .results .t .doc-file .ext { flex: none; }
 }
 .results .pile { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; }
 .results .act .quiet-links .btn--quiet { display: block; width: 100%; }

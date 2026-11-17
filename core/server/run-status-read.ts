@@ -18,6 +18,7 @@ import { publicBudget, RECENT_LIMIT } from '../domain/run-status.ts';
 import { spendFromRow, unknownFromRow, type Store, type RunRow, type DocumentRow } from './store.ts';
 import { runVendors } from '../vendors/outbound.ts';
 import { READER_CONTRACTS, CONFIDENCE_QUESTION_POLICIES } from '../config/project.ts';
+import { CONFIDENCE_CONTEXT_POLICIES } from '../config/confidence-context.ts';
 import type { RunCampaign, RunStatus, RunStatusInput, RunPolicyHeaders } from '../domain/run-status-types.ts';
 
 const RUN_STATUSES: readonly RunStatus[] = ['uploading', 'running', 'complete', 'halted', 'closing', 'closed'];
@@ -113,6 +114,11 @@ export function frozenRunPolicies(run: Pick<RunRow, 'pack_json'>): RunPolicyHead
     if (!(CONFIDENCE_QUESTION_POLICIES as readonly unknown[]).includes(recorded.confidenceQuestionPolicy))
       return unreadable('The confidence question layout recorded on this run is unreadable.');
     fields.confidenceQuestionPolicy = recorded.confidenceQuestionPolicy as RunPolicyHeaders['confidenceQuestionPolicy'];
+  }
+  if (Object.hasOwn(recorded, 'confidenceContextPolicy')) {
+    if (!(CONFIDENCE_CONTEXT_POLICIES as readonly unknown[]).includes(recorded.confidenceContextPolicy))
+      return unreadable('The confidence context policy recorded on this run is unreadable.');
+    fields.confidenceContextPolicy = recorded.confidenceContextPolicy as RunPolicyHeaders['confidenceContextPolicy'];
   }
   return fields;
 }

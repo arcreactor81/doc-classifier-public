@@ -20,6 +20,7 @@
 // 2 refused to start (bad input, a failed preflight check, the budget, a pointer rule).
 import { existsSync, mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
+import {readReadingCount} from './reading.mjs';
 import { fileURLToPath } from 'node:url';
 import { installPicker, opfsRoot, writeFolder } from '../ui-harness/opfs.mjs';
 import { readCompactResults, readResultsPage, readRunList } from '../../core/ui/wire.ts';
@@ -99,15 +100,18 @@ const blockAll = receipts => request => {
 };
 
 /** Preflight for the batches about to run, through an open site session. Returns {ok, checks, budget, ...}. */
-async function preflight(site, options, kit, batches, testRunIds) {
+const runLimitText = options => options.unlimited ? 'No spending limit' : formatUsd(options.runLimitNano);
+async function preflight(site, options, kit, batches, testRunIds, hooks) {
   const read = await readSite(site.get, options.reader);
   const { checks, pilotSize } = preflightChecks({ ...read, build: options.build, reader: options.reader, readerPin: options.readerPin,
     typeFile: kit.typeFile, batchSizes: batches.map(b => b.files.length), batchesToRun: batches.length });
   const runs = readRunList({ runs: read.runs });
   const spend = spendToday(runs, testRunIds);
-  const budget = budgetDecision({ maxTotalNano: options.maxTotalNano, runLimitNano: options.runLimitNano, batchesToRun: batches.length,
+  const budget = options.unlimited ? await hooks.authorizeUnlimited(read, batches, options.maxTotalNano) : budgetDecision({
+    maxTotalNano: options.maxTotalNano, runLimitNano: options.runLimitNano, batchesToRun: batches.length,
     testSpentNano: spend.testNano, todayOtherNano: spend.todayOtherNano });
-  checks.push({ name: 'the total budget covers every batch to run at its full run limit', ok: budget.ok, detail: budget.reason });
+  checks.push({ name: options.unlimited ? 'the campaign guard admits this no-limit run' : 'the total budget covers every batch to run at its full run limit',
+    ok: budget.ok === true, detail: budget.reason });
   const pools = read.usage?.enabled ? (read.usage.pools ?? []).map(p => ({ id: p.id, unit: p.unit, used: p.usedUnits, reserved: p.reservedUnits, limit: p.limitUnits, unknownCalls: p.unknownCalls, blocked: p.blocked })) : null;
   return { ok: checks.every(c => c.ok), checks, pilotSize, budget: { ...budget, worstNano: String(budget.worstNano) },
     spendToday: { testUsd: Number(spend.testNano) / 1e9, otherRunsTodayUsd: Number(spend.todayOtherNano) / 1e9 }, usagePools: pools,
@@ -121,7 +125,7 @@ async function runBatch({ options, kit, batch, out, testLog, frozen, remaining, 
   const files = batch.files.map(file => ({ ...file, bytes: readFileSync(file.path) }));
   const writes = [], blocked = [], uploads = [], uploaded = new Set(), timeline = [];
   const state = { prints: new Set(batch.files.map(f => f.fingerprint)), batchSize: size, reader: options.reader,
-    runLimitNano: String(options.runLimitNano), skipPilot: false, quoteSent: false, quoteId: null, createSent: false, runId: null };
+    unlimited: options.unlimited === true, runLimitNano: options.unlimited ? null : String(options.runLimitNano), skipPilot: false, quoteSent: false, quoteId: null, createSent: false, runId: null };
   let preflightOnly = true, log = testLog, dir = null, evidenceWritten = false;
   let quoteAnswer = null, createBudget = null, status = null, confirmView = null, resultsView = null, checks = [], perDocument = [], reportedModel = null;
   const waitFor = async (key, timeoutMs = 15_000) => {
@@ -143,8 +147,12 @@ async function runBatch({ options, kit, batch, out, testLog, frozen, remaining, 
     // The run's identity arrives with the page's own response; wait for it rather than judge too early.
     if (request.path === '/api/runs' && state.quoteSent && state.quoteId === null) await waitFor('quote');
     if (/^\/api\/runs\/[^/]+\//.test(request.path) && state.createSent && state.runId === null) await waitFor('run');
-    const verdict = request.sameOrigin ? judgeWrite(state, request)
+    let verdict = request.sameOrigin ? judgeWrite(state, request)
       : { allow: false, kind: 'other-origin', reason: 'a write to another origin' };
+    if (verdict.allow && verdict.kind === 'upload' && hooks.verifyUpload) {
+      try { await hooks.verifyUpload(request.body); }
+      catch { verdict = { allow: false, kind: 'upload', reason: 'extracted input differs from the approved comparison record' }; }
+    }
     const receipt = { method: request.method, path: request.sameOrigin ? request.path : `${request.origin}${request.path}`, allowed: verdict.allow, kind: verdict.kind, reason: verdict.reason };
     writes.push(receipt);
     if (verdict.kind === 'upload' && verdict.allow) uploaded.add(request.body.fingerprint);
@@ -210,7 +218,7 @@ async function runBatch({ options, kit, batch, out, testLog, frozen, remaining, 
     evidenceWritten = true;
     writeOnce(path.join(dir, 'evidence.json'), {
       at: new Date().toISOString(), batch: batch.name, outcome, reason, runId: state.runId, origin: options.origin, build: options.build,
-      reader: options.reader, readerPin: options.readerPin ?? null, runLimitNano: String(options.runLimitNano), skipPilot: state.skipPilot,
+      reader: options.reader, readerPin: options.readerPin ?? null, runLimitNano: state.runLimitNano, skipPilot: state.skipPilot,
       documents: batch.files.map(f => ({ name: f.name, fingerprint: f.fingerprint, expected: f.expected })),
       checks, writes, blocked, pageErrors: site.pageErrors, uploads: { count: uploads.length, allowed: uploads.filter(u => u.allowed).length, distinctDocuments: uploaded.size },
       quoteAnswer, createBudget, status, spendNano: status?.spend?.blended ?? null, reportedModel, perDocument, confirmView, resultsView,
@@ -220,7 +228,7 @@ async function runBatch({ options, kit, batch, out, testLog, frozen, remaining, 
 
   try {
     await page.goto(options.origin + '/#/', { waitUntil: 'domcontentloaded', timeout: 120_000 });
-    const pre = await preflight(site, options, kit, remaining, testRunIds);
+    const pre = await preflight(site, options, kit, remaining, testRunIds, hooks);
     testLog('batch-preflight', { batch: batch.name, ok: pre.ok, failed: pre.checks.filter(c => !c.ok), budget: pre.budget.reason, spendToday: pre.spendToday });
     if (!pre.ok) throw new StopTest('a preflight check failed before this batch; nothing was started', pre.checks.filter(c => !c.ok));
     guardClear();
@@ -232,7 +240,7 @@ async function runBatch({ options, kit, batch, out, testLog, frozen, remaining, 
     writeOnce(path.join(out, 'pointers', `${batch.name}.txt`), dir);
     log = journal(path.join(dir, 'journal.jsonl'));
     log('batch-start', { batch: batch.name, documents: size, skipPilot: state.skipPilot, pilotSize: pre.pilotSize, reader: options.reader,
-      readerLabel: pre.readerLabel, runLimit: formatUsd(options.runLimitNano), serving: pre.serving, budget: pre.budget.reason });
+      readerLabel: pre.readerLabel, runLimit: runLimitText(options), serving: pre.serving, budget: pre.budget.reason });
     writeOnce(path.join(dir, 'preflight.json'), pre);
     preflightOnly = false;
 
@@ -248,12 +256,12 @@ async function runBatch({ options, kit, batch, out, testLog, frozen, remaining, 
     const readStart = Date.now(), done = page.locator('[data-testid="files-primary"] [data-feedback][data-state="done"]');
     let reading = readingProgress({ read: 0, now: readStart, stallMs: options.readStallMin * 60_000 }), loggedAt = readStart;
     while (await done.count() === 0) {
-      const read = Number((await text('[data-testid="files-count"] b')).replace(/[^0-9]/g, '')) || 0;
-      reading = readingProgress({ read, now: Date.now(), stallMs: options.readStallMin * 60_000, previous: reading });
-      if (reading.stalled) throw new StopTest(`reading made no progress for ${options.readStallMin} minutes`, { read: reading.read, total: files.length });
+      const read = await readReadingCount(page,files.length);
+      reading = readingProgress({ read: read===null?reading.read:read, now: Date.now(), stallMs: options.readStallMin * 60_000, previous: reading });
+      if (reading.stalled) throw new StopTest(`reading made no progress for ${options.readStallMin} minutes`, { read, total: files.length, phase:read===null?'scanning':'reading' });
       if (Date.now() - loggedAt >= 120_000) {
         const seconds = (Date.now() - readStart) / 1000;
-        log('reading', { read: reading.read, total: files.length, seconds: Math.round(seconds), filesPerSecond: Number((reading.read / seconds).toFixed(3)) });
+        log('reading', { read, total: files.length, seconds: Math.round(seconds), filesPerSecond: read===null?null:Number((read / seconds).toFixed(3)) });
         loggedAt = Date.now();
       }
       await page.waitForTimeout(2000);
@@ -297,16 +305,28 @@ async function runBatch({ options, kit, batch, out, testLog, frozen, remaining, 
       while (shown === '' && Date.now() < until) { await page.waitForTimeout(250); shown = await text('[data-testid="confirm-reader-selected"]'); }
       if (shown !== pre.readerLabel) throw new StopTest('the reader choice changed on Confirm', { shown, expected: pre.readerLabel });
     }
-    await page.fill('#confirm-limit-blended', options.runLimitUsd);
+    if (options.unlimited) {
+      const more = page.getByTestId('confirm-more');
+      if (!(await more.evaluate(element => element.open))) await more.locator('summary').click();
+      await page.locator('#confirm-no-limit').check();
+      await page.locator('#confirm-ack').check();
+    } else await page.fill('#confirm-limit-blended', options.runLimitUsd);
     await enabled(button('confirm-primary'));
     confirmView = { reader: await text('[data-testid="confirm-reader-selected"]'), pin: await text('[data-testid="confirm-reader-pin"]'),
       selection: await count(), withoutTrial: await page.locator('[data-testid="trial-skipped-note"]').count() === 1,
-      limit: await page.inputValue('#confirm-limit-blended'), start: await text('[data-testid="confirm-primary"] button[data-op]') };
+      limit: options.unlimited ? null : await page.inputValue('#confirm-limit-blended'),
+      ...(options.unlimited ? {noLimit: await page.locator('#confirm-no-limit').isChecked(), acknowledged: await page.locator('#confirm-ack').isChecked()} : {}),
+      start: await text('[data-testid="confirm-primary"] button[data-op]') };
+    if (options.unlimited && (!confirmView.noLimit || !confirmView.acknowledged)) throw new StopTest('the no-limit choice needs acknowledgement');
     if (options.readerPin && confirmView.pin !== options.readerPin) throw new StopTest('Confirm shows another reader model', confirmView);
     log('confirm', confirmView);
     await shot('confirm');
     guardClear();
-    log('start-authorized', { runLimit: formatUsd(options.runLimitNano) });
+    if (options.unlimited) {
+      const current = await preflight(site, options, kit, [batch], testRunIds, hooks);
+      if (!current.ok) throw new StopTest('the campaign guard refused this run at confirmation', current.checks.filter(c=>!c.ok));
+    }
+    log('start-authorized', { runLimit: runLimitText(options) });
     await (await enabled(button('confirm-primary'))).click();
 
     const idEnd = Date.now() + 120_000;
@@ -329,7 +349,7 @@ async function runBatch({ options, kit, batch, out, testLog, frozen, remaining, 
         log('run-status', row ?? { missing: true });
       }
       if (hooks.onStatus) await hooks.onStatus({ batch, runId: state.runId, status, page });
-      const decision = statusDecision({ status, runLimitNano: options.runLimitNano, blocked: blocked.length, pageErrors: site.pageErrors.length, timedOut: Date.now() > deadline });
+      const decision = statusDecision({ status, runLimitNano: options.runLimitNano, unlimited: options.unlimited, blocked: blocked.length, pageErrors: site.pageErrors.length, timedOut: Date.now() > deadline });
       if (decision.action === 'stop') throw new StopTest(decision.reason, blocked.at(-1) ?? site.pageErrors.at(-1) ?? status);
       if (decision.action === 'done') break;
       await page.waitForTimeout(options.pollMs);
@@ -398,6 +418,7 @@ async function runBatch({ options, kit, batch, out, testLog, frozen, remaining, 
 }
 
 export async function runTest(options, hooks = {}) {
+  if (options.unlimited && typeof hooks.authorizeUnlimited !== 'function') throw new Error('An acknowledged unlimited run requires the supervising campaign budget guard.');
   const out = checkOutFolder(options.out);
   const kit = loadKit({ kitDir: options.kit, keyFile: options.key ?? path.join(options.kit, 'answer-key.json'), categoriesFile: options.categories,
     maxBatchDocuments: options.maxBatchDocuments });
@@ -408,7 +429,7 @@ export async function runTest(options, hooks = {}) {
   const { pointers, prior, summaries } = readPrior(out);
   const names = kit.batches.map(b => b.name);
   testLog('invocation', { kit: options.kit, out, origin: options.origin, build: options.build, reader: options.reader, readerPin: options.readerPin ?? null,
-    runLimit: formatUsd(options.runLimitNano), maxTotal: formatUsd(options.maxTotalNano), from: options.from ?? null, to: options.to ?? null,
+    runLimit: runLimitText(options), maxTotal: formatUsd(options.maxTotalNano), from: options.from ?? null, to: options.to ?? null,
     acceptStopped: options.acceptStopped, preflightOnly: !!options.preflightOnly, batches: names.length, documents: kit.batches.reduce((n, b) => n + b.files.length, 0),
     keyEntriesOutsideBatches: kit.keyOutsideBatches, earlier: summaries.map(s => ({ name: s.name, outcome: s.outcome, runId: s.runId })) });
   let selected;
@@ -432,7 +453,7 @@ export async function runTest(options, hooks = {}) {
     let pre;
     try {
       await site.page.goto(options.origin + '/#/', { waitUntil: 'domcontentloaded', timeout: 120_000 });
-      pre = await preflight(site, options, kit, batches, testRunIds);
+      pre = await preflight(site, options, kit, batches, testRunIds, hooks);
     } catch (error) {
       testLog('test-refused', { reason: `preflight could not read the site: ${safeMessage(error)}` });
       return refused('preflight read failed');
@@ -473,7 +494,7 @@ export async function runTest(options, hooks = {}) {
 // Command line
 // ---------------------------------------------------------------------------------------------------------------
 
-const FLAGS = new Set(['preflight-only']);
+const FLAGS = new Set(['preflight-only','unlimited']);
 const LISTS = new Set(['accept-stopped']);
 export function parseArgs(argv) {
   const raw = { 'accept-stopped': [] };
@@ -488,10 +509,10 @@ export function parseArgs(argv) {
     i++;
   }
   const known = new Set(['kit', 'key', 'categories', 'out', 'origin', 'profile', 'build', 'reader', 'reader-pin', 'run-limit-usd', 'max-total-usd',
-    'from', 'to', 'accept-stopped', 'preflight-only', 'batch-timeout-min', 'min-free-gb', 'memory-wait-min', 'poll-ms', 'max-batch-documents', 'read-stall-min']);
+    'from', 'to', 'accept-stopped', 'preflight-only', 'unlimited', 'batch-timeout-min', 'min-free-gb', 'memory-wait-min', 'poll-ms', 'max-batch-documents', 'read-stall-min']);
   const unknown = Object.keys(raw).filter(key => !known.has(key));
   if (unknown.length) throw new Error(`Unknown option(s): ${unknown.map(k => '--' + k).join(', ')}`);
-  for (const needed of ['kit', 'categories', 'out', 'origin', 'profile', 'build', 'reader', 'run-limit-usd', 'max-total-usd'])
+  for (const needed of ['kit', 'categories', 'out', 'origin', 'profile', 'build', 'reader', 'max-total-usd'])
     if (!raw[needed]) throw new Error(`--${needed} is required`);
   const number = (key, fallback) => {
     if (raw[key] === undefined) return fallback;
@@ -499,12 +520,14 @@ export function parseArgs(argv) {
     if (!Number.isFinite(value) || value <= 0) throw new Error(`--${key} must be a positive number`);
     return value;
   };
-  const runLimitNano = usdToNano(raw['run-limit-usd']), maxTotalNano = usdToNano(raw['max-total-usd']);
-  if (runLimitNano <= 0n) throw new Error('--run-limit-usd must be above zero');
+  const unlimited = raw.unlimited === true;
+  if (unlimited === (raw['run-limit-usd'] !== undefined)) throw new Error('Specify exactly one of --run-limit-usd or --unlimited.');
+  const runLimitNano = unlimited ? null : usdToNano(raw['run-limit-usd']), maxTotalNano = usdToNano(raw['max-total-usd']);
+  if (!unlimited && runLimitNano <= 0n) throw new Error('--run-limit-usd must be above zero');
   return {
     kit: raw.kit, key: raw.key, categories: raw.categories, out: raw.out, origin: raw.origin.replace(/\/+$/, ''), profile: raw.profile,
     build: raw.build, reader: raw.reader === 'none' ? null : raw.reader, readerPin: raw['reader-pin'] ?? null,
-    runLimitUsd: raw['run-limit-usd'], runLimitNano, maxTotalNano, from: raw.from, to: raw.to, acceptStopped: raw['accept-stopped'],
+    unlimited, runLimitUsd: raw['run-limit-usd'], runLimitNano, maxTotalNano, from: raw.from, to: raw.to, acceptStopped: raw['accept-stopped'],
     preflightOnly: !!raw['preflight-only'], batchTimeoutMin: number('batch-timeout-min', 60), minFreeGb: number('min-free-gb', 2),
     // The kit's largest batch; default 60, the owner site's usual per-run limit. Preflight still checks the site's own limit.
     maxBatchDocuments: number('max-batch-documents', 60),

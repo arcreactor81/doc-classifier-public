@@ -76,14 +76,14 @@ type Call={attemptId:string;role:string;costNano:string|null;runId?:string};
 function ledgerFixture(options:{unlimited?:boolean;policy?:string}={}){
  const db=new DatabaseSync(':memory:');
  db.exec(`CREATE TABLE controls(id INTEGER,kill INTEGER); INSERT INTO controls VALUES(1,0);
- CREATE TABLE runs(id TEXT PRIMARY KEY,status TEXT,mode TEXT,budget_json TEXT,pack_json TEXT,notes_json TEXT NOT NULL DEFAULT '[]',halt_json TEXT,spend_openai_nano INTEGER NOT NULL DEFAULT 0,spend_typesafe_nano INTEGER NOT NULL DEFAULT 0,unknown_calls INTEGER NOT NULL DEFAULT 0,runtime_pending_deadline_ms INTEGER);
+ CREATE TABLE runs(id TEXT PRIMARY KEY,actor TEXT,quote_id TEXT,bakeoff_json TEXT,expected_count INTEGER,status TEXT,mode TEXT,budget_json TEXT,pack_json TEXT,notes_json TEXT NOT NULL DEFAULT '[]',halt_json TEXT,spend_openai_nano INTEGER NOT NULL DEFAULT 0,spend_typesafe_nano INTEGER NOT NULL DEFAULT 0,unknown_calls INTEGER NOT NULL DEFAULT 0,runtime_pending_deadline_ms INTEGER);
  CREATE TABLE vendor_calls(attempt_id TEXT PRIMARY KEY,run_id TEXT NOT NULL,fingerprint TEXT NOT NULL,role TEXT NOT NULL,model_requested TEXT NOT NULL,model_returned TEXT,status INTEGER,latency_ms INTEGER,request_id TEXT,usage_json TEXT,cost_nano TEXT,raw_key TEXT NOT NULL,created_at TEXT NOT NULL);
  CREATE TABLE events(id TEXT PRIMARY KEY,run_id TEXT,fingerprint TEXT,created_at TEXT,stage TEXT,kind TEXT,elapsed_ms INTEGER,details_json TEXT);
  CREATE TABLE artifacts(key TEXT PRIMARY KEY,run_id TEXT,fingerprint TEXT,kind TEXT,state TEXT,contains_text INTEGER,deleted_at TEXT);
  CREATE TABLE documents(run_id TEXT,fingerprint TEXT,status TEXT);
  CREATE TABLE storage_circuit_outcomes(run_id TEXT,fingerprint TEXT,set_aside INTEGER,failures_after INTEGER);`);
  const budget=authorizeRunBudget(options.unlimited?UNLIMITED:LIMITED,'person','2026-09-22');
- for(const id of ['run','another-run'])db.prepare('INSERT INTO runs(id,status,mode,budget_json,pack_json) VALUES(?,?,?,?,?)').run(id,'running','interactive',JSON.stringify(budget),JSON.stringify({settings:options.policy?{unknownSpendPolicy:options.policy}:{}}));
+ for(const id of ['run','another-run'])db.prepare("INSERT INTO runs(id,actor,quote_id,expected_count,status,mode,budget_json,pack_json) VALUES(?,'person',?,1,?,?,?,?)").run(id,'quote-'+id,'running','interactive',JSON.stringify(budget),JSON.stringify({settings:options.policy?{unknownSpendPolicy:options.policy}:{}}));
  const queries:string[]=[];
  const statement=(sql:string)=>{let params:SQLInputValue[]=[];const s={bind(...values:SQLInputValue[]){params=values;return s;},first:async()=>db.prepare(sql).get(...params)??null,all:async()=>({results:db.prepare(sql).all(...params)}),run:async()=>({success:true,meta:{changes:Number(db.prepare(sql).run(...params).changes)}}),execute:()=>db.prepare(sql).run(...params)};return s;};
  const env={MODEL_CALLS_ENABLED:'true',DB:{prepare:(sql:string)=>{queries.push(sql);return statement(sql);},batch:async(statements:ReturnType<typeof statement>[])=>{db.exec('BEGIN');try{const results=statements.map(s=>({success:true,meta:{changes:Number(s.execute().changes)}}));db.exec('COMMIT');return results;}catch(error){db.exec('ROLLBACK');throw error;}}}} as unknown as Env;

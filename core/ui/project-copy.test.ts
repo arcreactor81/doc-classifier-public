@@ -1,4 +1,4 @@
-﻿import { test } from 'node:test';
+import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { COPY_OVERRIDE_PATHS, resolveProjectCopy, validateProjectCopy } from './project-copy.ts';
@@ -27,7 +27,7 @@ test('omitted overrides retain every protected outcome and action sentence',()=>
 // for an eligible project set up for one, so the same sentence follows the core line and the owner's account terms.
 const OPENAI_PLACE='OpenAI chooses which country it is processed in, unless the account is set up for one region.';
 const CORE_OPENAI_LINE="Processed by OpenAI under this site's OpenAI account terms. "+OPENAI_PLACE;
-const OWNER_OPENAI_LINE='Shared with OpenAI in exchange for free usage. OpenAI may use it to evaluate and train its models. '+OPENAI_PLACE;
+const OWNER_OPENAI_LINE='Shared with OpenAI. OpenAI may use it to evaluate and train its models. '+OPENAI_PLACE;
 const DATA_LINE='screenConfirm.readerDataNote.openai';
 const pack=(name:string)=>JSON.parse(readFileSync(new URL('../../projects/'+name+'/project.json',import.meta.url),'utf8'));
 test('the OpenAI data line: a neutral core default, overridable by a project pack without touching the other lines',()=>{

@@ -1,12 +1,14 @@
 import { TYPESAFE_POOL_ID, utcUsageDay, type UsageLimits } from '../config/usage-limits.ts';
+import type { ProjectSettings } from '../config/project.ts';
 import { usageCopy as copy } from '../ui/copy-usage.ts';
 import { ServerFailure } from './errors.ts';
+import { scopedDeepseekPool } from './run-daily-exception.ts';
 import { classifyD1WriteTransient, d1WriteBackoff, d1WriteChanges, D1_WRITE_ATTEMPTS, readD1 } from './d1-write-policy.ts';
 
 export interface DailyPool { id: string; unit: 'tokens' | 'nanodollars'; modelIds: readonly string[] }
 export interface DailyReservationRequest {
   attemptId: string; runId: string; modelId: string; pool: DailyPool;
-  reservedUnits: number; limitUnits: number; at: string;
+  reservedUnits: number; limitUnits: number|null; at: string;
 }
 export interface DailyUsage {
   day: string; resetsAt: string; usedUnits: number; reservedUnits: number;
@@ -15,13 +17,19 @@ export interface DailyUsage {
 }
 interface ReservationRow {
   attempt_id: string; run_id: string; model_id: string; pool: string; unit: string;
-  day: string; reserved_units: number; limit_units: number; owner_nonce: string; created_at: string;
+  day: string; reserved_units: number; limit_units: number|null; owner_nonce: string; created_at: string;
 }
 const positive = (n: unknown): n is number => Number.isSafeInteger(n) && Number(n) > 0;
 const text = (v: unknown): v is string => typeof v === 'string' && v.length > 0;
 const storage = (cause?: unknown) => Object.assign(new ServerFailure('E_DAILY_USAGE_STORAGE', 'blocker', copy.storage), { cause });
 /** Every read here follows the one bounded rule (DECISIONS 135, readD1); a read still lost past it is E_DAILY_USAGE_STORAGE. */
 const readRow = <T>(statement: D1PreparedStatement) => readD1<T>(statement, undefined, storage);
+
+/** Check actual dispatch time. Already-admitted work still retains its response and usage after the end of the window. */
+export function requireInferenceTime(window: ProjectSettings['inferenceWindow'], at: number): void {
+  if (window !== undefined && !(at >= Date.parse(window.startAt) && at < Date.parse(window.endAt)))
+    throw new ServerFailure('E_INFERENCE_WINDOW', 'blocker', copy.inferenceWindow);
+}
 
 function poolCheck(pool: DailyPool): void {
   if (!text(pool.id) || !['tokens', 'nanodollars'].includes(pool.unit) || !Array.isArray(pool.modelIds) ||
@@ -46,17 +54,25 @@ function poolCheck(pool: DailyPool): void {
 function accounting(pool: DailyPool, at: string) {
   poolCheck(pool);
   const date = utcUsageDay(at);
-  const models = pool.id !== TYPESAFE_POOL_ID;
+  // A scoped pool contains only calls with its own reservation. Historical unreserved calls keep their original ordinary pool.
+  const scoped=pool.id.startsWith('deepseek/run/');
+  const models = pool.id !== TYPESAFE_POOL_ID && !scoped;
   const role = models
     ? "v.role IN ('reader','recovery') AND v.model_requested IN (SELECT value FROM json_each(?))"
-    : "v.role='confidence'";
+    : scoped ? '0' : "v.role='confidence'";
   const sql = `WITH usage_rows AS (
     SELECT r.unit,r.reserved_units,r.run_id,r.model_id,v.attempt_id AS call_id,v.run_id AS call_run,
       v.model_requested AS call_model,v.nano_units,v.token_units,c.attempt_id AS cancelled
     FROM daily_usage_reservations r LEFT JOIN daily_vendor_usage v ON v.attempt_id=r.attempt_id
     LEFT JOIN daily_usage_cancellations c ON c.attempt_id=r.attempt_id AND c.owner_nonce=r.owner_nonce
-    WHERE r.pool=? AND (r.day=? OR (v.created_at>=? AND v.created_at<?))
+    WHERE r.pool=? AND r.day=?
       AND (c.attempt_id IS NULL OR v.attempt_id IS NOT NULL)
+    UNION ALL
+    SELECT r.unit,r.reserved_units,r.run_id,r.model_id,v.attempt_id,v.run_id,
+      v.model_requested,v.nano_units,v.token_units,c.attempt_id
+    FROM daily_vendor_usage v CROSS JOIN daily_usage_reservations r ON r.attempt_id=v.attempt_id
+    LEFT JOIN daily_usage_cancellations c ON c.attempt_id=r.attempt_id AND c.owner_nonce=r.owner_nonce
+    WHERE v.created_at>=? AND v.created_at<? AND r.pool=? AND r.day!=?
     UNION ALL
     SELECT ?,NULL,v.run_id,v.model_requested,v.attempt_id,v.run_id,v.model_requested,v.nano_units,v.token_units,NULL
     FROM daily_vendor_usage v WHERE v.created_at>=? AND v.created_at<? AND ${role}
@@ -72,7 +88,9 @@ function accounting(pool: DailyPool, at: string) {
       COALESCE(SUM(CASE WHEN unit!=? OR (call_id IS NOT NULL AND (cancelled IS NOT NULL OR call_run!=run_id OR call_model!=model_id)) THEN 1 ELSE 0 END),0) AS invalidRows
     FROM charged
   )`;
-  const params: (string | number)[] = [pool.id, date.day, date.startsAt, date.resetsAt,
+  // Disjoint branches preserve admission-day OR settlement-day charging without visiting the pool's entire history.
+  // CROSS JOIN keeps the other-day branch driven by the indexed settlement date, then the reservation primary key.
+  const params: (string | number)[] = [pool.id, date.day, date.startsAt, date.resetsAt, pool.id, date.day,
     pool.unit, date.startsAt, date.resetsAt, ...(models ? [JSON.stringify(pool.modelIds)] : []), pool.unit];
   return { sql, params, date };
 }
@@ -106,8 +124,10 @@ export type DailyReservation =
  * never falls within a UTC day, so such a request cannot fit until the reset. Otherwise the refusal is contention.
  */
 export async function reserveDailyUsage(db: D1Database, request: DailyReservationRequest): Promise<DailyReservation> {
+  const unlimited=request.limitUnits===null;
   if (![request.attemptId, request.runId, request.modelId].every(text) || !positive(request.reservedUnits) ||
-      !positive(request.limitUnits)) throw storage();
+      (unlimited ? request.pool.id!==scopedDeepseekPool(request.runId)||request.modelId!=='deepseek-flash'||request.pool.unit!=='nanodollars' :
+        !positive(request.limitUnits)||request.pool.id.startsWith('deepseek/run/'))) throw storage();
   const query = accounting(request.pool, request.at);
   if (!request.pool.modelIds.includes(request.modelId)) throw storage();
   const nonce = crypto.randomUUID();
@@ -125,8 +145,8 @@ export async function reserveDailyUsage(db: D1Database, request: DailyReservatio
   const statement = db.prepare(query.sql + `
     INSERT INTO daily_usage_reservations(attempt_id,run_id,model_id,pool,unit,day,reserved_units,limit_units,owner_nonce,created_at)
     SELECT ?,?,?,?,?,?,?,?,?,? FROM totals
-    WHERE unreservedUnknownCalls=0 AND overruns=0 AND invalidRows=0 AND usedUnits+reservedUnits+?<=?
-    ON CONFLICT(attempt_id) DO NOTHING`).bind(...query.params, ...Object.values(expected), request.reservedUnits, request.limitUnits);
+    WHERE unreservedUnknownCalls=0 AND overruns=0 AND invalidRows=0 AND (? IS NULL OR usedUnits+reservedUnits+?<=?)
+    ON CONFLICT(attempt_id) DO NOTHING`).bind(...query.params, ...Object.values(expected),request.limitUnits,request.reservedUnits, request.limitUnits);
   for (let attempt = 1; attempt <= D1_WRITE_ATTEMPTS; attempt++) {
     let result: D1Result;
     try { result = await statement.run(); }
@@ -145,7 +165,8 @@ export async function reserveDailyUsage(db: D1Database, request: DailyReservatio
     if (changes !== 0) throw storage();
     const state = await readDailyUsage(db, request.pool, request.at);
     requireKnown(state);
-    if (!Number.isSafeInteger(state.usedUnits + request.reservedUnits) || state.usedUnits + request.reservedUnits > request.limitUnits)
+    if(unlimited)throw storage();
+    if (!Number.isSafeInteger(state.usedUnits + request.reservedUnits) || state.usedUnits + request.reservedUnits > request.limitUnits!)
       throw new ServerFailure('E_DAILY_LIMIT', 'blocker', copy.daily);
     return { state: 'busy', usedUnits: state.usedUnits, reservedUnits: state.reservedUnits };
   }

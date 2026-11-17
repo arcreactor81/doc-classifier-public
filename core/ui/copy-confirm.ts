@@ -65,13 +65,13 @@ export const confirmCopy = {
   },
   sent: {
     overline: 'Sent for sorting',
-    title: 'Only the text',
-    detail: 'Their text and headings go to the two checks, with the names of all the files.'
+    title: 'Text and document details',
+    detail: 'Both checks read the text. The certainty check also uses headings and table headers. The site records filenames for your results.'
   },
-  toSend: (n: number) => (n === 1 ? '1 document will be sent.' : `${n} documents will be sent.`),
+  toSend: (n: number) => n === 1 ? 'Text from 1 document will be sent for sorting.' : `Text from ${n} documents will be sent for sorting.`,
   notRead: (n: number) => n === 1
-    ? '1 file could not be read. It is listed in the results with its reason, and is not sent.'
-    : `${n} files could not be read. They are listed in the results with their reason, and are not sent.`,
+    ? '1 file could not be read. The site records its name and the reason.'
+    : `${n} files could not be read. The site records their names and the reasons.`,
   /** How it runs: Interactive is the only way, so this is a statement, not a choice. */
   daily: {
     title: 'Daily allowance', loading: 'Checking today’s usage…', refresh: 'Check usage again', updated: 'Usage checked.',

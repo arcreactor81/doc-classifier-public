@@ -60,6 +60,14 @@ export class UsageAccountingFailure extends Error {
   readonly kind = 'blocker' as const;
   constructor(code: UsageAccountingCode, message: string) { super(message); this.name = 'UsageAccountingFailure'; this.code = code; }
 }
+/** Optional lifetime breakdown must agree with the no-write contract; absence keeps historical usage valid. */
+function requireZeroWriteBreakdown(details: Record<string, unknown>): void {
+  const breakdown = details.cache_write_tokens_details;
+  if (breakdown === undefined) return;
+  if (!isRecord(breakdown) || Object.keys(breakdown).length !== 2 ||
+      breakdown.ttl_30m_tokens !== 0 || breakdown.ttl_12h_tokens !== 0)
+    throw new UsageAccountingFailure('E_CACHE_POLICY', 'The zero-write policy requires zero cache-write lifetime counts; billed usage is unaccounted until reconciled.');
+}
 /**
  * Price recorded token usage, never estimated output. The caller passes the cache policy its run recorded
  * (`usageCachePolicy` in core/config/project.ts): `disabled` for packs whose OpenAI requests select no cached prefix,
@@ -75,6 +83,7 @@ export function actualUsageCost(usage: unknown, rates: TokenRates, cachePolicy: 
     if (!isRecord(details) || !isCount(details.cached_tokens) || !isCount(details.cache_write_tokens) || details.cached_tokens !== 0 || details.cache_write_tokens !== 0) {
       throw new UsageAccountingFailure('E_CACHE_POLICY', 'The no-cache request requires explicit zero cache read and write tokens; billed usage is unaccounted until reconciled.');
     }
+    requireZeroWriteBreakdown(details);
   } else if (cachePolicy === 'priced') {
     const details = usage.input_tokens_details;
     if (!isRecord(details) || !isCount(details.cached_tokens) || details.cached_tokens > usage.input_tokens) {
@@ -83,6 +92,7 @@ export function actualUsageCost(usage: unknown, rates: TokenRates, cachePolicy: 
     if (details.cache_write_tokens !== undefined && details.cache_write_tokens !== 0) {
       throw new UsageAccountingFailure('E_CACHE_POLICY', 'This model has no cache-write charge, so reported cache writes must be zero or absent; billed usage is unaccounted until reconciled.');
     }
+    requireZeroWriteBreakdown(details);
     const cachedRate = rates.cachedInputNanodollarsPerMillion;
     if (typeof cachedRate !== 'string' || !/^(0|[1-9][0-9]*)$/.test(cachedRate)) {
       throw new UsageAccountingFailure('E_CACHE_POLICY', 'Priced caching requires the recorded cached-input rate.');

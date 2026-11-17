@@ -11,6 +11,16 @@ Comparison artefacts and the calibration dataset they were measured on are kept 
 `.local/projects/validation/` on the machine that holds them (moved there on 2026-09-25). They are not needed to
 build, test or deploy.
 
+## Current ordinary owner/practice configuration, 17 November 2026
+
+The ordinary default is GPT-6.1 Sol at low effort with a 16,384-token cap. Jev is `jev-1.14.0` with the explicit long-context policy, and heading recovery is GPT-5.4 nano at low effort with its own 8,192-token cap. The owner approved the named OpenAI identities under the run-frozen returned-model policy; Jev remains versioned. Prices, settings and dated reasons are stored in the project packs. Frozen historical packs retain their settings.
+
+The OpenAI model page checked on 17 November marks GPT-5.4 nano deprecated. The configured identity remains unchanged; the existing refusal and model-drift guards stop affected work rather than substituting another model.
+
+The [full Flash comparison](flash-reader-comparison-2026-11-17.md) evaluated `deepseek-flash` at low effort with a 16,384-token cap. That option was limited to individually enrolled study runs. Post-test restoration removed its ordinary-menu entry and the inference window, restored existing site limits and kept Sol as default. No pin, prompt, threshold or category was promoted from the result.
+
+The sections below are historical approval records, not a claim that their model is the current default.
+
 ## Confidence: `jev-1.13.0` (versioned), 2026-09-22
 
 - **Approval:** version confirmed against the official TypeSafe documentation.

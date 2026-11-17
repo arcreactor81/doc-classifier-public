@@ -124,14 +124,14 @@ try{
  // S4: the run list carries uploads, the last upload time, the category version and the lineage of each run.
  const listed=await call('runs');check(listed.status,200);readRunList(listed.body);checks++;
  const row=id=>listed.body.runs.find(r=>r.id===id);
- check(Object.keys(row(statusId)),['id','status','createdAt','total','completed','spendNano','spend','budget','unaccountedCalls','pendingAccounting','runtimeWait','textHeld','mode','uploaded','lastUploadAt','definitionRevisionId','comparedWith','campaign']);
+ check(Object.keys(row(statusId)),['id','status','createdAt','total','completed','spendNano','spend','budget','unaccountedCalls','pendingAccounting','runtimeWait','textHeld','mode','uploaded','undispatched','lastUploadAt','definitionRevisionId','comparedWith','campaign']);
  check([row(statusId).runtimeWait,row(run.body.runId).runtimeWait,row('source').runtimeWait],[null,null,null]);
  // Step 4: runs quoted without a campaign (at most the pilot size) carry none, in the list and in the status.
  check([row(statusId).campaign,row(run.body.runId).campaign,row('source').campaign,status.body.run.campaign],[null,null,null,null]);
  check(row(run.body.runId).comparedWith,{referenceId:ref.body.id,sourceRunId:'source'});
  check([row(run.body.runId).uploaded,row(run.body.runId).lastUploadAt,row(run.body.runId).definitionRevisionId],[5,null,draft.body.id]);
  check([row('source').comparedWith,row('source').definitionRevisionId,row('source').uploaded],[null,null,7]);
- check([row(statusId).comparedWith,row(statusId).uploaded,row(statusId).lastUploadAt,row(statusId).definitionRevisionId],[null,2,status.body.run.lastUploadAt,newer.body.id]);
+ check([row(statusId).comparedWith,row(statusId).uploaded,row(statusId).undispatched,row(statusId).lastUploadAt,row(statusId).definitionRevisionId],[null,2,status.body.run.undispatched,status.body.run.lastUploadAt,newer.body.id]);
 
  // S1 again: once the last document is uploaded, the version the client holds is stale and the full status comes back.
  const lastUpload={...readUpload,fingerprint:statusDocs[2].fingerprint,originalFilename:statusDocs[2].originalFilename};

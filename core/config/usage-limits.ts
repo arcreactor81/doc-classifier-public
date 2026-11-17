@@ -4,7 +4,15 @@ export interface DailyTokenPool {
   id: string;
   modelIds: string[];
   limitTokens: number;
+  limitNano?: never;
 }
+export interface DailyMonetaryPool {
+  id: string;
+  modelIds: string[];
+  limitNano: string;
+  limitTokens?: never;
+}
+export type DailyOpenaiPool = DailyTokenPool | DailyMonetaryPool;
 
 /** Installation-wide admission limits. They never replace the person's separate per-run spending choice. */
 export interface UsageLimitsV1 {
@@ -32,10 +40,17 @@ export interface UsageLimitsV3 extends Omit<UsageLimitsV2, 'policy'> {
   policy: 'daily-usage-v3';
   anthropicDailyNano: string;
 }
-export type UsageLimits = UsageLimitsV1 | UsageLimitsV2 | UsageLimitsV3;
-/** Whether a limit block carries the vendor pools of v2 (Workers AI and DeepSeek): v2 and v3 do. */
-export const hasVendorPools = (limits: UsageLimits): limits is UsageLimitsV2 | UsageLimitsV3 =>
-  limits.policy === 'daily-usage-v2' || limits.policy === 'daily-usage-v3';
+/** v4 keeps the same ledgers and vendor pools; an OpenAI pool declares tokens or nanodollars, never both. */
+export interface UsageLimitsV4 extends Omit<UsageLimitsV3, 'policy' | 'openaiTokenPools'> {
+  policy: 'daily-usage-v4';
+  openaiTokenPools: DailyOpenaiPool[];
+}
+export type UsageLimits = UsageLimitsV1 | UsageLimitsV2 | UsageLimitsV3 | UsageLimitsV4;
+/** Whether a limit block carries the vendor pools of v2 (Workers AI and DeepSeek): v2 and later do. */
+export const hasVendorPools = (limits: UsageLimits): limits is UsageLimitsV2 | UsageLimitsV3 | UsageLimitsV4 =>
+  limits.policy === 'daily-usage-v2' || limits.policy === 'daily-usage-v3' || limits.policy === 'daily-usage-v4';
+export const hasAnthropicPool = (limits: UsageLimits): limits is UsageLimitsV3 | UsageLimitsV4 =>
+  limits.policy === 'daily-usage-v3' || limits.policy === 'daily-usage-v4';
 
 /**
  * Cloudflare's published Workers AI price: USD 0.011 per 1,000 Neurons (pricing page, last updated 1 October 2026), so
@@ -64,7 +79,8 @@ const V3_KEYS = [...V2_KEYS, 'anthropicDailyNano'] as const;
 export function validateUsageLimits(value: unknown, models: readonly { id: string; vendor: ModelVendor }[]): ConfigIssue[] {
   const issues: ConfigIssue[] = [];
   const issue = (path: string, detail: string) => issues.push({ code: 'E_PROJECT_CONFIG', path: 'settings.usageLimits' + path, detail });
-  const v3 = object(value) && value.policy === 'daily-usage-v3';
+  const v4 = object(value) && value.policy === 'daily-usage-v4';
+  const v3 = object(value) && value.policy === 'daily-usage-v3' || v4;
   const v2 = object(value) && value.policy === 'daily-usage-v2' || v3;
   if (!object(value) || !exact(value, v3 ? V3_KEYS : v2 ? V2_KEYS : V1_KEYS)) {
     issue('', 'Record the complete daily-usage policy, limits and model pools.');
@@ -92,19 +108,23 @@ export function validateUsageLimits(value: unknown, models: readonly { id: strin
   const openaiIds = new Set(models.filter(model => model.vendor === 'openai').map(model => model.id));
   for (const [index, pool] of value.openaiTokenPools.entries()) {
     const path = '.openaiTokenPools.' + index;
-    if (!object(pool) || !exact(pool, ['id', 'modelIds', 'limitTokens'])) {
-      issue(path, 'Record the pool identity, models and daily token limit.'); continue;
+    const monetary = v4 && object(pool) && exact(pool, ['id', 'modelIds', 'limitNano']);
+    if (!object(pool) || !(exact(pool, ['id', 'modelIds', 'limitTokens']) || monetary)) {
+      issue(path, v4 ? 'Record the pool identity, models and exactly one daily token or nanodollar limit.'
+        : 'Record the pool identity, models and daily token limit.'); continue;
     }
     if (!text(pool.id) || !/^[a-z][a-z0-9_]*$/.test(pool.id) || seenPools.has(pool.id))
       issue(path + '.id', 'Pool identities must be unique snake_case values.');
     else seenPools.add(pool.id);
-    if (!positive(pool.limitTokens)) issue(path + '.limitTokens', 'A positive safe integer is required.');
+    if (monetary) {
+      if (!nanoLimit(pool.limitNano)) issue(path + '.limitNano', 'Record a positive daily nanodollar limit within the exact storage range.');
+    } else if (!positive(pool.limitTokens)) issue(path + '.limitTokens', 'A positive safe integer is required.');
     if (!Array.isArray(pool.modelIds) || pool.modelIds.length === 0 || !pool.modelIds.every(text))
       issue(path + '.modelIds', 'Name every versioned model that shares this pool.');
     else for (const id of pool.modelIds) {
       if (seenModels.has(id)) issue(path + '.modelIds', 'Each model must belong to exactly one pool.');
       if (models.some(model => model.id === id && model.vendor !== 'openai'))
-        issue(path + '.modelIds', 'Only OpenAI models are counted in tokens; this model has its own vendor pool.');
+        issue(path + '.modelIds', 'Only OpenAI models belong in these pools; this model has its own vendor pool.');
       seenModels.add(id);
     }
   }
@@ -113,15 +133,31 @@ export function validateUsageLimits(value: unknown, models: readonly { id: strin
   for (const vendor of new Set(models.map(model => model.vendor).filter(vendor => vendor !== 'openai'))) {
     if (vendor === 'anthropic' ? !v3 : !v2)
       issue('.policy', 'A ' + (vendor === 'cloudflare' ? 'Workers AI' : vendor === 'deepseek' ? 'DeepSeek' : 'Claude') +
-        ' reader needs its daily pool: use ' + (vendor === 'anthropic' ? 'daily-usage-v3' : 'daily-usage-v2 or daily-usage-v3') + '.');
+        ' reader needs its daily pool: use ' + (vendor === 'anthropic' ? 'daily-usage-v3 or daily-usage-v4' : 'daily-usage-v2, daily-usage-v3 or daily-usage-v4') + '.');
   }
   return issues;
 }
 
-export function tokenPoolForModel(limits: Pick<UsageLimits, 'openaiTokenPools'>, modelId: string): DailyTokenPool | null {
+export function tokenPoolForModel(limits: Pick<UsageLimits, 'openaiTokenPools'>, modelId: string): DailyOpenaiPool | null {
   const pools = limits.openaiTokenPools.filter(pool => pool.modelIds.includes(modelId));
   if (pools.length > 1) throw new Error('A model belongs to more than one daily pool.');
   return pools[0] ?? null;
+}
+
+/** Normalize only an explicitly declared unit; historical token entries retain their exact pool identity and units. */
+export function normalizeOpenaiPool(pool: DailyOpenaiPool): {
+  id: string; unit: 'tokens' | 'nanodollars'; modelIds: readonly string[]; limitUnits: number
+} {
+  const invalid = () => { throw Object.assign(new Error('The OpenAI daily pool is incomplete or has conflicting units.'),
+    { code: 'E_PROJECT_CONFIG', kind: 'blocker' }); };
+  if (!object(pool) || !text(pool.id) || !/^[a-z][a-z0-9_]*$/.test(pool.id) ||
+      !Array.isArray(pool.modelIds) || !pool.modelIds.length || !pool.modelIds.every(text) ||
+      new Set(pool.modelIds).size !== pool.modelIds.length) return invalid();
+  if (exact(pool, ['id', 'modelIds', 'limitTokens']) && positive(pool.limitTokens))
+    return { id: 'openai/' + pool.id, unit: 'tokens', modelIds: pool.modelIds, limitUnits: pool.limitTokens };
+  if (exact(pool, ['id', 'modelIds', 'limitNano']) && nanoLimit(pool.limitNano))
+    return { id: 'openai/' + pool.id, unit: 'nanodollars', modelIds: pool.modelIds, limitUnits: Number(pool.limitNano) };
+  return invalid();
 }
 
 export function utcUsageDay(at: string | number): { day: string; startsAt: string; resetsAt: string } {

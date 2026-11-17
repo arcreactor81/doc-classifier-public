@@ -187,6 +187,7 @@ test('result headers expose frozen variants, preserve historical absence and nev
     const initial = await f.run(), pack = JSON.parse(initial.pack_json);
     pack.settings.readerContract = 'reader-compact-verdicts-v1';
     pack.settings.confidenceQuestionPolicy = 'confidence-grouped-nouls-v1';
+    pack.settings.confidenceContextPolicy = 'long-context-262k-v1';
     f.db.prepare('UPDATE runs SET pack_json=? WHERE id=?').run(JSON.stringify(pack), initial.id);
     const run = await f.run();
     for (const result of [await compactResults(f.store, run),
@@ -194,15 +195,18 @@ test('result headers expose frozen variants, preserve historical absence and nev
       const header = result as unknown as Record<string, unknown>;
       assert.equal(header.readerContract, pack.settings.readerContract);
       assert.equal(header.confidenceQuestionPolicy, pack.settings.confidenceQuestionPolicy);
+      assert.equal(header.confidenceContextPolicy, pack.settings.confidenceContextPolicy);
     }
     // An older pack never recorded either field. Newly projected headers retain that absence.
     delete pack.settings.readerContract;
     delete pack.settings.confidenceQuestionPolicy;
+    delete pack.settings.confidenceContextPolicy;
     const historical = { ...run, pack_json: JSON.stringify(pack) };
     for (const result of [await compactResults(f.store, historical),
       await resultPages(f.store, historical, { after: null, limit: null })]) {
       assert.equal(Object.hasOwn(result, 'readerContract'), false);
       assert.equal(Object.hasOwn(result, 'confidenceQuestionPolicy'), false);
+      assert.equal(Object.hasOwn(result, 'confidenceContextPolicy'), false);
     }
     // A cached result predating the fields is served exactly as recorded, even when the pack has explicit settings.
     const cached = { runId: run.id, entries: (await manifestFor(f.store, await f.run())).entries, oldHeader: 'preserved' };

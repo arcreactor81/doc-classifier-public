@@ -163,10 +163,29 @@ export async function shaText(text: string): Promise<string> {
 const HTTP_ATTEMPT_ID = "c.run_id||'-'||c.fingerprint||'-'||replace(c.name,'-http-','-')";
 /** Vendor HTTP checkpoint `c` never completed and its attempt recorded no call row: its charge is unknown. */
 export const UNRECEIPTED_HTTP_CHECKPOINT = "c.status!='complete' AND (c.name LIKE 'confidence-http-%' OR c.name LIKE 'reader-http-%' OR c.name LIKE 'recovery-http-%') AND NOT EXISTS(SELECT 1 FROM vendor_calls v WHERE v.attempt_id=" + HTTP_ATTEMPT_ID + ")";
+// Pre-send denials without reservations and confirmed unsent cancellations have no pending charge.
+export const PENDING_ACCOUNTING_CHECKPOINT = UNRECEIPTED_HTTP_CHECKPOINT +
+  " AND NOT (c.status='failed' AND c.error_code IS NOT NULL AND c.error_code IN ('E_DAILY_LIMIT','E_DAILY_USAGE_UNKNOWN','E_DAILY_USAGE_BOUND') AND NOT EXISTS(SELECT 1 FROM daily_usage_reservations r WHERE r.attempt_id=" + HTTP_ATTEMPT_ID + "))" +
+  " AND NOT EXISTS(SELECT 1 FROM daily_usage_cancellations x JOIN daily_usage_reservations r ON r.attempt_id=x.attempt_id AND r.owner_nonce=x.owner_nonce WHERE x.attempt_id=" + HTTP_ATTEMPT_ID + ")";
 
-/** The execution guard's single read: the controls row's kill flag and the storage brake's recorded trip beside the full run row. */
-export const GUARD_SNAPSHOT_SQL =
-  `SELECT k.kill AS guard_kill,r.id IS NOT NULL AS guard_run_present,${storageCircuitTrippedSql('r.id')} AS guard_storage_tripped,r.* FROM (SELECT 1) AS one LEFT JOIN controls k ON k.id=1 LEFT JOIN runs r ON r.id=?`;
+type ExecutionGuardRun = Pick<RunRow, 'id'|'actor'|'status'|'expected_count'|'quote_id'|'bakeoff_json'|'budget_json'|
+  'pack_json'|'spend_openai_nano'|'spend_typesafe_nano'|'unknown_calls'|'runtime_pending_deadline_ms'>;
+interface GuardSnapshot<T> { kill: number | null; run: T | null; storageTripped: boolean }
+
+function guardSnapshotSql(columns: string): string {
+  return `SELECT k.kill AS guard_kill,r.id IS NOT NULL AS guard_run_present,${storageCircuitTrippedSql('r.id')} AS guard_storage_tripped,${columns}
+    FROM (SELECT 1) AS one LEFT JOIN controls k ON k.id=1 LEFT JOIN runs r ON r.id=?`;
+}
+// The execution guard reads only settings from the frozen pack. For an ordinary pack keep the original
+// settings object on the wire. Missing, duplicate, non-object or malformed settings take the old JS path.
+// In particular a broken pack must not pre-empt a kill or run-status failure in the SQL read.
+const executionSettings = `CASE WHEN json_valid(r.pack_json) THEN (
+  SELECT CASE WHEN COUNT(*)=1 AND field.type='object' THEN '{"settings":'||field.value||'}' ELSE r.pack_json END
+  FROM json_each(r.pack_json) field WHERE field.key='settings'
+) ELSE r.pack_json END`;
+export const GUARD_SNAPSHOT_SQL = guardSnapshotSql(`r.id,r.actor,r.status,r.expected_count,r.quote_id,r.bakeoff_json,r.budget_json,
+  r.spend_openai_nano,r.spend_typesafe_nano,r.unknown_calls,r.runtime_pending_deadline_ms,${executionSettings} AS pack_json`);
+const FULL_GUARD_SNAPSHOT_SQL = guardSnapshotSql('r.*');
 
 async function sha256Hex(bytes: Uint8Array): Promise<string> {
   return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), v => v.toString(16).padStart(2, '0')).join('');
@@ -198,11 +217,14 @@ export class Store {
    * at every step and model boundary.
    * The outer one-row SELECT always returns a row, so a missing controls row and a missing run stay distinguishable.
    */
-  async guardSnapshot(runId: string): Promise<{ kill: number | null; run: RunRow | null; storageTripped: boolean }> {
-    const row = await readD1(this.env.DB.prepare(GUARD_SNAPSHOT_SQL).bind(runId));
+  async guardSnapshot(runId: string): Promise<GuardSnapshot<RunRow>>;
+  async guardSnapshot(runId: string, projection: 'execution'): Promise<GuardSnapshot<ExecutionGuardRun>>;
+  async guardSnapshot(runId: string, projection?: 'execution'): Promise<GuardSnapshot<ExecutionGuardRun>> {
+    const sql = projection === 'execution' ? GUARD_SNAPSHOT_SQL : FULL_GUARD_SNAPSHOT_SQL;
+    const row = await readD1(this.env.DB.prepare(sql).bind(runId));
     if (!row) return { kill: null, run: null, storageTripped: false };
     const { guard_kill: kill, guard_run_present: present, guard_storage_tripped: tripped, ...run } = row;
-    return { kill: typeof kill === 'number' ? kill : null, run: present === 1 ? run as unknown as RunRow : null, storageTripped: tripped === 1 };
+    return { kill: typeof kill === 'number' ? kill : null, run: present === 1 ? run as unknown as ExecutionGuardRun : null, storageTripped: tripped === 1 };
   }
 
   /** Every document of a run in quote order (`ordinal`, backfilled from the tag for older runs by migration 0015). */
@@ -554,10 +576,7 @@ export class Store {
   async pendingAccounting(runId: string): Promise<number> {
     const calls = await this.env.DB
       .prepare(
-        'SELECT COUNT(*) AS count FROM checkpoints c WHERE c.run_id=? AND ' + UNRECEIPTED_HTTP_CHECKPOINT +
-        // These denials occur before sending. A reservation, uncertain dispatch or generic storage failure stays pending.
-        " AND NOT (c.status='failed' AND c.error_code IS NOT NULL AND c.error_code IN ('E_DAILY_LIMIT','E_DAILY_USAGE_UNKNOWN','E_DAILY_USAGE_BOUND') AND NOT EXISTS(SELECT 1 FROM daily_usage_reservations r WHERE r.attempt_id=" + HTTP_ATTEMPT_ID + "))" +
-        " AND NOT EXISTS(SELECT 1 FROM daily_usage_cancellations x JOIN daily_usage_reservations r ON r.attempt_id=x.attempt_id AND r.owner_nonce=x.owner_nonce WHERE x.attempt_id=" + HTTP_ATTEMPT_ID + ")"
+        'SELECT COUNT(*) AS count FROM checkpoints c WHERE c.run_id=? AND ' + PENDING_ACCOUNTING_CHECKPOINT
       )
       .bind(runId)
       .first<{ count: number }>();

@@ -213,6 +213,7 @@ export function projectRunStatus(input: RunStatusInput): RunStatusProjection {
       ...(run.bakeoff === undefined ? {} : { bakeoff: run.bakeoff }),
       ...(run.readerContract === undefined ? {} : { readerContract: run.readerContract }),
       ...(run.confidenceQuestionPolicy === undefined ? {} : { confidenceQuestionPolicy: run.confidenceQuestionPolicy }),
+      ...(run.confidenceContextPolicy === undefined ? {} : { confidenceContextPolicy: run.confidenceContextPolicy }),
       ...(run.readerVersion === undefined ? {} : { readerVersion: { ...run.readerVersion } }),
       ...(run.readerModelChange === undefined ? {} : { readerModelChange: { ...run.readerModelChange } })
     },

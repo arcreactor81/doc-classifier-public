@@ -6,6 +6,8 @@ import { usageCopy } from '../ui/copy-usage.ts';
 import { ServerFailure } from './errors.ts';
 import { readR2 } from './r2-write-policy.ts';
 import { shaText, type Store } from './store.ts';
+import type { ProjectSettings } from '../config/project.ts';
+import { requireInferenceTime } from './daily-usage.ts';
 
 interface CountRunner {
   env: Env;
@@ -59,7 +61,7 @@ function transient(envelope: CountEnvelope): boolean {
  * is retained in its own checkpoint, and only an exhausted bound (or a refusal that is not transient) stops the run.
  * The first attempt keeps its original checkpoint name, so runs already in flight replay unchanged.
  */
-export async function countRequestInput(runner: CountRunner, request: FrozenVendorRequest): Promise<number> {
+export async function countRequestInput(runner: CountRunner, request: FrozenVendorRequest, window?: ProjectSettings['inferenceWindow']): Promise<number> {
   if (request.modelPolicy.id !== request.model) throw refused();
   verifyModelPolicy(request.modelPolicy, request.model, request.role);
   const counted = buildInputTokenCountRequest(request), requestHash = await shaText(request.body);
@@ -76,6 +78,7 @@ export async function countRequestInput(runner: CountRunner, request: FrozenVend
       let route: OutboundRoute;
       try { route = await siteRoute(runner.env, 'openai'); } catch (error) { secret = null; throw error; }
       const started = Date.now();
+      requireInferenceTime(window, started);
       let response: Response | null = null, bytes: Uint8Array | null = null;
       try {
         response = await sendRouted(runner.env, route, counted.endpoint, { method: 'POST',

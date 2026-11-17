@@ -25,6 +25,10 @@ export const evidenceCopy = {
   whyToYou: 'Why it came to you',
   whyFailed: 'Why it could not be processed',
   noOutcomeYet: 'This document has no outcome yet.',
+  noOutcomeStopped: 'The run stopped before this document had an outcome.',
+  recordedEvidence: 'Recorded evidence',
+  notReceived: 'This file has not been sent to the site. There is no evidence to show.',
+  readUpdatedEvidence: 'The evidence changed while it was being read. Close and reopen the details to read it again.',
 
   /** The two systems, side by side. */
   sideBySide: 'The two systems, side by side',

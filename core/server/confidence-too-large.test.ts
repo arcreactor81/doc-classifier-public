@@ -70,6 +70,7 @@ type Policy = NonNullable<ProjectPack['settings']['unknownSpendPolicy']>;
  */
 function ownerWith(policy?: Policy, grouped?: TypeFile): ProjectPack {
   const raw = structuredClone(ownerPack) as unknown as ProjectPack;
+  delete raw.settings.inferenceWindow;
   assert.equal(raw.settings.unknownSpendPolicy, 'not-processed-zero-v6', 'the owner pack ships not-processed-zero-v6, which keeps the v3 refusal and reads the nested one');
   if (policy) raw.settings.unknownSpendPolicy = policy;
   if (grouped) (raw.settings as { confidenceQuestionPolicy: string }).confidenceQuestionPolicy = GROUPED_CONFIDENCE_POLICY;

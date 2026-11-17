@@ -512,7 +512,10 @@ async function withReaderMenu<T>(action: () => Promise<T>, limits = false): Prom
   const source = projectSource as unknown as Record<string, unknown>, original = structuredClone(source);
   const owner = JSON.parse(readFileSync(join(import.meta.dirname, '..', '..', 'projects', 'owner', 'project.json'), 'utf8'));
   owner.id = PACK.id; owner.typeFile = original.typeFile; owner.structuralVocabulary = [];
-  if (!limits) delete owner.settings.usageLimits;
+  if (!limits) {
+    delete owner.settings.usageLimits;
+    delete owner.settings.inferenceWindow;
+  }
   // These tests exercise the shared site's usual per-run cap of 60; the shipped pack's value is asserted in
   // scripts/deploy-owner.test.mjs.
   else owner.settings.usageLimits.maxDocumentsPerRun = 60;

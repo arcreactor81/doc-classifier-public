@@ -1,5 +1,11 @@
 # Spending for each run
 
+## Post-study ordinary limits
+
+The November full-reader study used explicitly acknowledged unlimited runs, with DeepSeek exceptions bound to each exact run. Normal configuration restores the ordinary USD 0.50 DeepSeek and USD 1 Jev daily pools, keeps the existing shared OpenAI allocation and removes the temporary inference window and study-only reader option. Past grants, usage and held charges remain immutable.
+
+Restoring a smaller allowance does not erase that UTC day's test spending. If it already exceeds the ordinary limit, new work waits for the next normal UTC reset. The unlimited choice for a run does not bypass shared vendor pools or the emergency stop. No counter is cleared or old run closed as part of a settings reset.
+
 On **Confirm**, after choosing the reader, set the run's spending under **Spending limit**:
 
 - **Stop this run if spending reaches**: all recorded model spending for the run combined.

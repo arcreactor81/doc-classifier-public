@@ -72,7 +72,7 @@ export function runStrip(ctx: RunStripContext, header: HTMLElement, topBar: HTML
         return run.uploaded < run.total && run.status === 'uploading' ? copy.shell.strip.sent(run.uploaded, run.total)
           : copy.shell.strip.decided(run.decided, run.total);
       }
-      return draft === null ? '' : copy.shell.strip.read(draft.settled, draft.total);
+      return draft === null ? '' : copy.shell.strip.read(draft.settled, draft.total, draft.failed);
     });
     const checked = computed(() => {
       const subject = ctx.subject();

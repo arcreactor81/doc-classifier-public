@@ -1,5 +1,5 @@
 import { vendorModelIds, type ProjectPack } from '../config/project.ts';
-import { ANTHROPIC_POOL_ID, DEEPSEEK_POOL_ID, NANODOLLARS_PER_NEURON, TYPESAFE_POOL_ID, WORKERS_AI_POOL_ID, hasVendorPools, tokenPoolForModel, type UsageLimits } from '../config/usage-limits.ts';
+import { ANTHROPIC_POOL_ID, DEEPSEEK_POOL_ID, NANODOLLARS_PER_NEURON, TYPESAFE_POOL_ID, WORKERS_AI_POOL_ID, hasAnthropicPool, hasVendorPools, normalizeOpenaiPool, tokenPoolForModel, type UsageLimits } from '../config/usage-limits.ts';
 import { actualUsageCost, type TokenRates } from '../cost/cost.ts';
 import { usageCopy } from '../ui/copy-usage.ts';
 import { requestVendor, type FrozenVendorRequest } from './requests.ts';
@@ -32,7 +32,7 @@ export function readInputTokenCount(raw: unknown): number {
 export interface RequestReservation {
   pool: { id: string; unit: 'tokens' | 'nanodollars'; modelIds: readonly string[] };
   reservedUnits: number;
-  limitUnits: number;
+  limitUnits: number|null;
 }
 
 /** A nanodollar reservation at the recorded list rates: positive and exactly representable, or the request has no bound. */
@@ -44,7 +44,7 @@ function listPriceUnits(inputTokens: number, outputTokens: number, rates: TokenR
 
 /** A reservation larger than its whole pool can never be admitted on any day; say so rather than wait for a reset. */
 function withinPool(reservation: RequestReservation): RequestReservation {
-  if (reservation.reservedUnits > reservation.limitUnits) throw new ValidationFailure('E_DAILY_REQUEST_BOUND', 'blocker', usageCopy.larger);
+  if (reservation.limitUnits!==null && reservation.reservedUnits > reservation.limitUnits) throw new ValidationFailure('E_DAILY_REQUEST_BOUND', 'blocker', usageCopy.larger);
   return reservation;
 }
 
@@ -60,16 +60,18 @@ const byteBound = (vendor: string): vendor is ByteBoundVendor => Object.hasOwn(C
  * full input rate, and the output at the unchanged full cap, which includes any thinking. The reply's usage settles it;
  * a reply above the reservation stops the pool (E_DAILY_USAGE_BOUND), so a wrong bound fails loudly.
  */
-function vendorReservation(pack: ProjectPack, limits: UsageLimits, request: FrozenVendorRequest, vendor: ByteBoundVendor, inputTokens: number | null): RequestReservation {
+function vendorReservation(pack: ProjectPack, limits: UsageLimits, request: FrozenVendorRequest, vendor: ByteBoundVendor,
+  inputTokens: number | null, scopedPool?:string): RequestReservation {
   if (inputTokens !== null) throw refused();
-  if (!hasVendorPools(limits) || vendor === 'anthropic' && limits.policy !== 'daily-usage-v3') throw new ValidationFailure('E_DAILY_MODEL', 'blocker', usageCopy.model);
+  if (!hasVendorPools(limits) || vendor === 'anthropic' && !hasAnthropicPool(limits)) throw new ValidationFailure('E_DAILY_MODEL', 'blocker', usageCopy.model);
   const body: unknown = JSON.parse(request.body);
   const cap = record(body) ? body[CAP_FIELD[vendor]] : undefined;
   if (request.role !== 'reader' || !count(cap) || cap < 1) throw unbounded();
   const inputBound = new TextEncoder().encode(request.body).length;
-  const limitUnits = vendor === 'cloudflare' ? limits.workersAiDailyNeurons * NANODOLLARS_PER_NEURON
-    : vendor === 'deepseek' ? Number(limits.deepseekDailyNano) : Number((limits as Extract<UsageLimits, { policy: 'daily-usage-v3' }>).anthropicDailyNano);
-  return withinPool({ pool: { id: vendor === 'cloudflare' ? WORKERS_AI_POOL_ID : vendor === 'deepseek' ? DEEPSEEK_POOL_ID : ANTHROPIC_POOL_ID,
+  if(scopedPool!==undefined && (vendor!=='deepseek'||!scopedPool.startsWith('deepseek/run/')))throw refused();
+  const limitUnits = scopedPool!==undefined ? null : vendor === 'cloudflare' ? limits.workersAiDailyNeurons * NANODOLLARS_PER_NEURON
+    : vendor === 'deepseek' ? Number(limits.deepseekDailyNano) : Number((limits as Extract<UsageLimits, { policy: 'daily-usage-v3' | 'daily-usage-v4' }>).anthropicDailyNano);
+  return withinPool({ pool: { id: scopedPool??(vendor === 'cloudflare' ? WORKERS_AI_POOL_ID : vendor === 'deepseek' ? DEEPSEEK_POOL_ID : ANTHROPIC_POOL_ID),
     unit: 'nanodollars', modelIds: vendorModelIds(vendor) },
     reservedUnits: listPriceUnits(inputBound, cap, pack.prices.interactive.reader), limitUnits });
 }
@@ -91,24 +93,29 @@ export function readerContextBound(request: FrozenVendorRequest, inputTokens: nu
 }
 
 /** A reservation never trims input or lowers the configured output cap. Usage is settled from the raw vendor ledger. */
-export function reservationForRequest(pack: ProjectPack, request: FrozenVendorRequest, inputTokens: number | null): RequestReservation | null {
+export function reservationForRequest(pack: ProjectPack, request: FrozenVendorRequest, inputTokens: number | null,scopedPool?:string): RequestReservation | null {
   const limits = pack.settings.usageLimits;
   if (!limits) return null;
   if (request.role === 'confidence') {
     const rates = pack.prices.interactive.confidence;
     if (rates.outputNanodollarsPerMillion !== '0') throw unbounded();
-    // Published Jev ceiling: state plus all questions, ingested once, at most 64k input tokens for the current pin.
-    // The verified pack records that ceiling. Output is explicitly free under the recorded pricing contract.
+    // The frozen pack records its context-policy ceiling (64k standard, 262k long context), not the current site's
+    // setting. Output is explicitly free under the recorded pricing contract.
     return withinPool({ pool: { id: TYPESAFE_POOL_ID, unit: 'nanodollars', modelIds: [request.model] },
       reservedUnits: listPriceUnits(pack.limits.confidenceAllQuestionTokens, 0, rates), limitUnits: Number(limits.typesafeDailyNano) });
   }
   const vendor = requestVendor(request.role, request.modelPolicy);
-  if (byteBound(vendor)) return vendorReservation(pack, limits, request, vendor, inputTokens);
+  if (byteBound(vendor)) return vendorReservation(pack, limits, request, vendor, inputTokens,scopedPool);
   const pool = tokenPoolForModel(limits, request.model);
   if (!pool) throw new ValidationFailure('E_DAILY_MODEL', 'blocker', usageCopy.model);
   const body: unknown = JSON.parse(request.body);
   if (!count(inputTokens) || !record(body) || !count(body.max_output_tokens) || body.max_output_tokens < 1 ||
       !Number.isSafeInteger(inputTokens + body.max_output_tokens)) throw refused();
-  return withinPool({ pool: { id: 'openai/' + pool.id, unit: 'tokens', modelIds: pool.modelIds },
-    reservedUnits: inputTokens + body.max_output_tokens, limitUnits: pool.limitTokens });
+  const normalized = normalizeOpenaiPool(pool);
+  if (normalized.unit === 'nanodollars' && limits.policy !== 'daily-usage-v4')
+    throw new ValidationFailure('E_DAILY_MODEL', 'blocker', usageCopy.model);
+  const reservedUnits = normalized.unit === 'tokens' ? inputTokens + body.max_output_tokens
+    : listPriceUnits(inputTokens, body.max_output_tokens, pack.prices.interactive[request.role]);
+  return withinPool({ pool: { id: normalized.id, unit: normalized.unit, modelIds: normalized.modelIds },
+    reservedUnits, limitUnits: normalized.limitUnits });
 }

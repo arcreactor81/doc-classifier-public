@@ -4,6 +4,8 @@ export interface DispatchControl {
  stopped():boolean;
  /** Latch a known failure before awaiting its durable halt/event writes. */
  stop():void;
+ /** Stop selecting new documents for this page; already-issued handshakes still finish. */
+ pause():void;
 }
 export interface DispatchDependencies {
  readStatus():Promise<string>;
@@ -22,10 +24,10 @@ export async function dispatchRunDocuments(deps:DispatchDependencies):Promise<Di
  if(status!=='running')return{started,pending:0,status};
  const documents=await deps.readDocuments();
  const pending=documents.filter(eligible).slice(0,50);
- let next=0,stopped=false,failed=false,firstError:unknown,observedStop:string|null=null;
- const control:DispatchControl={stopped:()=>stopped,stop:()=>{stopped=true;}};
+ let next=0,stopped=false,paused=false,failed=false,firstError:unknown,observedStop:string|null=null;
+ const control:DispatchControl={stopped:()=>stopped,stop:()=>{stopped=true;},pause:()=>{paused=true;}};
  const dispatch=async()=>{
-  while(!stopped&&next<pending.length){
+  while(!stopped&&!paused&&next<pending.length){
    const document=pending[next++]!;
    try{
     const current=await deps.readStatus();
@@ -33,7 +35,7 @@ export async function dispatchRunDocuments(deps:DispatchDependencies):Promise<Di
      control.stop();observedStop??=current;return;
     }
     // Another lane can observe a stop while this read still holds an earlier running value.
-    if(stopped)return;
+    if(stopped||paused)return;
     if(await deps.create(document.fingerprint,control))started++;
    }catch(error){
     control.stop();

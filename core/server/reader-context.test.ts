@@ -45,6 +45,7 @@ const AT = () => new Date().toISOString();
 async function fixture(option: 'mini' | 'qwen' | 'deepseek', characters: number, needsOutlineRecovery: boolean,
   adjust: (pack: ProjectPack, fullText: string) => void = () => {}) {
   const pack: ProjectPack = selectReaderModel(requireProject({ ...structuredClone(ownerPack), typeFile: fixtures.syntheticTypeFile(2), structuralVocabulary: [] }), option);
+  delete pack.settings.inferenceWindow;
   const fullText = '[Page 1]\nIntroduction\n' + 'Synthetic words. '.repeat(Math.ceil(characters / 17)).slice(0, characters);
   adjust(pack, fullText);
   const db = migratedDatabase(), DB = localD1(db), bucket = memoryR2();

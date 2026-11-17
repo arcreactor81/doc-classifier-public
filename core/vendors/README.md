@@ -43,3 +43,10 @@ Reader/recovery under `explicit-no-cache-v1` set prompt_cache_options.mode=expli
 The owner approved GPT-6 Sol for new runs after five paired documents produced identical reader yes-sets and decision-rule replays with 13.3% lower selected-completion cost; this small provisional comparison establishes no general quality advantage. Existing frozen Terra run packs remain valid. Reader prompt, low effort, 16,384 output cap, full text, exact evidence checks and deterministic decision rules are unchanged. Recovery remains GPT-5.6 Luna.
 
 Reverified the official [GPT-6 Sol model page](https://developers.openai.com/api/docs/models/gpt-6-sol) on 2026-09-23: Responses and structured outputs, low effort, 1,050,000 context, standard USD2 input/USD10 output per million tokens, and the existing above-272,000-token 2x input/1.5x output tier. Account throughput remains explicitly unknown in the packs.
+
+
+## Explicit Jev context policy (4 November 2026)
+
+`settings.confidenceContextPolicy` is frozen with the pack. Historical absence and `standard-v1` omit the experimental header. `long-context-262k-v1` adds only `TypeSafe-Danger-Zone-Long-Context: true`; the serialized request body is unchanged. Both single and grouped layouts propagate the policy. The transport captures it before any attempt and rejects unknown policies or a confidence policy attached to a reader/recovery request. Raw envelopes record the explicit policy without credentials. There is no after-rejection switch.
+
+The owner pack declares both published limits as 262000 and keeps category capacity via an explicit `confidenceQuestionBudgetTokens: 32000`. Daily reservations read the frozen request ceiling; actual usage accounting still uses retained responses. Run headers, calibration/trial fences and usage-sample matching retain the context distinction. The official source is https://docs.typesafe.ai/models#long-context, checked 4 November 2026. The mode is experimental; a successful HTTP request is not an accuracy result.

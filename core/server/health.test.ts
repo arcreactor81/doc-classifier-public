@@ -137,11 +137,13 @@ test('a missing AI binding or DeepSeek key blocks only that reader; the site sta
   try {
     const view = await menu.health(site.env, 'cloudflare') as { status: string; readerOptions: { id: string; ready: boolean; blockers: { code: string }[] }[] };
     assert.equal(view.status, 'READY');
+    const hasLow = ownerPack.readerModels.options.some(o=>o.id==='deepseek_low');
+    const lowRows = hasLow ? [['deepseek_low', false, ['E_VENDOR_KEY']]] : [];
     assert.deepEqual(view.readerOptions.map(row => [row.id, row.ready, row.blockers.map(b => b.code)]),
-      [['standard', true, []], ['mini', true, []], ['qwen', false, ['E_READER_BINDING']], ['deepseek', false, ['E_VENDOR_KEY']], ['claude', false, ['E_VENDOR_KEY']]]);
+      [['standard', true, []], ['mini', true, []], ['qwen', false, ['E_READER_BINDING']], ['deepseek', false, ['E_VENDOR_KEY']], ['claude', false, ['E_VENDOR_KEY']], ['sol', true, []], ['terra', true, []], ['luna', true, []], ...lowRows]);
     const notes = (view as unknown as { notes: { code: string; headline: string }[] }).notes.filter(note => note.code === 'N_READER_MODEL_UNLOCKED');
     // DECISIONS 154 (no lock) and 155 (the OpenAI readers by name): every reader says its name is not locked.
-    assert.deepEqual(notes.map(note => note.headline), ['GPT-5.4', 'GPT-5.4 mini', 'Qwen 3.8 27B (Cloudflare)', 'DeepSeek Flash', 'Claude Sonnet 5.5']
+    assert.deepEqual(notes.map(note => note.headline), ['GPT-5.4', 'GPT-5.4 mini', 'Qwen 3.8 27B (Cloudflare)', 'DeepSeek Flash', 'Claude Sonnet 5.5', 'GPT-6.1 Sol', 'GPT-6.1 Terra', 'GPT-6 Luna', ...(hasLow?['DeepSeek Flash (low reasoning)']:[])]
       .map(name => `The model name behind ${name} is not locked; each run freezes the first name it reports and stops if it changes.`));
   } finally { site.db.close(); }
   const bound = env({ PROJECT_ID: 'owner', AI: { run: async () => new Response('{}'), gateway: () => ({ run: async () => new Response('{}') }) }, DEEPSEEK_API_KEY: { get: async () => 'local-test-only' },

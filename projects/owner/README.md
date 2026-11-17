@@ -137,3 +137,45 @@ they are no quality measure.
 - Threshold: the named readers start at 0.90, uncalibrated.
 - If a run ever reports a snapshot other than `gpt-5.4-2026-03-05` (Results then says the model changed), treat it as a
   pin change and score the runs that follow.
+
+
+## Jev long-context preparation (4 November 2026)
+
+New runs select `long-context-262k-v1`, with the TypeSafe long-context request header and published 262000-token per-request/per-question limits. The pin stays `jev-1.13.0`; this mode also works with 1.14, but model promotion is a separate comparison. Category allocation remains 32000 through `limits.confidenceQuestionBudgetTokens`. Standard historical packs carry no header. Request content, evidence rules, spending limits and reader configuration are unchanged. Long-context trials and threshold evidence are separate; the menu starts at 0.90 untested.
+
+This is experimental: TypeSafe says longer contexts are slower and less accurate. No paid long-context bake-off has run and no improved accuracy or live deployment is claimed. Earlier arXiv counts and cost estimates describe standard-context runs; more papers reaching the reader can increase cost. Source checked 4 November 2026: https://docs.typesafe.ai/models#long-context.
+
+
+## Decision-only comparison results (4 November 2026)
+
+The approved frozen pilot completed all 390 Jev requests; no reader, heading-recovery or Clef call was made. Match counts below use dataset reference labels, not independent human adjudication. Groups remain separate.
+
+| Jev option | Main research: reference matches / valid answers | News: reference matches / valid answers | Size stress: reference matches / valid answers |
+| --- | ---: | ---: | ---: |
+| 1.13 standard | 45/53; 11 size refusals | 49/50 | No valid answers; 16 size refusals |
+| 1.14 standard | 45/53; 11 size refusals | 48/50 | No valid answers; 16 size refusals |
+| 1.14 long | 55/64; no size refusals | 48/50 | 16/16; no size refusals |
+
+Long context added 27 accepted research cases. On common-valid cases, correctness counts were unchanged between 1.14 standard and long, but most numerical answers differed; this is not equivalence or validated calibration. Main-research threshold candidates were 37 with 2 errors for each standard arm and 47 with 2 errors for long; these are not product R1 filings without a reader.
+
+Liquid remains incomplete: d1.1 returned three valid answers; d1-ultra returned two valid answers plus one HTTP 422 input-limit refusal with an unknown charge. Another 254 Liquid requests remain unattempted. No Liquid ranking is justified. The known model subtotal of USD 0.240832640 comprises Jev USD 0.239734236 and Liquid USD 0.001098404, plus one unresolved Liquid charge. The production 1.13-long setting was not directly evaluated by these arms, and no production pin or threshold was changed or deployed. Full evidence and limitations: [comparison report](../../docs/decision-bakeoff-results-2026-11-04.md).
+
+## Full decision-only comparison (5 November 2026)
+
+The full 2,040-document arXiv inventory was freshly extracted. Two documents containing their own answer-category stamps were blocked before inference and retained in the inventory; all 2,038 scheduled requests per model finished. No reader, heading-recovery LLM or Clef call was made. Liquid used the approved native Noul criteria representation; both providers received the same unchanged full text and questions.
+
+| Measure | Jev 1.14 long | Liquid d1-ultra |
+| --- | ---: | ---: |
+| Valid answers / scheduled | 2,038/2,038 | 1,645/2,038 |
+| Reference-label matches / valid answers | 1,806/2,038 (88.62%) | 1,429/1,645 (86.87%) |
+| Matches on the same 1,645 common-valid papers | 1,450 (88.15%) | 1,429 (86.87%) |
+| Threshold candidates / scheduled | 1,541/2,038 | 804/2,038 |
+| Candidate disagreements / candidates | 38/1,541 (2.47%) | 9/804 (1.12%) |
+
+Liquid recorded 390 input-size refusals and three HTTP 504 failures, all retained without retry and with unknown cost. Jev had no processing failures. The known new-comparison model subtotal is USD 3.965680236 (Jev 2.402952678; Liquid 1.562727558), plus 393 unresolved Liquid failure charges. The earlier pilot is separate and unchanged.
+
+These are matches against fixed primary-subject references, not independent adjudication or R1 filing accuracy. Liquid's lower candidate error rate applies to a smaller, different candidate set; the same numeric confidence threshold does not establish equal calibration. No production model, threshold or definition was promoted from these results. All dispatches were unique despite two local retrieval interruptions; both isolated health endpoints were ready at completion. Code and results remain local as directed. Full methodology, denominators, per-class counts and evidence: [full comparison report](../../docs/decision-bakeoff-full-results-2026-11-05.md).
+
+### November reader study results (13 November 2026)
+
+Using the same Jev check and filing rules, Sol recorded outcomes for all 2,032 eligible arXiv papers. Terra recorded 2,020 outcomes, including 1,435 correct automatic filings and 33 misfiles. On the same inputs Sol made 1,426 correct automatic filings and 31 misfiles. Luna stopped after two independent runs exhausted reader attempts on evidence matching. It recorded 117 outcomes. The matched 60-paper Flash sample recorded 32 correct automatic filings, 0 misfiles, 23 reviews and 5 processing failures. [Full paired study and spending](../../docs/reader-study-2026-11-13.md)

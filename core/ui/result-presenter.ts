@@ -109,12 +109,12 @@ export interface PresentedRow {
   outcomeGlyph: OutcomeGlyph | null;
   /** Where it went: a category name, "Needs review" or "Could not process"; null while undecided. */
   placeLabel: string | null;
-  /** The one-line reason; null while undecided. */
+  /** The one-line reason; an unfinished stopped document explains the stop without acquiring an outcome. */
   reason: string | null;
   first: boolean;
   /** "Review first" for R5, else null. */
   firstLabel: string | null;
-  /** The stage label while undecided ("Reader", "Not sent yet"…); null once decided. */
+  /** The stage label while active and undecided; "Not completed" after a stop; null once decided. */
   phaseLabel: string | null;
   /** Plain sentences for the document's notes. */
   notes: readonly string[];
@@ -123,6 +123,8 @@ export interface PresentedRow {
 }
 
 export interface PresentOptions {
+  /** Presentation only: an unfinished document keeps its null outcome and recorded last stage. */
+  runStopped?: boolean;
   /**
    * The label for a stage while a document is undecided. Stage labels belong to copy-phases.ts (WP-3). The default
    * reads `uiCopy.phases.stages[stage]` and throws if that copy is missing, rather than showing a raw stage id.
@@ -151,9 +153,12 @@ const OUTCOMES: Readonly<Record<RowOutcome, { label: string; glyph: OutcomeGlyph
 export function presentRow(doc: PresentableDoc, displayNames: CategoryNames, options: PresentOptions = {}): PresentedRow {
   const notes = noteLines(doc.notes);
   if (doc.outcome === null) {
+    const stage = (options.stageLabel ?? defaultStageLabel)(doc.stage);
+    const stopped = options.runStopped === true;
     return {
-      outcomeLabel: null, outcomeGlyph: null, placeLabel: null, reason: null, first: false, firstLabel: null,
-      phaseLabel: (options.stageLabel ?? defaultStageLabel)(doc.stage), notes, notesInformational: false
+      outcomeLabel: null, outcomeGlyph: null, placeLabel: null,
+      reason: stopped ? uiCopy.screenResults.stoppedBeforeOutcome(stage) : null, first: false, firstLabel: null,
+      phaseLabel: stopped ? uiCopy.screenResults.notCompleted : stage, notes, notesInformational: false
     };
   }
   const outcome = OUTCOMES[doc.outcome];

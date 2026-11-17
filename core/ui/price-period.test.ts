@@ -17,7 +17,7 @@ const period = (iso: string) => {
 
 test('the schedule is DeepSeek\'s published one, kept once as data with its source and date; no other vendor has one', () => {
   assert.equal(deepseek.source, 'https://api-docs.deepseek.com/quick_start/pricing');
-  assert.equal(deepseek.verifiedAt, '2026-10-07');
+  assert.equal(deepseek.verifiedAt, '2026-11-13');
   assert.deepEqual(deepseek.peakUtc, [{ days: [1, 2, 3, 4, 5], fromHour: 1, toHour: 4 }, { days: [1, 2, 3, 4, 5], fromHour: 6, toHour: 10 }]);
   assert.equal(vendorPricePeriods('openai'), null);
   assert.equal(vendorPricePeriods('cloudflare'), null);

@@ -15,6 +15,16 @@ import type { RunStatusInput, RunStatusResponse, ServerPhase } from './run-statu
 
 type InputDocument = RunStatusInput['documents'][number];
 
+test('status retains recorded confidence context and includes it in the status version', () => {
+  const legacy = input([]), oldStatus = projectRunStatus(legacy);
+  assert.equal(Object.hasOwn(oldStatus.run, 'confidenceContextPolicy'), false);
+  for (const confidenceContextPolicy of ['standard-v1', 'long-context-262k-v1'] as const) {
+    const current = projectRunStatus({ ...legacy, run: { ...legacy.run, confidenceContextPolicy } });
+    assert.equal(current.run.confidenceContextPolicy, confidenceContextPolicy);
+    assert.notEqual(statusVersion(current), statusVersion(oldStatus));
+  }
+});
+
 const fingerprint = (n: number) => n.toString(16).padStart(64, '0');
 
 function doc(n: number, overrides: Partial<InputDocument> = {}): InputDocument {

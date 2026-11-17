@@ -15,7 +15,7 @@ import { actionSlot } from '../components/action-slot.ts';
 import { words } from '../components/words.ts';
 import type { LocalDraftSummary } from '../state/types.ts';
 import type { RouteOf, ViewContext } from '../shell/view-context.ts';
-import { cardRows, runCards, watchedRuns } from './home-parts.ts';
+import { cardRows, runCards, runHistoryFeedback, watchedRuns } from './home-parts.ts';
 
 export function runsScreen(ctx: ViewContext<RouteOf<'runs'>>): Node {
   const copy = ctx.copy;
@@ -43,6 +43,7 @@ export function runsScreen(ctx: ViewContext<RouteOf<'runs'>>): Node {
     h('h1', { class: 'h-page', attrs: { tabindex: -1 } }, words(copy.home.runsTitle)),
     h('p', { class: 'lede' }, copy.home.runsLead),
     h('div', { class: 'runs__action' }, actionSlot(primary, { testid: 'runs-primary' })),
+    runHistoryFeedback(store, copy),
     show(computed(() => runs() !== null && all().length === 0), () => h('p', { class: 'hint runs__empty' }, copy.home.runsEmpty)),
     h('div', { class: 'runs-row runs__cards' }, runCards(copy, rows, 'runs-table', 'h2')),
     show(computed(() => drafts().length > 0), () => h('div', { class: 'runs__drafts', attrs: { 'data-build': '' } },

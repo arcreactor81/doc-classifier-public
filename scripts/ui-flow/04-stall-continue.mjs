@@ -229,7 +229,7 @@ await runScript(SCRIPT, 'Owner non-negotiables 4, 5, 13, 14 — stalled send, Co
   check('B: nothing was posted before the Start run click (no POST /api/runs, no upload)',
     runsCreated(B0).filter(r => fake.requests.indexOf(r) < started.mark).length === 0 && posts(B, 'documents').every(r => fake.requests.indexOf(r) >= started.mark),
     described(writes(B0).filter(r => fake.requests.indexOf(r) < started.mark)));
-  await until(() => stall.waiting === 1, 'the 14th upload to be held', 120_000);
+  await until(() => stall.waiting === 3, 'the next upload group to be held', 120_000);
   // The count follows the status checks (every 3 s), so give it one.
   const sending13 = await until(async () => { const p = await progressPrimary(page); return /^13\s*of 114/.test(p.count ?? '') ? p : null; },
     'the count to show 13 of 114 sent', 10_000).catch(async () => progressPrimary(page));
@@ -241,7 +241,7 @@ await runScript(SCRIPT, 'Owner non-negotiables 4, 5, 13, 14 — stalled send, Co
   check('B: reloading while sending asked "leave this page?" first (the unload guard is on while sending)',
     dialogs.slice(guardDialogs).some(d => d.type === 'beforeunload'), dialogs.slice(guardDialogs));
   stall.release();
-  await until(() => stall.requests[0]?.dropped === true, 'the held upload to be dropped with the old page');
+  await until(() => stall.requests.every(r => r.dropped === true), 'the held uploads to be dropped with the old page');
   const markB = fake.requests.length;
   await sleep(1500);
   const early = await progressPrimary(page);
@@ -354,9 +354,9 @@ await runScript(SCRIPT, 'Owner non-negotiables 4, 5, 13, 14 — stalled send, Co
   // ==============================================================================================================
   // C. A refused document: Discard only
   // ==============================================================================================================
-  const refuse = () => fake.failNext({ method: 'POST', path: '/api/runs/*/documents' }, 'E_REQUEST',
-    'The document differs from the confirmed preflight input.', { status: 400, kind: 'request', skip: 2 });
   const five = fake.run(5).files;
+  const refuse = () => fake.failNext(r => r.method === 'POST' && r.path.endsWith('/documents') && r.body?.fingerprint === five[2].fingerprint,
+    'E_REQUEST', 'The document differs from the confirmed preflight input.', { status: 400, kind: 'request' });
   await writeFolder(page, `${root}/five`, five);
   const C1 = (await startRunFromPage(`${root}/five`, { before: refuse })).runId;
   await waitPrimary(`progress:discard:${C1}`, 60_000);
@@ -374,8 +374,13 @@ await runScript(SCRIPT, 'Owner non-negotiables 4, 5, 13, 14 — stalled send, Co
   });
   evidence.partC = { runId: C1, progress: refused, lights: lightsRefused, notice: refusedNotice, adjacency: adjacencyRefused,
     uploads: described(posts(C1, 'documents')) };
-  check('C: a refused document stops sending: 2 accepted, the 3rd refused (400), nothing more sent',
-    JSON.stringify(posts(C1, 'documents').map(r => r.status)) === '[201,201,400]', described(posts(C1, 'documents')));
+  const attemptedC = posts(C1, 'documents'), acceptedC = attemptedC.filter(r => r.status === 201);
+  const rejectedC = attemptedC.filter(r => r.status === 400);
+  check('C: a refusal drains the active group, keeps its accepted siblings, and starts no further upload or hand-over',
+    attemptedC.length === 4 && new Set(attemptedC.map(r => r.body.fingerprint)).size === 4 &&
+    rejectedC.length === 1 && rejectedC[0].body.fingerprint === five[2].fingerprint &&
+    acceptedC.length === 3 && fake.getRun(C1).docs.size === 3 &&
+    acceptedC.every(r => fake.getRun(C1).docs.has(r.body.fingerprint)) && posts(C1, 'start').length === 0, described(attemptedC));
   check('C: Progress offers Discard only: its primary is "Discard this run…", and no Continue sending anywhere',
     refused.label === 'Discard this run…' && !refused.buttons.includes('Continue sending'), { label: refused.label, buttons: refused.buttons });
   check('C: the light is red "A document was refused" in both places', lightsAgree(lightsRefused, 'failed', 'A document was refused'), lightsRefused);

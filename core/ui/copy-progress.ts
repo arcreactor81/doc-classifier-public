@@ -25,6 +25,8 @@ export const progressCopy = {
   continuesNote: (name: string) => `This continues ${name}. It doesn't start a new run or change your spending limit.`,
   discard: 'Discard this run…',
   activityTitle: "What's happening now",
+  recordedActivity: 'Recorded activity',
+  viewSavedResults: (n: number) => n === 1 ? 'View 1 saved result' : `View ${n} saved results`,
   killStopped: "Stopped by the emergency stop. This run can't be continued. Start a new run when new runs are allowed again.",
   seeResults: 'See the results',
   /**
@@ -56,7 +58,7 @@ export const progressCopy = {
     sending: (_total: number) => 'Sending the text',
     handingOver: (_total: number) => 'Handing over to sorting',
     sorting: (total: number) => `Sorting ${docs(total)}`,
-    sorted: (total: number) => `${docs(total)} sorted`,
+    sorted: (total: number) => `Results ready for ${docs(total)}`,
     stopped: (_total: number) => 'Stopped',
     closing: (_total: number) => 'Closing',
     discarded: (_total: number) => 'Discarded'
@@ -106,6 +108,7 @@ export const progressCopy = {
     splitReader: (services: string, reading: string, typesafe: string) => `${services} ${reading} · TypeSafe ${typesafe}`,
     readerServices: { cloudflare: 'Cloudflare and OpenAI', deepseek: 'DeepSeek and OpenAI', anthropic: 'Anthropic and OpenAI' },
     pending: (n: number) => (Number(n) === 1 ? '1 charge not reported yet.' : `${n} charges not reported yet.`),
+    unpriced: (n: number) => n === 1 ? '1 request has an unknown charge.' : `${n} requests have unknown charges.`,
     allReported: 'Every charge has been reported.'
   },
   providerWait: (service: string, until: string) => `${service} asked the app to wait until ${until}. The run carries on after that.`,

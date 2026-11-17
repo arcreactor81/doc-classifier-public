@@ -213,36 +213,46 @@ test('current owner, generic and comparison packs are validated without rewritin
 // Owner decision of 6 October 2026 (DECISIONS 132): the reader moves to the dated gpt-5.4 snapshot and heading
 // recovery to the dated gpt-5.4-nano snapshot; their automatic prompt caching is accepted and priced. Jev is unchanged.
 const configured = (pack: unknown) => ({ ...(pack as Record<string, unknown>), typeFile: types, structuralVocabulary: [] }) as Record<string, any>;
+const automaticBaseline = () => {
+ const pack = configured(structuredClone(owner)), option = pack.readerModels.options.find((value:{id:string})=>value.id==='standard');
+ pack.pins.reader=structuredClone(option.pin);pack.prices.interactive.reader=structuredClone(option.rates);
+ pack.settings.promptCachePolicy=option.promptCachePolicy;delete pack.settings.recoveryPromptCachePolicy;delete pack.settings.usageLimits;
+ delete pack.settings.inferenceWindow;
+ pack.readerModels.defaultId='standard';pack.readerModels.options=pack.readerModels.options.filter((value:{id:string})=>!['sol','luna','terra'].includes(value.id));
+ return pack;
+};
 const cacheIssues = (pack: unknown) => validateProject(pack).filter(issue => issue.path.includes('promptCachePolicy') || issue.path.includes('cachedInput'));
 
 // Owner decision of 10 October 2026 (DECISIONS 155, "drop the dates"): both are now requested by name under the undated
 // policy; the dated snapshots remain valid in frozen packs (core/config/undated-openai.test.ts).
-test('the owner pack requests gpt-5.4 for the reader and gpt-5.4-nano for recovery by name, and keeps Jev',()=>{
- assert.deepEqual(owner.pins.reader,{id:'gpt-5.4',date:'2026-10-10',reason:'Owner decision 10 October 2026 (DECISIONS 155): requested by name; each run records the model OpenAI reports and halts if it changes within the run.',policy:'owner_approved_undated'});
- assert.deepEqual(owner.pins.recovery,{id:'gpt-5.4-nano',date:'2026-10-10',reason:'Owner decision 10 October 2026 (DECISIONS 155): requested by name; nano keeps heading recovery in the separate small-model pool; each run records the model OpenAI reports and halts if it changes within the run.',policy:'owner_approved_undated'});
- assert.deepEqual(owner.pins.confidence,{id:'jev-1.13.0',date:'2026-09-22',reason:'Version confirmed against official TypeSafe documentation.',policy:'versioned'});
+test('the owner pack requests approved Sol at low effort, preserves nano recovery and names the approved Jev version',()=>{
+ assert.deepEqual({...owner.pins.reader,reason:undefined},{id:'gpt-6.1-sol',date:'2026-11-05',reason:undefined,policy:'owner_approved_undated'});
+ assert.deepEqual({...owner.pins.recovery,reason:undefined},{id:'gpt-5.4-nano',date:'2026-10-10',reason:undefined,policy:'owner_approved_undated'});
+ assert.match(owner.pins.recovery.reason,/shared paid OpenAI pool/);
+ assert.deepEqual({...owner.pins.confidence,reason:undefined},{id:'jev-1.14.0',date:'2026-11-05',reason:undefined,policy:'versioned'});
  assert.equal(owner.settings.readerEffort,'low');assert.equal(owner.settings.recoveryEffort,'low');
  assert.equal(owner.settings.readerMaxOutputTokens,16384);assert.equal(owner.settings.recoveryMaxOutputTokens,8192);
- assert.equal(owner.settings.promptCachePolicy,'automatic-cache-priced-v1');
+ assert.equal(owner.settings.promptCachePolicy,'explicit-no-cache-v1');
+ assert.equal(owner.settings.recoveryPromptCachePolicy,'automatic-cache-priced-v1');
  assert.equal(owner.limits.readerContextTokens,1050000);
  assert.deepEqual(validateProject(configured(owner)),[]);
 });
 
-test('the owner pack records gpt-5.4 and gpt-5.4-nano standard prices in nanodollars',()=>{
- // gpt-5.4: USD 2.50 / 0.25 cached / 15.00 per million; above 272,000 input tokens 2x input, 1.5x output.
+test('the owner pack records Sol prices and preserves nano and Jev prices in nanodollars',()=>{
+ // Sol: USD 2 / 0.10 cached / 10 per million; above 272,000 input tokens 2x input, 1.5x output.
  assert.deepEqual(owner.prices.interactive.reader,{
-  inputNanodollarsPerMillion:'2500000000',cachedInputNanodollarsPerMillion:'250000000',outputNanodollarsPerMillion:'15000000000',
+  inputNanodollarsPerMillion:'2000000000',cachedInputNanodollarsPerMillion:'100000000',outputNanodollarsPerMillion:'10000000000',
   longContext:{aboveInputTokens:272000,inputMultiplier:{numerator:'2',denominator:'1'},outputMultiplier:{numerator:'3',denominator:'2'}}
  });
  // gpt-5.4-nano: USD 0.20 / 0.02 cached / 1.25 per million. No long-context rate is published, and its maximum input
  // is 272,000 tokens, so no request can reach a long-context tier; none is recorded.
  assert.deepEqual(owner.prices.interactive.recovery,{inputNanodollarsPerMillion:'200000000',cachedInputNanodollarsPerMillion:'20000000',outputNanodollarsPerMillion:'1250000000'});
  assert.deepEqual(owner.prices.interactive.confidence,{outputNanodollarsPerMillion:'0',inputNanodollarsPerMillion:'42000000'});
- assert.equal(owner.prices.verifiedAt,'2026-10-06');
+ assert.equal(owner.prices.verifiedAt,'2026-11-05');
  assert.ok(owner.prices.source.includes('https://developers.openai.com/api/docs/models/gpt-5.4'));
  assert.ok(owner.prices.source.includes('https://developers.openai.com/api/docs/models/gpt-5.4-nano'));
  assert.ok(owner.prices.source.includes('https://developers.openai.com/api/docs/pricing'));
- assert.equal(owner.prices.source.some(url=>/gpt-6/.test(url)),false);
+ assert.ok(owner.prices.source.includes('https://developers.openai.com/api/docs/models/gpt-6.1-sol'));
 });
 
 test('the reader accepts dated gpt-5.4 and mini, recovery dated nano; bare names and other roles are refused',()=>{
@@ -271,12 +281,15 @@ test('the recorded prompt cache policy: absence reads the explicit no-cache poli
  for(const role of ['reader','recovery'] as const)assert.equal(usageCachePolicy({promptCachePolicy:'automatic-cache-priced-v1'},role),'priced');
  for(const settings of [{},{promptCachePolicy:'explicit-no-cache-v1' as const},{promptCachePolicy:'automatic-cache-priced-v1' as const}])
   assert.equal(usageCachePolicy(settings,'confidence'),'not_applicable');
- assert.equal(usageCachePolicy(owner.settings as never,'reader'),'priced');
+ assert.equal(usageCachePolicy(owner.settings as never,'reader'),'disabled');
+ assert.equal(usageCachePolicy(owner.settings as never,'recovery'),'priced');
 });
 
 test('runs frozen before 6 October keep their recorded no-cache policy and stay readable',()=>{
  // A run frozen on 6 October with the GPT-6 pins and prices and no cache setting: readable, accounted as before.
  const frozen=configured({...structuredClone(owner),pins:generic.pins,prices:generic.prices});delete frozen.readerModels;delete frozen.settings.usageLimits;delete frozen.settings.promptCachePolicy;
+ delete frozen.settings.inferenceWindow;
+ delete frozen.settings.recoveryPromptCachePolicy;
  const before=JSON.stringify(frozen);
  assert.strictEqual(requireProject(frozen),frozen);assert.equal(JSON.stringify(frozen),before);
  assert.equal(usageCachePolicy(frozen.settings,'reader'),'disabled');assert.equal(usageCachePolicy(frozen.settings,'recovery'),'disabled');
@@ -290,7 +303,7 @@ test('runs frozen before 6 October keep their recorded no-cache policy and stay 
 test('the prompt cache policy must suit both OpenAI pins and carry a cached-input rate when priced',()=>{
  // gpt-5.4 does not accept prompt_cache_options, so it cannot use the explicit no-cache policy, recorded or absent.
  for(const policy of [undefined,'explicit-no-cache-v1']){
-  const pack=configured(structuredClone(owner));if(policy===undefined)delete pack.settings.promptCachePolicy;else pack.settings.promptCachePolicy=policy;
+  const pack=automaticBaseline();if(policy===undefined)delete pack.settings.promptCachePolicy;else pack.settings.promptCachePolicy=policy;
   assert.deepEqual(cacheIssues(pack).map(issue=>[issue.code,issue.path]),[['E_MODEL_POLICY','settings.promptCachePolicy'],['E_MODEL_POLICY','settings.promptCachePolicy']],String(policy));
   assert.throws(()=>requireProject(pack),/configuration/);
  }
@@ -298,7 +311,7 @@ test('the prompt cache policy must suit both OpenAI pins and carry a cached-inpu
  const gpt6=configured({...generic,settings:{...generic.settings,promptCachePolicy:'automatic-cache-priced-v1'},prices:owner.prices});
  assert.deepEqual(cacheIssues(gpt6).map(issue=>issue.path),['settings.promptCachePolicy','settings.promptCachePolicy']);
  // Mixed pins are judged per role.
- const mixed=configured({...structuredClone(owner),pins:{...owner.pins,recovery:generic.pins.recovery}});delete mixed.readerModels;delete mixed.settings.usageLimits;
+ const mixed=automaticBaseline();mixed.pins.recovery=structuredClone(generic.pins.recovery);delete mixed.readerModels;
  assert.deepEqual(cacheIssues(mixed).map(issue=>[issue.path,issue.detail]),[['settings.promptCachePolicy','The recovery model does not support this prompt cache policy.']]);
  // An unknown policy is refused, never read as either known one.
  for(const bad of [null,'','implicit',['automatic-cache-priced-v1']]){
@@ -307,7 +320,7 @@ test('the prompt cache policy must suit both OpenAI pins and carry a cached-inpu
  }
  // Priced accounting needs a recorded cached-input rate for both OpenAI roles; a malformed rate is refused anywhere.
  for(const role of ['reader','recovery']){
-  const pack=configured(structuredClone(owner));delete pack.prices.interactive[role].cachedInputNanodollarsPerMillion;
+  const pack=automaticBaseline();delete pack.prices.interactive[role].cachedInputNanodollarsPerMillion;
   assert.deepEqual(cacheIssues(pack).map(issue=>[issue.code,issue.path]),[['E_PRICING_UNVERIFIED','prices.interactive.'+role+'.cachedInputNanodollarsPerMillion']]);
  }
  for(const bad of ['', '-1', '0.25', 250000000]){

@@ -22,6 +22,16 @@ test('actual usage under disabled caching validates explicit zero cache counters
   assert.throws(() => actualUsageCost({ ...usage, input_tokens: -1 }, rate, 'disabled'), /token/i);
 });
 
+test('optional cache-write lifetime details cannot contradict a zero-write policy', () => {
+  const usage = { input_tokens: 1000, output_tokens: 100, input_tokens_details: { cached_tokens: 0, cache_write_tokens: 0,
+    cache_write_tokens_details: { ttl_30m_tokens: 0, ttl_12h_tokens: 0 } } };
+  assert.equal(actualUsageCost(usage, rate, 'disabled'), '3000000');
+  for (const breakdown of [{ ttl_30m_tokens: 1, ttl_12h_tokens: 0 }, { ttl_30m_tokens: 0, ttl_12h_tokens: 2 },
+    { ttl_30m_tokens: 0 }, null, { ttl_30m_tokens: 0, ttl_12h_tokens: -1 }])
+    assert.throws(() => actualUsageCost({ ...usage, input_tokens_details: { ...usage.input_tokens_details, cache_write_tokens_details: breakdown } }, rate, 'disabled'),
+      (error: unknown) => (error as { code: string }).code === 'E_CACHE_POLICY');
+});
+
 // Owner decision of 6 October 2026: reader and recovery on gpt-5.4, whose automatic prompt caching is accepted and
 // priced. The rates are the pack's recorded rates (owner pack, verified 2026-10-06), not code constants.
 const gpt54 = {

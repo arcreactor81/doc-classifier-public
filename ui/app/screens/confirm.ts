@@ -192,6 +192,10 @@ export function confirmScreen(ctx: ViewContext<RouteOf<'confirm'>>): Node {
       errorContext: 'confirm', run: async fb => {
         const choice = option.peek();
         if (choice.id === null) throw new Error(c.readerChanged);
+        if (prepared.peek()?.readerModel?.id === choice.id && draft.trial.peek()?.selectedReaderModel === choice.id) {
+          fb.done(c.readerSelected(choice.label));
+          return;
+        }
         changingReader.set(true);
         // The choice is being edited before any storage read can yield; Start must not use the old preparation.
         draft.prepared.set(null);

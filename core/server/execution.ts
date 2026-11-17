@@ -62,8 +62,10 @@ import { enforceRuntimeDeadline } from './runtime-settlement.ts';
 import { unknownChargeIsolated, unaccountedAttempts } from './unknown-charge.ts';
 import { readerContextBound, reservationForRequest } from '../vendors/input-token-count.ts';
 import { usageCopy } from '../ui/copy-usage.ts';
-import { assertDailyUsage, cancelUnsentDailyReservation, confirmOwnedReservation, reserveDailyUsage, type DailyReservation } from './daily-usage.ts';
+import { assertDailyUsage, cancelUnsentDailyReservation, confirmOwnedReservation, requireInferenceTime, reserveDailyUsage, type DailyReservation } from './daily-usage.ts';
 import { countRequestInput } from './request-token-count.ts';
+import { requireLowRunGrant, runDailyException, verifyDailyException, scopedDeepseekPool, requireScopedDispatchTime } from './run-daily-exception.ts';
+import { DEEPSEEK_LOW_OPTION } from '../config/project.ts';
 import { freezeReportedModel } from './model-identity.ts';
 import { workersAiBinding, runWorkersAi } from './workers-ai.ts';
 
@@ -86,7 +88,7 @@ export async function guard(env: Env, store: Store, runId: string): Promise<void
   for (;;) {
   // The kill switch, the run row and the storage brake's trip in one read; checked in the same order as before:
   // controls, kill switch, run, and the trip only after the model, spending and unknown-spend stops.
-  const { kill, run: current, storageTripped } = await store.guardSnapshot(runId);
+  const { kill, run: current, storageTripped } = await store.guardSnapshot(runId, 'execution');
   if (kill === null) throw new ServerFailure('E_STORAGE_D1', 'blocker', 'Run controls are missing.');
   if (kill)
     throw new ServerFailure('E_KILL_SWITCH', 'blocker', 'The kill switch is set.');
@@ -421,7 +423,7 @@ export class Runner {
   async requireReaderContext(request: FrozenVendorRequest, pack: ProjectPack): Promise<void> {
     const vendor = requestVendor(request.role, request.modelPolicy);
     if (vendor === 'openai' && !pack.settings.usageLimits) return;
-    const bound = readerContextBound(request, vendor === 'openai' ? await countRequestInput(this, request) : null);
+    const bound = readerContextBound(request, vendor === 'openai' ? await countRequestInput(this, request, pack.settings.inferenceWindow) : null);
     if (bound !== null && bound > pack.limits.readerContextTokens)
       throw new ServerFailure('E_READER_CONTEXT', 'document', 'The full text exceeds the reader context limit.');
   }
@@ -439,13 +441,14 @@ export class Runner {
    * decides (it never sends again).
    */
   private async holdDailyReservation(label: string, http: string, attempt: number, attemptId: string, model: string,
-    reservation: NonNullable<ReturnType<typeof reservationForRequest>>): Promise<OwnedReservation | null> {
+    reservation: NonNullable<ReturnType<typeof reservationForRequest>>, window?: ProjectPack['settings']['inferenceWindow']): Promise<OwnedReservation | null> {
     if (await this.checkpointExists(http)) return null;
     const { intervalMs, boundMs } = this.dailyContention;
     let firstBusyAt: number | null = null;
     for (let round = 1; ; round++) {
       const key = await this.stage(`${label}-daily-${attempt}-${round}`, async (): Promise<SavedReservation> => {
         const at = Date.now();
+        requireInferenceTime(window, at);
         const result = await reserveDailyUsage(this.env.DB, { ...reservation, attemptId, runId: this.run.id, modelId: model,
           at: new Date(at).toISOString() });
         if (result.state === 'busy') await this.store.event(this.run.id, this.fingerprint, label, 'daily_usage_waiting',
@@ -506,8 +509,14 @@ export class Runner {
     if (vendor === 'cloudflare' && !workersAiBinding(this.env))
       throw new ValidationFailure('E_VENDOR_KEY', 'blocker', 'Vendor credentials are missing.');
     // Only OpenAI documents an input-count endpoint; the other readers reserve their byte bound (input-token-count.ts).
-    const inputTokens = pack.settings.usageLimits && role !== 'confidence' && vendor === 'openai' ? await countRequestInput(this, request) : null;
-    const reservation = reservationForRequest(pack, request, inputTokens);
+    const window = pack.settings.inferenceWindow;
+    const lowGrant = pack.selectedReaderModel === DEEPSEEK_LOW_OPTION
+      ? await requireLowRunGrant(this.env, this.run, pack, this.fingerprint) : null;
+    const deepseekReader = role === 'reader' && vendor === 'deepseek';
+    const exception = lowGrant ?? (deepseekReader && window ? await runDailyException(this.env.DB, this.run.id) : null);
+    if (exception && !lowGrant) verifyDailyException(exception, this.run, this.env, pack, this.fingerprint);
+    const inputTokens = pack.settings.usageLimits && role !== 'confidence' && vendor === 'openai' ? await countRequestInput(this, request, window) : null;
+    const reservation = reservationForRequest(pack, request, inputTokens,deepseekReader && exception ? scopedDeepseekPool(this.run.id) : undefined);
     let providerRefusal = false;
     const deferredOutcome = { exhausted: null as boolean | null };
     const consecutiveFailureLimit = 3;
@@ -563,7 +572,7 @@ export class Runner {
         try {
           // Top level, before the HTTP checkpoint: contention waits here; nothing below waits for capacity.
           const owned = reservation
-            ? await this.holdDailyReservation(names.label, names.http(index), index, activeId, request.model, reservation) : null;
+            ? await this.holdDailyReservation(names.label, names.http(index), index, activeId, request.model, reservation, window) : null;
           const http = this.reference(names.http(index), async () => {
             const started = Date.now();
             let response: Response | null = null, raw: string | null = null, bindingRequestId: string | null = null;
@@ -572,7 +581,11 @@ export class Runner {
             if (reservation) {
               if (!owned || owned.attemptId !== activeId) throw new ServerFailure('E_DAILY_USAGE_UNCERTAIN', 'blocker', usageCopy.uncertain);
               await confirmOwnedReservation(this.env.DB, owned);
-              try { await this.executionGuard(); }
+              try {
+                await this.executionGuard();
+                requireInferenceTime(window, Date.now());
+                if(exception)requireScopedDispatchTime(exception,Date.now());
+              }
               catch (error) {
                 // This callback has not entered fetch.
                 await this.releaseUnsentReservation(owned, error);
@@ -633,6 +646,8 @@ export class Runner {
               responseKey,
               rawOverflow,
               latencyMs,
+              ...(role === 'confidence' && request.confidenceContextPolicy !== undefined
+                ? { confidenceContextPolicy: request.confidenceContextPolicy } : {}),
               // Workers AI only: the binding's own record of the request (env.AI.lastRequestId), when it sets one, and
               // its AI Gateway log id (env.AI.aiGatewayLogId; null while the gateway keeps no log for these requests).
               ...(vendor === 'cloudflare' ? { bindingRequestId, bindingGatewayLogId } : {})
@@ -891,10 +906,10 @@ export class Runner {
     try { policy = confidenceQuestionPolicy(pack.settings.confidenceQuestionPolicy); }
     catch { throw new ServerFailure('E_PROJECT_CONFIG', 'blocker', 'Unknown confidence question policy.'); }
     if (policy === SINGLE_CONFIDENCE_POLICY) {
-      const request = buildConfidenceRequest({ pin, typeFile: pack.typeFile, serializedDigest });
+      const request = buildConfidenceRequest({ pin, typeFile: pack.typeFile, serializedDigest, contextPolicy: pack.settings.confidenceContextPolicy });
       return this.vendor(request, pack, raw => decodeConfidence(raw, pin, typeIds));
     }
-    const groups = buildConfidenceRequests({ pin, typeFile: pack.typeFile, serializedDigest, budget: packQuestionBudget(pack) });
+    const groups = buildConfidenceRequests({ pin, typeFile: pack.typeFile, serializedDigest, budget: packQuestionBudget(pack), contextPolicy: pack.settings.confidenceContextPolicy });
     const answers: { value: ConfidenceGroupAnswer; attemptIds: string[] }[] = [];
     for (const group of groups) {
       const key = await this.vendor(group.request, pack, raw => decodeConfidenceGroup(raw, pin, group), { index: group.index, count: group.count });

@@ -24,7 +24,7 @@ export const requestContractHash = (): Promise<string> =>
  * Read only immutable scalar facts from the plan head, never its document manifest or today's active categories.
  * Ordinary historical runs make no extra query and acquire no new build requirement.
  */
-export async function requireBakeoffExecution(env: Env, store: Store, run: RunRow): Promise<void> {
+export async function requireBakeoffExecution(env: Env, store: Store, run: Pick<RunRow,'actor'|'quote_id'|'bakeoff_json'>): Promise<void> {
   if (run.bakeoff_json === null || run.bakeoff_json === undefined) return;
   const invalid = () => new ServerFailure('E_BAKEOFF_EXECUTION_IDENTITY', 'blocker', copy.identity);
   let provenance: ReturnType<typeof readBakeoffProvenance>;

@@ -130,3 +130,17 @@ test('an observed stop cannot hide a peer error or abandon its other accepted cr
  assert.equal(await running,problem);assert.equal(settledBeforeWrites,false);
  assert.deepEqual(entered,['0','1','2','3']);assert.deepEqual(f.created,['0','2','3']);assert.equal(f.completed(),0);
 });
+
+test('capacity pacing stops new selections without aborting already-issued creation handshakes',async()=>{
+ const f=fixture(12),entered=deferred(),held=deferred(),create=f.deps.create;
+ const deps:DispatchDependencies=f.deps;
+ let count=0;const fatalSeen:boolean[]=[];
+ deps.create=async(fingerprint,control)=>{
+  if(++count===4)entered.resolve();await entered.promise;
+  if(fingerprint==='0'){control.pause();return false;}
+  await held.promise;fatalSeen.push(control.stopped());return create(fingerprint);
+ };
+ const running=dispatchRunDocuments(deps);await entered.promise;await setImmediate();held.resolve();
+ assert.deepEqual(await running,{started:3,pending:9,status:'running'});
+ assert.equal(count,4);assert.deepEqual(fatalSeen,[false,false,false]);
+});

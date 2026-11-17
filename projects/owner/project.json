@@ -3,7 +3,7 @@
   "id": "owner",
   "productName": "Document classifier",
   "copyOverrides": {
-    "screenConfirm.readerDataNote.openai": "Shared with OpenAI in exchange for free usage. OpenAI may use it to evaluate and train its models. OpenAI chooses which country it is processed in, unless the account is set up for one region."
+    "screenConfirm.readerDataNote.openai": "Shared with OpenAI. OpenAI may use it to evaluate and train its models. OpenAI chooses which country it is processed in, unless the account is set up for one region."
   },
   "typeFile": {
     "types": [],
@@ -40,11 +40,13 @@
     "readerEvidencePolicy": "layout-quotes-v2",
     "readerContract": "reader-exact-evidence-v2",
     "confidenceQuestionPolicy": "confidence-single-request-v1",
+    "confidenceContextPolicy": "long-context-262k-v1",
     "tokenBytesRatio": 1,
     "unknownSpendPolicy": "not-processed-zero-v6",
-    "promptCachePolicy": "automatic-cache-priced-v1",
+    "promptCachePolicy": "explicit-no-cache-v1",
+    "recoveryPromptCachePolicy": "automatic-cache-priced-v1",
     "usageLimits": {
-      "policy": "daily-usage-v3",
+      "policy": "daily-usage-v4",
       "maxDocumentsPerRun": 60,
       "maxRunsPerActorPerDay": 3,
       "openaiTokenPools": [
@@ -60,11 +62,20 @@
           "id": "small",
           "modelIds": [
             "gpt-5.4-mini",
-            "gpt-5.4-mini-2026-03-17",
-            "gpt-5.4-nano",
-            "gpt-5.4-nano-2026-03-17"
+            "gpt-5.4-mini-2026-03-17"
           ],
           "limitTokens": 2250000
+        },
+        {
+          "id": "paid",
+          "modelIds": [
+            "gpt-6.1-sol",
+            "gpt-5.4-nano",
+            "gpt-5.4-nano-2026-03-17",
+            "gpt-6.1-terra",
+            "gpt-6-luna"
+          ],
+          "limitNano": "48000000000"
         }
       ],
       "typesafeDailyNano": "1000000000",
@@ -75,21 +86,21 @@
   },
   "pins": {
     "confidence": {
-      "id": "jev-1.13.0",
-      "date": "2026-09-22",
-      "reason": "Version confirmed against official TypeSafe documentation.",
+      "id": "jev-1.14.0",
+      "date": "2026-11-05",
+      "reason": "Owner selected Jev 1.14 long context after the full decision-model comparison. Exact version retained; no fallback.",
       "policy": "versioned"
     },
     "reader": {
-      "id": "gpt-5.4",
-      "date": "2026-10-10",
-      "reason": "Owner decision 10 October 2026 (DECISIONS 155): requested by name; each run records the model OpenAI reports and halts if it changes within the run.",
+      "id": "gpt-6.1-sol",
+      "date": "2026-11-05",
+      "reason": "Owner-approved 5 November 2026 reader: GPT-6.1 Sol at low effort. Requested by name; each run freezes the reported model identity. Explicit no-cache mode has no breakpoints.",
       "policy": "owner_approved_undated"
     },
     "recovery": {
       "id": "gpt-5.4-nano",
       "date": "2026-10-10",
-      "reason": "Owner decision 10 October 2026 (DECISIONS 155): requested by name; nano keeps heading recovery in the separate small-model pool; each run records the model OpenAI reports and halts if it changes within the run.",
+      "reason": "Owner decision 10 October 2026 (DECISIONS 155): requested by name; nano keeps heading recovery in the separate small-model pool; each run records the model OpenAI reports and halts if it changes within the run. The owner test approved on 5 November 2026 accounts this unchanged recovery model in the shared paid OpenAI pool.",
       "policy": "owner_approved_undated"
     }
   },
@@ -104,8 +115,9 @@
     "readerTokensPerMinute": null,
     "readerContextTokens": 1050000,
     "confidenceRequestsPerMinute": 1200,
-    "confidenceStateQuestionTokens": 32000,
-    "confidenceAllQuestionTokens": 64000
+    "confidenceStateQuestionTokens": 262000,
+    "confidenceAllQuestionTokens": 262000,
+    "confidenceQuestionBudgetTokens": 32000
   },
   "prices": {
     "interactive": {
@@ -130,12 +142,16 @@
             "numerator": "2"
           }
         },
-        "inputNanodollarsPerMillion": "2500000000",
-        "cachedInputNanodollarsPerMillion": "250000000",
-        "outputNanodollarsPerMillion": "15000000000"
+        "inputNanodollarsPerMillion": "2000000000",
+        "cachedInputNanodollarsPerMillion": "100000000",
+        "outputNanodollarsPerMillion": "10000000000"
       }
     },
     "source": [
+      "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+      "https://developers.openai.com/api/docs/models/gpt-6.1-terra",
+      "https://developers.openai.com/api/docs/models/gpt-6-luna",
+      "https://developers.openai.com/api/docs/guides/prompt-caching",
       "https://developers.openai.com/api/docs/pricing",
       "https://docs.typesafe.ai/models",
       "https://developers.openai.com/api/docs/models/gpt-5.4",
@@ -147,10 +163,10 @@
       "https://api-docs.deepseek.com/quick_start/pricing",
       "https://platform.claude.com/docs/en/about-claude/pricing"
     ],
-    "verifiedAt": "2026-10-06"
+    "verifiedAt": "2026-11-05"
   },
   "readerModels": {
-    "defaultId": "standard",
+    "defaultId": "sol",
     "options": [
       {
         "id": "standard",
@@ -261,6 +277,90 @@
         },
         "promptCachePolicy": "automatic-cache-priced-v1",
         "contextTokens": 1000000
+      },
+      {
+        "id": "sol",
+        "label": "GPT-6.1 Sol",
+        "pin": {
+          "id": "gpt-6.1-sol",
+          "date": "2026-11-05",
+          "reason": "Owner-approved 5 November 2026 reader: GPT-6.1 Sol at low effort. Requested by name; each run freezes the reported model identity. Explicit no-cache mode has no breakpoints.",
+          "policy": "owner_approved_undated"
+        },
+        "rates": {
+          "inputNanodollarsPerMillion": "2000000000",
+          "cachedInputNanodollarsPerMillion": "100000000",
+          "outputNanodollarsPerMillion": "10000000000",
+          "longContext": {
+            "aboveInputTokens": 272000,
+            "inputMultiplier": {
+              "numerator": "2",
+              "denominator": "1"
+            },
+            "outputMultiplier": {
+              "numerator": "3",
+              "denominator": "2"
+            }
+          }
+        },
+        "promptCachePolicy": "explicit-no-cache-v1",
+        "contextTokens": 1050000
+      },
+      {
+        "id": "terra",
+        "label": "GPT-6.1 Terra",
+        "pin": {
+          "id": "gpt-6.1-terra",
+          "date": "2026-11-13",
+          "reason": "The owner selected GPT-6.1 Terra for the paired reader comparison. Standard pricing verified 13 November 2026. Each run freezes the reported model identity.",
+          "policy": "owner_approved_undated"
+        },
+        "rates": {
+          "inputNanodollarsPerMillion": "1000000000",
+          "cachedInputNanodollarsPerMillion": "50000000",
+          "outputNanodollarsPerMillion": "5000000000",
+          "longContext": {
+            "aboveInputTokens": 272000,
+            "inputMultiplier": {
+              "numerator": "2",
+              "denominator": "1"
+            },
+            "outputMultiplier": {
+              "numerator": "3",
+              "denominator": "2"
+            }
+          }
+        },
+        "promptCachePolicy": "explicit-no-cache-v1",
+        "contextTokens": 1050000
+      },
+      {
+        "id": "luna",
+        "label": "GPT-6 Luna",
+        "pin": {
+          "id": "gpt-6-luna",
+          "date": "2026-11-12",
+          "reason": "The owner selected GPT-6 Luna for the paired reader comparison. Standard pricing verified 12 November 2026. Each run freezes the reported model identity.",
+          "policy": "owner_approved_undated"
+        },
+        "rates": {
+          "inputNanodollarsPerMillion": "100000000",
+          "cachedInputNanodollarsPerMillion": "10000000",
+          "outputNanodollarsPerMillion": "500000000",
+          "longContext": {
+            "aboveInputTokens": 272000,
+            "inputMultiplier": {
+              "numerator": "2",
+              "denominator": "1"
+            },
+            "outputMultiplier": {
+              "numerator": "3",
+              "denominator": "2"
+            }
+          }
+        },
+        "promptCachePolicy": "explicit-no-cache-v1",
+        "contextTokens": 1050000
       }
     ]
   }

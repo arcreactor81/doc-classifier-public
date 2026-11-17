@@ -1,6 +1,6 @@
 import { WorkflowEntrypoint,type WorkflowEvent,type WorkflowStep } from 'cloudflare:workers';
 import { NonRetryableError } from 'cloudflare:workflows';
-import { requireProject } from '../config/project.ts';
+import { requireProject, promptCachePolicy } from '../config/project.ts';
 import { buildConfidenceState,type ConfidenceStateResult } from '../digest/confidence-state.ts';
 import { verifyRecoveredHeadings } from '../digest/recovery.ts';
 import { buildReaderRequest,buildRecoveryRequest,decodeReader,decodeRecovery } from '../vendors/requests.ts';
@@ -50,11 +50,11 @@ export class DocumentWorkflow extends WorkflowEntrypoint<Env,DocumentParams>{
    // DESIGN §6 (F6): the reader request is fixed by the full text, so its context is checked before any recovery,
    // confidence or reader request is reserved or sent for this document. The check above reads an upload's own count,
    // which current browsers never send.
-   const readerRequest=buildReaderRequest({pin:pack.pins.reader,typeFile:pack.typeFile,text:upload.fullText,effort:pack.settings.readerEffort,maxOutputTokens:pack.settings.readerMaxOutputTokens,contract:pack.settings.readerContract,cachePolicy:pack.settings.promptCachePolicy});
+   const readerRequest=buildReaderRequest({pin:pack.pins.reader,typeFile:pack.typeFile,text:upload.fullText,effort:pack.settings.readerEffort,maxOutputTokens:pack.settings.readerMaxOutputTokens,contract:pack.settings.readerContract,cachePolicy:promptCachePolicy(pack.settings,'reader')});
    await runner.requireReaderContext(readerRequest,pack);
    let outline=upload.outline;const notes:string[]=JSON.parse(initial.notes_json);
    if(upload.needsOutlineRecovery){
-    const request=buildRecoveryRequest({pin:pack.pins.recovery,text:upload.fullText,effort:pack.settings.recoveryEffort,maxOutputTokens:pack.settings.recoveryMaxOutputTokens,cachePolicy:pack.settings.promptCachePolicy});
+    const request=buildRecoveryRequest({pin:pack.pins.recovery,text:upload.fullText,effort:pack.settings.recoveryEffort,maxOutputTokens:pack.settings.recoveryMaxOutputTokens,cachePolicy:promptCachePolicy(pack.settings,'recovery')});
     const recoveryKey=await runner.vendor(request,pack,raw=>decodeRecovery(raw,pack.pins.recovery));
     recoveryCompleted=true;
     const recovered=(await store.json<{value:{model:string;headings:string[]}}>(recoveryKey)).value;
@@ -75,7 +75,7 @@ export class DocumentWorkflow extends WorkflowEntrypoint<Env,DocumentParams>{
    const confidenceKey=await runner.confidence(pack,digest.serialized);
    await documentWrites.confidence(confidenceKey);
    readerStarted=true;
-   const readerKey=await runner.vendor(readerRequest,pack,raw=>decodeReader(raw,pack.pins.reader,pack.typeFile.types.map(type=>type.id),upload.fullText,undefined,pack.settings.readerEvidencePolicy,pack.settings.readerContract));
+   const readerKey=await runner.vendor(readerRequest,pack,raw=>decodeReader(raw,pack.pins.reader,pack.typeFile.types.map(type=>type.id),upload.fullText,undefined,pack.settings.readerEvidencePolicy,pack.settings.readerContract,pack.settings.readerEffort));
    await documentWrites.reader(readerKey);
    const confidence=(await store.json<{value:ConfidenceOutput}>(confidenceKey)).value,reader=(await store.json<{value:ReaderOutput}>(readerKey)).value;
    const decisionKey=await runner.stage('decide',async()=>decide({notePolicy:pack.settings.decisionNotePolicy,confidenceStatePolicy:pack.settings.confidenceStatePolicy,typeIds:pack.typeFile.types.map(type=>type.id),threshold:run.threshold,failures:[],notes:[...new Set(notes)],confidence:{choice:confidence.choice,certainty:confidence.confidence,noul:confidence.nouls},readerYes:reader.verdicts.filter(verdict=>verdict.is_type).map(verdict=>verdict.type_id)}));

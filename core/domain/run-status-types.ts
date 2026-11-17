@@ -10,7 +10,7 @@ import type { BakeoffProvenance } from '../bakeoff/plan.ts';
 import type { ModelListReason } from '../vendors/model-list.ts';
 
 /** Present only when these settings were explicitly recorded in the frozen run pack. */
-export type RunPolicyHeaders = Pick<ProjectSettings, 'readerContract' | 'confidenceQuestionPolicy'>;
+export type RunPolicyHeaders = Pick<ProjectSettings, 'readerContract' | 'confidenceQuestionPolicy' | 'confidenceContextPolicy'>;
 
 export type RunStatus = 'uploading' | 'running' | 'complete' | 'halted' | 'closing' | 'closed';
 

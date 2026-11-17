@@ -104,6 +104,23 @@ const guardState = over => ({ prints: new Set([FP(1), FP(2)]), batchSize: 2, rea
 const quote = over => ({ method: 'POST', path: '/api/quote', contentType: 'application/json',
   body: { documents: [{ fingerprint: FP(1) }, { fingerprint: FP(2) }], mode: 'interactive', selectedReaderModel: 'claude', ...over } });
 
+test('explicit unlimited confirmation requires the exact acknowledged body and retains accounting stops', () => {
+  const state = guardState({unlimited:true,runLimitNano:null,quoteSent:true,quoteId:'q1'});
+  const budget = {mode:'unlimited',limits:{blended:null,openai:null,typesafe:null},unlimitedAcknowledged:true};
+  const judge = body => judgeWrite(state,{method:'POST',path:'/api/runs',body:{quoteId:'q1',budget:body}}).allow;
+  assert.equal(judge(budget),true);
+  for(const wrong of [{...budget,unlimitedAcknowledged:false},{...budget,limits:{}},{...budget,limits:{...budget.limits,openai:'5000000000'}},
+    {...budget,mode:'limited'},{...budget,extra:true}]) assert.equal(judge(wrong),false);
+  assert.equal(judgeWrite({...state,unlimited:false},{method:'POST',path:'/api/runs',body:{quoteId:'q1',budget}}).allow,false);
+  const complete={status:'complete',pendingAccounting:0,unaccountedCalls:0,spend:{blended:'100000000000'}};
+  assert.equal(statusDecision({status:complete,unlimited:true,runLimitNano:null}).action,'done');
+  assert.equal(statusDecision({status:{...complete,unaccountedCalls:1},unlimited:true,runLimitNano:null}).action,'stop');
+  const args=['--kit','k','--categories','c','--out','o','--origin','https://site.example','--profile','p','--build','b','--reader','sol','--max-total-usd','200'];
+  assert.throws(()=>parseArgs(args));
+  assert.throws(()=>parseArgs([...args,'--unlimited','--run-limit-usd','5']));
+  assert.equal(parseArgs([...args,'--unlimited']).runLimitNano,null);
+});
+
 test('write guard: the quote must be exactly this batch, this reader, and the trial choice the batch needs', () => {
   assert.equal(judgeWrite(guardState(), quote()).allow, true);
   assert.equal(judgeWrite(guardState({ quoteSent: true }), quote()).allow, false);
@@ -193,7 +210,7 @@ test('budget: the worst case (every remaining batch at its full limit) must fit;
 
 test('preflight: categories compared by ids and names; READY, build, reader, trial size, allowances', () => {
   const health = { status: 'READY', versions: { build: 'b1' }, readerOptions: [{ id: 'claude', label: 'Claude', ready: true }], project: { types: typeFile.types, displayNames: displayNamesOf(typeFile) } };
-  const project = { settings: { pilotSize: 25 }, readerModels: { options: [{ id: 'claude', pin: { id: 'claude-x' } }] } };
+  const project = { typeFile, settings: { pilotSize: 25 }, readerModels: { options: [{ id: 'claude', pin: { id: 'claude-x' } }] } };
   const usage = { enabled: true, maxDocumentsPerRun: 60, actorExempt: false, actorRunsToday: 0, maxRunsPerActorPerDay: 20, actorQuotesToday: 0, maxQuotesPerActorPerDay: 50, pools: [] };
   const run = over => preflightChecks({ health, project, usage, build: 'b1', reader: 'claude', readerPin: 'claude-x', typeFile, batchSizes: [60, 40], batchesToRun: 17, ...over });
   assert.ok(run().checks.every(c => c.ok)); assert.equal(run().pilotSize, 25);
@@ -209,6 +226,19 @@ test('preflight: categories compared by ids and names; READY, build, reader, tri
   assert.equal(renamed.idsMatch, true); assert.equal(renamed.ok, false);
   assert.equal(compareCategories(typeFile, [typeFile.types[0]]).ok, false);
   assert.equal(compareCategories(typeFile, [{ ...typeFile.types[0], what: 'changed' }, typeFile.types[1]]).textIdentical, false);
+});
+
+test('preflight rejects changed full definitions even when category ids and names still match', () => {
+  const health = { status: 'READY', versions: { build: 'b1' }, project: { types: typeFile.types, displayNames: displayNamesOf(typeFile) } };
+  const inspect = changed => preflightChecks({ health, project: { typeFile: changed, settings: { pilotSize: 25 } },
+    build: 'b1', reader: null, typeFile, batchSizes: [2], batchesToRun: 1 }).checks;
+  assert.ok(inspect(typeFile).every(check => check.ok));
+  const changedDefinition = structuredClone(typeFile);
+  changedDefinition.types[0].what += ' A different definition.';
+  const changedNone = structuredClone(typeFile);
+  changedNone.none_of_these.what += ' A different exclusion.';
+  for (const changed of [changedDefinition, changedNone, undefined])
+    assert.ok(inspect(changed).some(check => check.name.includes('complete type definitions') && !check.ok));
 });
 
 test('scoring glue: the bake-off scorer over the kit key, with its 95% ranges and the plain-language report', () => {

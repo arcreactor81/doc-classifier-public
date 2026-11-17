@@ -120,6 +120,7 @@ const owner=JSON.parse(readFileSync(join(import.meta.dirname,'..','..','projects
 function menuPack(){
  const base=syntheticPack(4),mini=owner.readerModels.options.find((option:{id:string})=>option.id==='mini');
  return structuredClone({...owner,id:base.id,typeFile:base.typeFile,structuralVocabulary:base.structuralVocabulary,selectedReaderModel:'mini',
+  settings:{...owner.settings,promptCachePolicy:mini.promptCachePolicy},
   pins:{...owner.pins,reader:mini.pin},prices:{...owner.prices,interactive:{...owner.prices.interactive,reader:mini.rates}},
   limits:{...owner.limits,readerContextTokens:mini.contextTokens}});
 }

@@ -14,6 +14,7 @@
  * groupCount so the multiplier is visible.
  */
 import type { ModelPin, TypeFile } from '../config/project.ts';
+import { confidenceQuestionTokens, type ConfidenceContextPolicy } from '../config/confidence-context.ts';
 import { confidenceRequestParts, freezeConfidenceRequest, verifyModelPolicy, type FrozenVendorRequest } from './requests.ts';
 import { ValidationFailure, validateConfidence, type ConfidenceOutput } from './validate.ts';
 
@@ -56,11 +57,14 @@ export function packTokenBytesRatio(settings: unknown): number {
   return ratio;
 }
 
-export function packQuestionBudget(pack: { readonly settings: unknown; readonly limits: { readonly confidenceStateQuestionTokens: unknown; readonly confidenceAllQuestionTokens: unknown } }): QuestionBudget {
+export function packQuestionBudget(pack: { readonly settings: unknown; readonly limits: { readonly confidenceStateQuestionTokens: unknown; readonly confidenceAllQuestionTokens: unknown; readonly confidenceQuestionBudgetTokens?: unknown } }): QuestionBudget {
   const { confidenceAllQuestionTokens: all, confidenceStateQuestionTokens: state } = pack.limits;
   if (!Number.isSafeInteger(all) || Number(all) < 1) throw configuration('limits.confidenceAllQuestionTokens', 'A verified positive integer limit is required.');
   if (!Number.isSafeInteger(state) || Number(state) < 1) throw configuration('limits.confidenceStateQuestionTokens', 'A verified positive integer limit is required.');
-  return { questionTokens: Number(all) - Number(state), tokenBytesRatio: packTokenBytesRatio(pack.settings) };
+  const settings = record(pack.settings) ? pack.settings : {};
+  return { questionTokens: confidenceQuestionTokens({ settings, limits: { confidenceAllQuestionTokens: Number(all),
+    confidenceStateQuestionTokens: Number(state), confidenceQuestionBudgetTokens: pack.limits.confidenceQuestionBudgetTokens } }),
+    tokenBytesRatio: packTokenBytesRatio(pack.settings) };
 }
 
 export interface ConfidenceRequestGroup {
@@ -86,7 +90,7 @@ function capacityRefusal(detail: string): ValidationFailure {
  * when the Choice question alone, or one Noul question alone, does not fit a request: activation already refuses such
  * a set (core/config/capacity.ts); this is the same refusal at the point the request is built.
  */
-export function buildConfidenceRequests(input: { pin: ModelPin; typeFile: TypeFile; serializedDigest: string; budget: QuestionBudget }): readonly ConfidenceRequestGroup[] {
+export function buildConfidenceRequests(input: { pin: ModelPin; typeFile: TypeFile; serializedDigest: string; budget: QuestionBudget; contextPolicy?: ConfidenceContextPolicy }): readonly ConfidenceRequestGroup[] {
   const { questionTokens, tokenBytesRatio } = input.budget;
   if (!Number.isSafeInteger(questionTokens)) throw configuration('limits.confidenceAllQuestionTokens', 'The question budget must be a whole number of tokens.');
   if (typeof tokenBytesRatio !== 'number' || !Number.isFinite(tokenBytesRatio) || tokenBytesRatio < 1) throw configuration('settings.tokenBytesRatio', 'A number of at least 1 is required.');
@@ -114,7 +118,7 @@ export function buildConfidenceRequests(input: { pin: ModelPin; typeFile: TypeFi
   return Object.freeze(groups.map((group, position) => Object.freeze({
     index: position + 1,
     count: groups.length,
-    request: freezeConfidenceRequest(input.pin, state, Object.fromEntries(group.map(item => [item.key, questions[item.key]]))),
+    request: freezeConfidenceRequest(input.pin, state, Object.fromEntries(group.map(item => [item.key, questions[item.key]])), input.contextPolicy),
     questionKeys: Object.freeze(group.map(item => item.key)),
     questionBytes: sizeOf(group)
   })));

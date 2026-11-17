@@ -99,11 +99,12 @@ test('a reservation cancelled between being held and being sent authorizes nothi
 });
 
 type SpendPolicy = NonNullable<ProjectPack['settings']['unknownSpendPolicy']>;
-async function fixture(limit = 100000, policy?: SpendPolicy) {
+async function fixture(limit = 100000, policy?: SpendPolicy, inferenceWindow?: {startAt:string;endAt:string}) {
   // A run frozen on another unknown-spend policy than the shipped one (the synthetic pack copies the generic pack's).
   const raw = syntheticPack(1, policy === undefined ? {} : { settings: { unknownSpendPolicy: policy } });
   raw.settings.usageLimits = { policy: 'daily-usage-v1', maxDocumentsPerRun: 60, maxRunsPerActorPerDay: 3,
     openaiTokenPools: [{ id: 'test', modelIds: [raw.pins.reader.id, raw.pins.recovery.id], limitTokens: limit }], typesafeDailyNano: '1000000000' };
+  if (inferenceWindow !== undefined) Object.assign(raw.settings, { inferenceWindow });
   const pack = requireProject(raw), db = migratedDatabase({ foreignKeys: false }), DB = localD1(db), bucket = memoryR2();
   const originalPut = bucket.put.bind(bucket);
   bucket.put = (async (key: string, body: unknown, options: unknown) => originalPut(key,
@@ -606,6 +607,78 @@ test('site-wide caps: several people with concurrent runs share each pool and to
 
 const confidenceRequestOf = (pack: ReturnType<typeof requireProject>) => buildConfidenceRequest({ pin: pack.pins.confidence, typeFile: pack.typeFile,
   serializedDigest: buildConfidenceState(pack.settings.confidenceStatePolicy, 'Synthetic content.', { headings: [], tables: [], blocks: [] }, pack.structuralVocabulary).serialized });
+
+const testWindowStart = '2030-04-11T22:00:00.000Z', testWindowEnd = '2030-04-14T00:00:00.000Z';
+const windowFixture = () => fixture(100000, undefined, { startAt: testWindowStart, endAt: testWindowEnd });
+
+test('inference window refuses early/expired confidence, reader and recovery dispatches before counting or reserving', async t => {
+  let clock = Date.parse(testWindowStart) - 1;
+  t.mock.method(Date,'now',()=>clock);
+  for (const at of [Date.parse(testWindowStart) - 1, Date.parse(testWindowEnd)]) {
+    clock = at;
+    const f = await windowFixture();
+    try {
+      const recovery = buildRecoveryRequest({pin:f.pack.pins.recovery,text:'Synthetic content.',
+        effort:f.pack.settings.recoveryEffort,maxOutputTokens:f.pack.settings.recoveryMaxOutputTokens});
+      for (const req of [confidenceRequestOf(f.pack), f.request, recovery])
+        await assert.rejects(f.runner.vendor(req,f.pack,x=>x), {code:'E_INFERENCE_WINDOW',kind:'blocker'});
+      assert.equal(countCalls,0);assert.equal(modelCalls,0);
+      assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM daily_usage_reservations').get()!.n,0);
+      assert.equal(await f.store.pendingAccounting('run'),0);
+    } finally { f.db.close(); }
+  }
+});
+
+test('expiry during a reservation cancels its owned unsent hold; a stored HTTP result remains replayable after expiry', async t => {
+  let clock=Date.parse(testWindowStart);
+  t.mock.method(Date,'now',()=>clock);
+  const f=await windowFixture();
+  try {
+    await f.runner.vendor(f.request,f.pack,x=>x);
+    assert.equal(modelCalls,1);
+    clock=Date.parse(testWindowEnd);
+    await f.runner.vendor(f.request,f.pack,x=>x);
+    assert.equal(modelCalls,1);assert.equal(countCalls,1);
+    clock=Date.parse(testWindowStart);
+    const original=f.runner.executionGuard.bind(f.runner);
+    f.runner.executionGuard=async()=>{
+      await original();
+      if (f.db.prepare("SELECT 1 FROM daily_usage_reservations WHERE pool='typesafe'").get()) clock=Date.parse(testWindowEnd);
+    };
+    await assert.rejects(f.runner.vendor(confidenceRequestOf(f.pack),f.pack,x=>x),{code:'E_INFERENCE_WINDOW'});
+    assert.equal(modelCalls,1);
+    assert.equal(f.db.prepare("SELECT COUNT(*) AS n FROM daily_usage_cancellations WHERE reason='E_INFERENCE_WINDOW'").get()!.n,1);
+    assert.equal(await f.store.pendingAccounting('run'),0);
+  } finally { f.db.close(); }
+});
+
+test('inference window requires canonical instants, active daily limits and at most three touched UTC dates', async () => {
+  const f=await windowFixture();
+  try {
+    for(const window of [null,{startAt:testWindowStart,endAt:testWindowStart},
+      {startAt:testWindowStart,endAt:'2030-04-14T00:00:00.001Z'},
+      {startAt:testWindowStart,endAt:'2030-04-14'},{startAt:testWindowStart,endAt:testWindowEnd,unused:true}])
+      assert.throws(()=>requireProject({...f.pack,settings:{...f.pack.settings,inferenceWindow:window}}),{code:'E_PROJECT_CONFIG'});
+    const {usageLimits,...rest}=f.pack.settings;
+    assert.throws(()=>requireProject({...f.pack,settings:rest}),{code:'E_PROJECT_CONFIG'});
+  } finally { f.db.close(); }
+});
+
+test('the first reply settles after cutoff but a schema retry cannot obtain another admission', async t => {
+  let clock = Date.parse(testWindowEnd) - 1;
+  t.mock.method(Date, 'now', () => clock);
+  const f = await windowFixture();
+  try {
+    onModel = async response => { clock = Date.parse(testWindowEnd); return response; };
+    const invalid = () => { throw new ValidationFailure('E_READER_SCHEMA', 'document', 'Synthetic invalid verdict.'); };
+    await assert.rejects(f.runner.vendor(f.request, f.pack, invalid), { code: 'E_INFERENCE_WINDOW', kind: 'blocker' });
+    assert.equal(modelCalls, 1);
+    assert.equal(countCalls, 1);
+    assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM vendor_calls WHERE cost_nano IS NOT NULL').get()!.n, 1);
+    assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM daily_usage_reservations').get()!.n, 1);
+    assert.equal(await f.store.pendingAccounting('run'), 0);
+  } finally { f.db.close(); }
+});
 
 test("one person's reserved unknown usage no longer refuses everyone; an unknown charge without a reservation still does, never as zero", async () => {
   const f = await siteFixture(['person-a', 'person-b'], 1, 225000, '1000000000');

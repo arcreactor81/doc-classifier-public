@@ -34,9 +34,9 @@ test('the Claude family is Anthropic\'s, takes the OpenAI readers\' efforts and 
   assert.deepEqual(vendorModelIds('anthropic'), [CLAUDE]);
 });
 
-test('the owner menu offers Claude Sonnet 5.5 at Anthropic\'s published prices; GPT-5.4 stays the default', () => {
+test('the owner menu keeps Claude Sonnet 5.5 at its recorded prices while Sol is the default', () => {
   assert.deepEqual(validateProject(configured()), []);
-  assert.equal(owner.readerModels.defaultId, 'standard');
+  assert.equal(owner.readerModels.defaultId, 'sol');
   const option = owner.readerModels.options[index('claude')];
   assert.equal(option.label, 'Claude Sonnet 5.5');
   assert.deepEqual({ ...option.pin, reason: undefined }, { id: CLAUDE, date: '2026-10-10', policy: 'owner_approved_undated', reason: undefined });
@@ -57,7 +57,7 @@ test('choosing Claude freezes its pin and keeps the pack\'s effort (low) and out
   assert.equal(selected.settings.readerEffort, 'low');
   assert.equal(selected.settings.readerMaxOutputTokens, 16384);
   assert.equal(selected.limits.readerContextTokens, 1000000);
-  assert.equal(selected.readerModels!.defaultId, 'standard');
+  assert.equal(selected.readerModels!.defaultId, 'sol');
   assert.deepEqual(validateProject(JSON.parse(JSON.stringify(selected))), []);
 });
 
@@ -78,7 +78,13 @@ test('Claude is refused as the default, with a per-run cap rule, its own effort 
 });
 
 test('the Anthropic daily pool is USD 100 in nanodollars under daily-usage-v3; a Claude model needs it', () => {
-  const limits = owner.settings.usageLimits;
+  const limits = structuredClone(owner.settings.usageLimits);
+  // Freeze the historical token-only policy instead of inheriting the owner's paid-model upgrade.
+  limits.policy = 'daily-usage-v3';
+  limits.openaiTokenPools = [
+    { id: 'large', modelIds: ['gpt-5.4'], limitTokens: 225000 },
+    { id: 'small', modelIds: ['gpt-5.4-mini', 'gpt-5.4-nano'], limitTokens: 2250000 }
+  ];
   assert.equal(limits.policy, 'daily-usage-v3');
   assert.equal(limits.anthropicDailyNano, '100000000000');
   assert.equal(ANTHROPIC_POOL_ID, 'anthropic');

@@ -22,7 +22,7 @@ import { glyph } from '../view/glyphs.ts';
 import { navigate } from '../router.ts';
 import type { AppStore } from '../state/types.ts';
 import type { RouteOf, ViewContext } from '../shell/view-context.ts';
-import { cardRows, runCards, runComplete, story, waitingRow, watchedRuns, type CardRow, type NamedRun } from './home-parts.ts';
+import { cardRows, runCards, runComplete, runHistoryFeedback, story, waitingRow, watchedRuns, type CardRow, type NamedRun } from './home-parts.ts';
 
 const RECENT = 3;
 
@@ -82,10 +82,10 @@ export function homeScreen(ctx: ViewContext<RouteOf<'home'>>): Node {
 
   return h('section', { class: 'home', testid: 'home' },
     story(copy, { primary, testid: 'home-primary', waiting, certainty: cats.certainty, piles: cats.names }),
-    workspace(copy, store, list, rows, recent, waiting, cats));
+    workspace(copy, store, list, computed(() => runs() !== null), rows, recent, waiting, cats));
 }
 
-function workspace(copy: UiCopy, store: AppStore, list: Read<readonly NamedRun[]>, rows: Read<readonly CardRow[]>,
+function workspace(copy: UiCopy, store: AppStore, list: Read<readonly NamedRun[]>, historyKnown: Read<boolean>, rows: Read<readonly CardRow[]>,
   recent: Read<readonly CardRow[]>, waiting: Read<CardRow | null>, cats: ActiveCategories): HTMLElement {
   const c = copy.home, w = c.workspace;
 
@@ -205,6 +205,7 @@ function workspace(copy: UiCopy, store: AppStore, list: Read<readonly NamedRun[]
     h('div', { class: 'ws-row ws-head' },
       h('h2', { class: 'ws-h', attrs: { id: 'home-ws-title' } }, w.title),
       h('span', { class: 'hint' }, w.hint)),
-    stats,
+    runHistoryFeedback(store, copy),
+    show(historyKnown, () => stats),
     h('div', { class: 'ws-grid' }, runsCol, catsPanel));
 }

@@ -371,7 +371,7 @@ test('every phrase resolves to plain text with no jargon', () => {
   for (const step of STEPS) assert.equal(typeof phraseText({ key: STEP_LABEL_KEYS[step] }), 'string', step);
 });
 
-test('the rail: eight steps in four chapters; done before the current step, upcoming after it, links only where reachable', () => {
+test('the rail: eight steps in four chapters; later Results may be inspected after a stop without marking them done', () => {
   for (const c of CASES) {
     const view = onView(c);
     assert.deepEqual(view.steps.map(step => step.id), STEPS);
@@ -379,11 +379,13 @@ test('the rail: eight steps in four chapters; done before the current step, upco
     view.steps.forEach((step, i) => {
       assert.equal(step.chapter, STEP_CHAPTER[step.id]);
       if (c.rule !== 'J18' && i < index) assert.ok(step.status === 'done' || step.status === 'skipped', `${c.name}: ${step.id} ${step.status}`);
-      if (i > index) assert.ok(step.status === 'upcoming' || step.status === 'blocked', `${c.name}: ${step.id} ${step.status}`);
+      const inspectable = c.rule === 'J15' && step.id === 'results';
+      if (i > index) assert.ok(step.status === 'upcoming' || step.status === 'blocked' || inspectable && step.status === 'available', `${c.name}: ${step.id} ${step.status}`);
       const unavailable = step.status === 'upcoming' || step.status === 'blocked';
-      if (unavailable) assert.ok(step.reason !== null, `${c.name}: ${step.id} has a reason`);
+      if (unavailable || inspectable) assert.ok(step.reason !== null, `${c.name}: ${step.id} has a reason`);
       else assert.equal(step.reason, null);
       if (unavailable && i !== index) assert.equal(step.href, null, `${c.name}: ${step.id} is not a link`);
+      if (inspectable) assert.equal(step.href, '#/run/run-7/results');
     });
   }
   assert.deepEqual(Object.values(STEP_CHAPTER), ['files', 'files', 'start', 'start', 'sorting', 'sorting', 'folders', 'folders']);
@@ -556,6 +558,33 @@ test('F5: a stopped run\'s later rail steps say "before every document had an ou
   assert.ok(after.steps.slice(5).every(step => step.reason?.key === 'journey.reason.stoppedKept'), 'every document has an outcome');
   assert.equal(phraseText(after.steps[5].reason!), uiCopy.journey.reason.stoppedKept);
   assert.doesNotMatch(phraseText(after.steps[5].reason!), /before every document/);
+});
+
+test('stopped Results remain reachable without marking the run or folder steps complete', () => {
+  for (const state of [
+    { uploaded: 5, decided: 3, undispatched: 0 },
+    { uploaded: 2, decided: 1, undispatched: 1 },
+    { uploaded: 5, decided: 5, undispatched: 0 },
+    { uploaded: 0, decided: 0, undispatched: 0 }
+  ]) for (const viewing of ['progress', 'results'] as const) {
+    const f = facts({ viewing, run: run({ ...state, status: 'halted', stopCode: 'E_DAILY_LIMIT' }) });
+    const view = journey(f), result = view.steps.find(step => step.id === 'results')!;
+    assert.equal(view.rule, 'J15');
+    assert.equal(result.href, '#/run/run-7/results');
+    assert.equal(result.status, 'available');
+    assert.notEqual(view.current, 'results');
+    assert.equal(view.narration.now.key, 'journey.now.stopped');
+    assert.equal(redirectHref(view, f), '#/run/run-7/progress');
+    for (const id of ['build', 'review']) {
+      const step = view.steps.find(step => step.id === id)!;
+      assert.equal(step.href, null);
+      assert.notEqual(step.status, 'done');
+    }
+  }
+  for (const status of ['running', 'closing', 'closed'] as const) {
+    const view = journey(facts({ run: run({ status, decided: 3 }) }));
+    assert.equal(view.steps.find(step => step.id === 'results')!.href, null, status);
+  }
 });
 
 // Go/no-go review, 10 October 2026: a run stopped part-way through sending read "Step 5 of 8 · Sort" on Progress while

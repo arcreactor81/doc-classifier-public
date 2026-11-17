@@ -1207,3 +1207,69 @@ On the owner's instruction that this log record everything done to date, entries
 - **Addendum, 12 October 2026: the heavy test done; the per-run cap and the TypeSafe cap restored.** The one large run (a5b7213d, 1,079 papers, 10:24-10:34 UTC) decided 1,065 papers and stopped on the site's own Anthropic daily allowance (`E_DAILY_LIMIT`, USD 100 a day under daily-usage-v3) before the credit ran out. As said before the run, the owner pack returns to 60 documents per run and USD 1 a day for TypeSafe; the Singapore egress and `layout-quotes-v2` stay on.
 - **Addendum, 12 October 2026: reader processing countries on Confirm; a private paper outline; the Anthropic key paused (owner).** Answering the open items, the owner chose "3.a" (name where each reader option's text is processed on the Confirm screen, as it already does for DeepSeek and TypeSafe, using only facts in `docs/data-residency.md`; built test-first, then deployed), "4 - private" (the paper outline is `docs/paper-outline.md`, left out of the public copy), "5 - api has been paused" (the owner paused the Anthropic API key after the tests; Claude reader calls will be refused until it is resumed) and "6 - cool" (the DNS advice on the test computer is noted, nothing changed).
 - **Addendum, 12 October 2026: Claude stays on the menu while the key is paused (owner).** Asked whether to hide the Claude reader while the Anthropic key is paused, the owner said "keep it". A Claude run stops with `E_VENDOR_AUTH` until the key is resumed.
+
+
+## 157. Explicit Jev long context; Liquid API preparation (4 November 2026)
+
+Owner: "enable the updates in the codebase to allow the updated limits in jev to work". Enable the documented long-context header in new owner-pack requests under a frozen versioned policy; keep Jev 1.13.0 and all existing model-facing content to isolate this change. Preserve historical standard behavior, identical retries, strict validation and deterministic outcomes. Equal 262k limits use a separate explicit category allocation (32000 in the owner pack). Do not carry standard trials or calibration into this experimental context mode. See the corresponding DESIGN amendment. No live run or deployment was requested.
+
+Owner also asked for parallel preparations and research for Liquid AI decision models, then reported adding the API key in Cloudflare Secrets Store. Metadata-only verification found LIQUID_API_KEY active for Workers; neither the deployed Worker nor local owner config has a Liquid binding. The preparation and documented open contract questions are in docs/liquid-decision-api-preparation.md. No secret value, paid request, new decision rule, automatic provider fallback or production substitution is authorized by this preparation.
+
+
+## 158. Prepare a blinded decision-model bake-off before provider activation (4 November 2026)
+
+Owner first requested repository integration and enabling Liquid/Clef, then clarified: "actually, make preparations for a bakeoff please - no llm calls, only decision model calls". Latest scope is offline preparation, no inference calls or provider activation. Liquid allowance is USD2 total across the campaign. Owner selected keeping Clef unavailable until full-text handling is verified and asked to check its subscription coverage. Owner confirms ZDR appears in their Liquid account console.
+
+Owner requested speed through independent agents, no data disclosure that reveals answers, and an audit of the original arXiv test's nuances. Preparation separates hidden references from request payloads, hashes every input/request, preserves exact text, uses independent fixed sampling, and reports decision-only metrics without a reader or R1 claims. The arXiv audit documents primary-field reference labels, converted Office files, mixed historical policies, stops/denominators and unresolved accounting. BBC controls and arXiv main/stress groups remain separate. No dataset, key, request body or response body is committed.
+
+
+### 158 addenda — owner spending clarification and readable Liquid format
+
+Owner: "4 - no need - use it until it is exhausted/api balance reports 0 - unless you want to implement some sort of safeguard like we did earlier". Keep the entire frozen comparison; actual reported spending/balance refusal governs eventual execution, not the earlier byte estimate. Shared Liquid USD2 remains recorded, unknown accounting pauses, no recharge/retry. The previous estimate-based all-arm block is superseded.
+
+Owner explicitly approved the first versioned mapping, requested both Liquid and Jev guidance/cookbook review, asked for a plain explanation, then approved the clear written Liquid format. Record explicit `liquid-native-instructions-v2` in new comparison arms, preserving every existing rule and all source text. Legacy v1 stays available by its recorded identity. Jev changes suggested by its guidance are proposals only and were not applied. The owner reiterated: follow established SOP; bring necessary new result-affecting ideas for approval first.
+
+
+## 159. Run the prepared decision-only comparison (4 November 2026)
+
+Owner: "run? what are you waiting for?". Execute the existing frozen plan now. This authorizes the isolated authenticated execution helper and its small metadata ledger, using existing vendor secret bindings and raw-artifact storage. No new document/model/prompt/reader/recovery option is added. Liquid USD2 total and native format approval remain; Clef remains blocked. All650requests retain their approved hashes; firstdocument/all5arms validates the contract before unsent remainingrequests. No automatic repeat of a paid or uncertain call. Follow raw-before-parse accounting, kill guards, recorded limits and visible failure policy.
+
+
+### 159 addendum — delegated ownership with the Liquid stop preserved
+
+Owner could not check the failed Liquid Ultra charge immediately ("can do later - am busy") and directed "take ownership of test run - i will be awayokay?". The coordinator keeps Liquid paused and finishes independent, untouched Jev requests within the original limits. A one-way authenticated continuation receipt records this scoped action without clearing the original halt or altering any raw response/unknown charge. No new Liquid inference, failed-request retry, changed prompt or spending increase follows.
+
+## 160. Full arXiv comparison, native Liquid criteria and the existing unlimited policy (5 November 2026)
+
+The owner explicitly requested the full 2,040-document arXiv comparison using Jev 1.14 long context and Liquid d1-ultra, correcting the Noul request to the native detailed API schema. New Liquid requests use `liquid-systemone-criteria-v3`; historical v1/v2 requests and the earlier 130-document study remain unchanged. No LLM or Clef calls, source shortening, model fallback or automatic retry are added.
+
+The owner directed use of the established unlimited-test acknowledgement rather than a USD 2 gate. Manifest v2 records the existing unlimited budget shape, all limits null, acknowledgement true, signer `owner-chat` and an actual UTC timestamp; the normal `authorizeRunBudget` validation freezes it. Unknown costs are isolated per document under `isolate-unlimited-v1`, not replaced with zero or used to stop unrelated documents. Credit/authentication, pin, kill, storage and unresolved active-claim stops remain. Retry-After governs the next distinct request, never a replay. Production limits and old campaign limits are not changed.
+
+The full private inventory remains 2,040. Final local screening audit v4 identifies two own-label-stamp files that must not reach a judge, leaving 2,038 eligible files and 4,076 requests. Keep the blocked records and unchanged originals, and disclose both inventory and scheduled denominators. Citation metadata is not silently edited. The new frozen plan hash is `<private frozen plan hash>`.
+
+Two fresh arm-scoped workers/clients may run concurrently, one serial request stream per arm. Initialization includes only the chosen arm's requests and explicit unlimited budget; `ALLOWED_ARM_ID` prevents cross-arm dispatch. No inference has occurred under this new plan at this documentation checkpoint. Local tests and deployment preparation are recorded in HANDOFF.md; deployment and live results require their own receipts.
+
+## 161. Prepare and launch the scaled Jev + Sol test in the existing app (5 November 2026)
+
+Owner requested statistical testing of the completed Jev/Liquid comparison and, in parallel, preparation for scaled LLM testing using Jev. The owner explicitly said to reuse the current setup, approved the previously discussed GPT-6.1 Sol reader at low effort, and selected Jev 1.14 long context. The earlier Claude answer referred to the historical arXiv run, not this new selection.
+
+Owner: "budget approved for openai model call is $48 - as soon as you complete prep, launch scaled testing immediately please - do not pause - take full ownership of this test plan". The $48 covers reader and existing heading-recovery calls. The owner separately approved "Allow $3 Jev for this test" in response to a test-only increase from $1, with restoration to $1 afterwards. No recharge is authorized. The existing run budget, daily reservations, kill switch, raw-before-parse recording, model identity guards and failure policy remain binding.
+
+Use the existing app and scripts/live-accuracy runner, not the decision-only executor. Keep the current prompts, schema, evidence policy, output caps, threshold 0.90, extraction and GPT-5.4 nano recovery model/effort. Add the new generic reader family and an explicit recovery cache-policy override so Sol can use the already supported no-cache policy while nano retains its existing automatic caching. Add daily-usage-v4 monetary OpenAI pools using the existing reservation ledger: the paid pool contains Sol and nano and is limited to USD 48. Old token policies and frozen runs remain unchanged. No new storage system or workflow architecture is introduced.
+
+OpenAI's current model page lists gpt-6.1-sol without a dated snapshot. The explicitly requested name follows the existing owner-approved-undated OpenAI behavior: accept the selected family and freeze the exact returned model per run; the test runner also rejects a change across its batches. No older Sol, Terra or other model is substituted. Current first-party docs verify low effort, Responses/structured outputs, 1,050,000 context, 128,000 maximum output, USD2/M input and USD 10/M output; the configured cap remains 16,384. Explicit cache mode with no breakpoints makes no cache reads/writes; unexpected counters still halt accounting. Cached-input price is USD0.10/M, and inputs above 272,000 use the documented long-context multipliers. No cache-write charge is silently dropped.
+
+The current app retains metadata titles. Its blinded test queue therefore blocks eight whole source files (two body/outline answer stamps and six title-only stamps), retains the full 2,040 inventory, and contains 2,032 unchanged eligible files in 34 batches of at most 60. No content is trimmed or replaced. The active category definitions already match the frozen test file exactly; no category switch is needed. The runner now checks complete definitions, not only IDs/names. The 136 thin PDFs and three noted files remain eligible; normal recovery and decision rules apply. Budget/guard stops and unfinished documents must remain explicit, never presented as a completed full-corpus test.
+
+The owner also requested a dedicated site consistency agent. Verified stopped-run Results navigation and unfinished-row presentation fixes may ship with the preparation, without changing stored outcomes, classification rules, Build/Review gates or run closure. The broader audit remains separate from model execution.
+
+## 162. Complete the Sol baseline before the paired Luna reader test, November 2026
+
+The owner approved two full-pipeline arms in order. Retain completed Sol outcomes, finish its eligible outstanding work, then select GPT-6 Luna on the same blinded papers. Preserve the excluded files and any unresolvable prior attempts in the comparison inventory. The shared budget is USD 200 for all November OpenAI test usage including the prior campaign and heading recovery. Jev is separately authorized as needed. Report model costs and the number and quality of automatic filings alongside reviews, failures and unmatched cases. Keep the other model-facing settings and the 0.90 decision threshold frozen. Historical source packs, decisions and billing remain reproducible.
+
+The owner then added GPT-6.1 Terra between Sol and Luna, and DeepSeek Flash off-peak after the OpenAI arms. The actual website offers “Use all documents without a trial” and “Run with no spending limit”. Those choices coexist with the installation's shared vendor pools. Use supervised sequential batches of up to 60 papers, and keep the existing pacing. The bounded owner test window starts 2026-11-12T18:45:00.000Z and ends before 2026-11-14T00:00:00.000Z. The shared paid OpenAI limit is temporarily USD 75 per UTC day and the separate Jev limit USD 5 per UTC day. The prior paid total plus the two daily OpenAI allocations is USD 197.162458100. Reconcile the ledger at each job. Report model-specific measured costs, processing failures, unresolved charges and the facts for any interrupted runs.
+
+
+### November 13, 2026, paired reader study allocation by UTC date
+
+The owner-funded comparison retains a USD 200 November OpenAI maximum. Its supervised coordinator allocates USD 102 to 12 November UTC and USD 48 to 13 November UTC, with USD 5 daily for Jev. Each temporary pack uses the existing server-side reservation and dispatch window for only its allocated UTC date. A supervisor must reconcile total charges and eliminate overlapping live prior-pack writers at each handover. No new inference or deployment is recorded by this source amendment.
