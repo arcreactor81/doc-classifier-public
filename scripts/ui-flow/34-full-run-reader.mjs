@@ -1,6 +1,6 @@
 /**
  * Script 34 — the reader menu and the daily estimates on Confirm, from the browser bug hunt of 7 October 2026 (the
- * owner's rules of that day), with the owner pack's four readers and a trial size of two:
+ * owner's rules of that day), with the configured owner menu and a trial size of two:
  * - A remaining-capacity estimate the service leaves out because some of today's usage in one of the reader's pools
  *   is unknown reads "Can't be estimated: some of today's usage isn't known yet.", not "Not measured yet"; a reader
  *   with no measured documents still reads "Not measured yet". "Rough cost: no estimate yet." sits beside the spending
@@ -56,7 +56,10 @@ await runScript(SCRIPT, 'Bug hunt of 7 October 2026: a full run keeps its trial\
   await page.getByText('2 of 4 documents selected for this run.', { exact: true }).waitFor();
   await page.locator('[data-testid="confirm-usage-per-day"]').waitFor();
 
-  // The service measured four documents on the default reader but leaves out the remaining estimate: a call in one of
+  // This measurement fixture describes GPT-5.4 specifically; choose it independently of the site's current default.
+  await page.locator(`button[data-op="confirm:reader:${localId}:standard"]`).click();
+  await until(async () => (await textOf('[data-testid="confirm-reader-selected"]')) === 'GPT-5.4', 'the measured fixture reader selected');
+  // The service measured four documents on this reader but leaves out the remaining estimate: a call in one of
   // its pools has no known usage today (core/server/usage-summary.ts sends the per-day figure either way).
   const resetsAt = new Date(Date.now() + 3_600_000).toISOString();
   const unknownUsage = {
@@ -144,14 +147,14 @@ await runScript(SCRIPT, 'Bug hunt of 7 October 2026: a full run keeps its trial\
   await until(async () => await button('standard').isDisabled(), 'the other readers greyed out', 10_000).catch(() => undefined);
   await sleep(500);
   const options = {};
-  for (const id of ['standard', 'mini', 'qwen', 'deepseek', 'claude'])
+  for (const {id} of owner.readerModels.options)
     options[id] = { disabled: await button(id).isDisabled(), text: await textOf(`[data-testid="confirm-reader-option-${id}"]`) };
   const full = { selected: await textOf('[data-testid="confirm-reader-selected"]'), options };
   evidence.fullRun = full;
   check('on the full run\'s Confirm the trial\'s reader is shown and stays available',
     full.selected === 'GPT-5.4 mini' && !options.mini.disabled && !options.mini.text.includes(TRIAL_ONLY), full);
   check('every other reader is greyed out with "A full run uses the same reader as its trial."',
-    ['standard', 'qwen', 'deepseek', 'claude'].every(id => options[id].disabled && options[id].text.includes(TRIAL_ONLY)), full);
+    owner.readerModels.options.filter(option => option.id !== 'mini').every(({id}) => options[id].disabled && options[id].text.includes(TRIAL_ONLY)), full);
   evidence.fullShot = await screenshot(page, `${SCRIPT}-full-run`);
 
   evidence.api = fake.requests.map(r => `${r.method} ${r.path} ${r.status}`);
