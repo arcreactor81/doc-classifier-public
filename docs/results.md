@@ -19,6 +19,8 @@ On the news benchmark, the two judges agreed often enough to file 812 of 941 art
 
 ## Follow a question
 
+- **Does model tier predict reader strength across subjects?** Compare the same November inputs by subject and file format, then examine which October comparisons shared only the original documents. [Reader strength across models and files](reader-strength-comparison.md)
+
 - **Can the system still file accurately with a weaker reader?** The matched studies show how reader strength changes correct filings, review work and failures, and how often two judges share a mistake. [Reader choice and the statistical evidence](reader-swap-evidence.md)
 
 - **Why do the denominators change?** A paper can be excluded before inference, lack an outcome after interruption, reach review, fail processing or be automatically filed. The misfile rate among automatic filings counts only that last group. The research reports use authors’ primary subject labels as the reference. [Corpus selection and reference-label limits](arxiv-bakeoff-methodology-review.md)

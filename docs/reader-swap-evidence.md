@@ -56,3 +56,5 @@ The supplement uses only retained evidence. The BBC pairing checks original and 
 Run `node scripts/reader-swap-statistics.mjs` from the repository root to regenerate the tables. Add `--json` for unrounded estimates, intervals, counts and p-values. The public input file contains aggregate counts and batch-level summaries. It contains no filenames, originals, text or individual predictions. [Aggregate inputs](data/reader-swap-inputs.json) · [Analysis code](../scripts/reader-swap-statistics.mjs) · [All calculated tables](reader-swap-statistical-tables.md)
 
 [Browse the experiments in order](results.md)
+
+[Follow-up across subjects, file formats and earlier readers](reader-strength-comparison.md)

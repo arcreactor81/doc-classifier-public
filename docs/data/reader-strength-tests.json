@@ -1,0 +1,944 @@
+{
+  "crossEra": [
+    {
+      "key": "sol correct",
+      "p": 8.978528424191906e-48,
+      "n": 1790,
+      "firstOnly": 62,
+      "secondOnly": 341,
+      "both": 918,
+      "neither": 469,
+      "holm": 2.693558527257572e-46
+    },
+    {
+      "key": "sol wrong",
+      "p": 0.5412561893463135,
+      "n": 1790,
+      "firstOnly": 10,
+      "secondOnly": 14,
+      "both": 13,
+      "neither": 1753,
+      "holm": 1.0
+    },
+    {
+      "key": "sol filed",
+      "p": 5.063090648700291e-46,
+      "n": 1790,
+      "firstOnly": 72,
+      "secondOnly": 355,
+      "both": 931,
+      "neither": 432,
+      "holm": 1.4176653816360813e-44
+    },
+    {
+      "key": "sol review",
+      "p": 8.200354350076105e-28,
+      "n": 1790,
+      "firstOnly": 29,
+      "secondOnly": 180,
+      "both": 321,
+      "neither": 1260,
+      "holm": 2.2140956745205483e-26
+    },
+    {
+      "key": "sol failure",
+      "p": 1.0001149731042111e-125,
+      "n": 1790,
+      "firstOnly": 437,
+      "secondOnly": 3,
+      "both": 0,
+      "neither": 1350,
+      "holm": 3.60041390317516e-124
+    },
+    {
+      "key": "sol reader",
+      "p": 0.0003077225118727813,
+      "n": 1350,
+      "firstOnly": 94,
+      "secondOnly": 50,
+      "both": 1070,
+      "neither": 136,
+      "holm": 0.006769895261201189
+    },
+    {
+      "key": "terra correct",
+      "p": 1.2326169227581375e-50,
+      "n": 1781,
+      "firstOnly": 57,
+      "secondOnly": 342,
+      "both": 918,
+      "neither": 464,
+      "holm": 4.067635845101853e-49
+    },
+    {
+      "key": "terra wrong",
+      "p": 0.28627872467041016,
+      "n": 1781,
+      "firstOnly": 8,
+      "secondOnly": 14,
+      "both": 15,
+      "neither": 1744,
+      "holm": 1.0
+    },
+    {
+      "key": "terra filed",
+      "p": 1.126660786582e-49,
+      "n": 1781,
+      "firstOnly": 65,
+      "secondOnly": 356,
+      "both": 933,
+      "neither": 427,
+      "holm": 3.6053145170624e-48
+    },
+    {
+      "key": "terra review",
+      "p": 6.794957784195138e-22,
+      "n": 1781,
+      "firstOnly": 32,
+      "secondOnly": 161,
+      "both": 317,
+      "neither": 1271,
+      "holm": 1.6987394460487845e-20
+    },
+    {
+      "key": "terra failure",
+      "p": 8.735198979797648e-119,
+      "n": 1781,
+      "firstOnly": 425,
+      "secondOnly": 5,
+      "both": 9,
+      "neither": 1342,
+      "holm": 2.9699676531312005e-117
+    },
+    {
+      "key": "terra reader",
+      "p": 5.955419961683023e-07,
+      "n": 1342,
+      "firstOnly": 99,
+      "secondOnly": 40,
+      "both": 1057,
+      "neither": 146,
+      "holm": 1.3697465911870953e-05
+    },
+    {
+      "key": "flash_full correct",
+      "p": 4.030173058427998e-49,
+      "n": 1790,
+      "firstOnly": 67,
+      "secondOnly": 358,
+      "both": 913,
+      "neither": 452,
+      "holm": 1.2493536481126794e-47
+    },
+    {
+      "key": "flash_full wrong",
+      "p": 0.42435622215270996,
+      "n": 1790,
+      "firstOnly": 10,
+      "secondOnly": 15,
+      "both": 13,
+      "neither": 1752,
+      "holm": 1.0
+    },
+    {
+      "key": "flash_full filed",
+      "p": 1.1846159634118705e-47,
+      "n": 1790,
+      "firstOnly": 77,
+      "secondOnly": 373,
+      "both": 926,
+      "neither": 414,
+      "holm": 3.4353862938944246e-46
+    },
+    {
+      "key": "flash_full review",
+      "p": 3.206613359058593e-22,
+      "n": 1790,
+      "firstOnly": 37,
+      "secondOnly": 173,
+      "both": 313,
+      "neither": 1267,
+      "holm": 8.337194733552343e-21
+    },
+    {
+      "key": "flash_full failure",
+      "p": 1.095160223010164e-123,
+      "n": 1790,
+      "firstOnly": 436,
+      "secondOnly": 4,
+      "both": 1,
+      "neither": 1349,
+      "holm": 3.833060780535574e-122
+    },
+    {
+      "key": "flash_full reader",
+      "p": 4.436779289030424e-12,
+      "n": 1349,
+      "firstOnly": 107,
+      "secondOnly": 28,
+      "both": 1056,
+      "neither": 158,
+      "holm": 1.0648270293673019e-10
+    },
+    {
+      "key": "luna correct",
+      "p": 1.0,
+      "n": 103,
+      "firstOnly": 12,
+      "secondOnly": 12,
+      "both": 41,
+      "neither": 38,
+      "holm": 1.0
+    },
+    {
+      "key": "luna wrong",
+      "p": 1.0,
+      "n": 103,
+      "firstOnly": 0,
+      "secondOnly": 0,
+      "both": 0,
+      "neither": 103,
+      "holm": 1.0
+    },
+    {
+      "key": "luna filed",
+      "p": 1.0,
+      "n": 103,
+      "firstOnly": 12,
+      "secondOnly": 12,
+      "both": 41,
+      "neither": 38,
+      "holm": 1.0
+    },
+    {
+      "key": "luna review",
+      "p": 0.04138946533203125,
+      "n": 103,
+      "firstOnly": 5,
+      "secondOnly": 15,
+      "both": 18,
+      "neither": 65,
+      "holm": 0.7863998413085938
+    },
+    {
+      "key": "luna failure",
+      "p": 0.12144948495551944,
+      "n": 103,
+      "firstOnly": 22,
+      "secondOnly": 12,
+      "both": 5,
+      "neither": 64,
+      "holm": 1.0
+    },
+    {
+      "key": "luna reader",
+      "p": 0.1796875,
+      "n": 64,
+      "firstOnly": 7,
+      "secondOnly": 2,
+      "both": 48,
+      "neither": 7,
+      "holm": 1.0
+    },
+    {
+      "key": "flash correct",
+      "p": 0.60723876953125,
+      "n": 52,
+      "firstOnly": 6,
+      "secondOnly": 9,
+      "both": 17,
+      "neither": 20,
+      "holm": 1.0
+    },
+    {
+      "key": "flash wrong",
+      "p": 1.0,
+      "n": 52,
+      "firstOnly": 0,
+      "secondOnly": 0,
+      "both": 0,
+      "neither": 52,
+      "holm": 1.0
+    },
+    {
+      "key": "flash filed",
+      "p": 0.60723876953125,
+      "n": 52,
+      "firstOnly": 6,
+      "secondOnly": 9,
+      "both": 17,
+      "neither": 20,
+      "holm": 1.0
+    },
+    {
+      "key": "flash review",
+      "p": 0.0703125,
+      "n": 52,
+      "firstOnly": 1,
+      "secondOnly": 7,
+      "both": 15,
+      "neither": 29,
+      "holm": 1.0
+    },
+    {
+      "key": "flash failure",
+      "p": 0.03515625,
+      "n": 52,
+      "firstOnly": 12,
+      "secondOnly": 3,
+      "both": 1,
+      "neither": 36,
+      "holm": 0.703125
+    },
+    {
+      "key": "flash reader",
+      "p": 0.375,
+      "n": 36,
+      "firstOnly": 4,
+      "secondOnly": 1,
+      "both": 26,
+      "neither": 5,
+      "holm": 1.0
+    },
+    {
+      "key": "flash_low_pilot correct",
+      "p": 0.057373046875,
+      "n": 52,
+      "firstOnly": 3,
+      "secondOnly": 11,
+      "both": 20,
+      "neither": 18,
+      "holm": 1.0
+    },
+    {
+      "key": "flash_low_pilot wrong",
+      "p": 1.0,
+      "n": 52,
+      "firstOnly": 0,
+      "secondOnly": 0,
+      "both": 0,
+      "neither": 52,
+      "holm": 1.0
+    },
+    {
+      "key": "flash_low_pilot filed",
+      "p": 0.057373046875,
+      "n": 52,
+      "firstOnly": 3,
+      "secondOnly": 11,
+      "both": 20,
+      "neither": 18,
+      "holm": 1.0
+    },
+    {
+      "key": "flash_low_pilot review",
+      "p": 0.2890625,
+      "n": 52,
+      "firstOnly": 2,
+      "secondOnly": 6,
+      "both": 14,
+      "neither": 30,
+      "holm": 1.0
+    },
+    {
+      "key": "flash_low_pilot failure",
+      "p": 0.0018310546875,
+      "n": 52,
+      "firstOnly": 13,
+      "secondOnly": 1,
+      "both": 0,
+      "neither": 38,
+      "holm": 0.0384521484375
+    },
+    {
+      "key": "flash_low_pilot reader",
+      "p": 0.625,
+      "n": 38,
+      "firstOnly": 3,
+      "secondOnly": 1,
+      "both": 28,
+      "neither": 6,
+      "holm": 1.0
+    }
+  ],
+  "jointReader": [
+    {
+      "key": "full sol vs terra",
+      "p": 0.1073515865331888,
+      "n": 1998,
+      "firstOnly": 58,
+      "secondOnly": 41,
+      "both": 1601,
+      "neither": 298,
+      "holm": 1.0
+    },
+    {
+      "key": "full sol vs flash_full",
+      "p": 0.06287060424787494,
+      "n": 1998,
+      "firstOnly": 128,
+      "secondOnly": 99,
+      "both": 1531,
+      "neither": 240,
+      "holm": 0.9430590637181241
+    },
+    {
+      "key": "full terra vs flash_full",
+      "p": 0.4070872345039555,
+      "n": 1998,
+      "firstOnly": 94,
+      "secondOnly": 82,
+      "both": 1548,
+      "neither": 274,
+      "holm": 1.0
+    },
+    {
+      "key": "luna sol vs terra",
+      "p": 1.0,
+      "n": 93,
+      "firstOnly": 2,
+      "secondOnly": 3,
+      "both": 76,
+      "neither": 12,
+      "holm": 1.0
+    },
+    {
+      "key": "luna sol vs luna",
+      "p": 0.021270751953125,
+      "n": 93,
+      "firstOnly": 13,
+      "secondOnly": 3,
+      "both": 65,
+      "neither": 12,
+      "holm": 0.361602783203125
+    },
+    {
+      "key": "luna sol vs flash_full",
+      "p": 1.0,
+      "n": 93,
+      "firstOnly": 6,
+      "secondOnly": 6,
+      "both": 72,
+      "neither": 9,
+      "holm": 1.0
+    },
+    {
+      "key": "luna terra vs luna",
+      "p": 0.012725830078125,
+      "n": 93,
+      "firstOnly": 14,
+      "secondOnly": 3,
+      "both": 65,
+      "neither": 11,
+      "holm": 0.22906494140625
+    },
+    {
+      "key": "luna terra vs flash_full",
+      "p": 1.0,
+      "n": 93,
+      "firstOnly": 6,
+      "secondOnly": 5,
+      "both": 73,
+      "neither": 9,
+      "holm": 1.0
+    },
+    {
+      "key": "luna luna vs flash_full",
+      "p": 0.00634765625,
+      "n": 93,
+      "firstOnly": 1,
+      "secondOnly": 11,
+      "both": 67,
+      "neither": 14,
+      "holm": 0.12060546875
+    },
+    {
+      "key": "pilot sol vs terra",
+      "p": 1.0,
+      "n": 44,
+      "firstOnly": 1,
+      "secondOnly": 2,
+      "both": 34,
+      "neither": 7,
+      "holm": 1.0
+    },
+    {
+      "key": "pilot sol vs luna",
+      "p": 0.0703125,
+      "n": 44,
+      "firstOnly": 7,
+      "secondOnly": 1,
+      "both": 28,
+      "neither": 8,
+      "holm": 0.984375
+    },
+    {
+      "key": "pilot sol vs flash",
+      "p": 1.0,
+      "n": 44,
+      "firstOnly": 2,
+      "secondOnly": 2,
+      "both": 33,
+      "neither": 7,
+      "holm": 1.0
+    },
+    {
+      "key": "pilot sol vs flash_low_pilot",
+      "p": 0.375,
+      "n": 44,
+      "firstOnly": 4,
+      "secondOnly": 1,
+      "both": 31,
+      "neither": 8,
+      "holm": 1.0
+    },
+    {
+      "key": "pilot terra vs luna",
+      "p": 0.0390625,
+      "n": 44,
+      "firstOnly": 8,
+      "secondOnly": 1,
+      "both": 28,
+      "neither": 7,
+      "holm": 0.625
+    },
+    {
+      "key": "pilot terra vs flash",
+      "p": 1.0,
+      "n": 44,
+      "firstOnly": 4,
+      "secondOnly": 3,
+      "both": 32,
+      "neither": 5,
+      "holm": 1.0
+    },
+    {
+      "key": "pilot terra vs flash_low_pilot",
+      "p": 0.2890625,
+      "n": 44,
+      "firstOnly": 6,
+      "secondOnly": 2,
+      "both": 30,
+      "neither": 6,
+      "holm": 1.0
+    },
+    {
+      "key": "pilot luna vs flash",
+      "p": 0.109375,
+      "n": 44,
+      "firstOnly": 2,
+      "secondOnly": 8,
+      "both": 27,
+      "neither": 7,
+      "holm": 1.0
+    },
+    {
+      "key": "pilot luna vs flash_low_pilot",
+      "p": 0.375,
+      "n": 44,
+      "firstOnly": 1,
+      "secondOnly": 4,
+      "both": 28,
+      "neither": 11,
+      "holm": 1.0
+    },
+    {
+      "key": "pilot flash vs flash_low_pilot",
+      "p": 0.375,
+      "n": 44,
+      "firstOnly": 4,
+      "secondOnly": 1,
+      "both": 31,
+      "neither": 8,
+      "holm": 1.0
+    }
+  ],
+  "subgroupReader": [
+    {
+      "key": "byCategory algorithms sol vs terra",
+      "p": 0.21875,
+      "n": 250,
+      "firstOnly": 1,
+      "secondOnly": 5,
+      "both": 234,
+      "neither": 10,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory algorithms sol vs flash_full",
+      "p": 0.00390625,
+      "n": 250,
+      "firstOnly": 0,
+      "secondOnly": 9,
+      "both": 235,
+      "neither": 6,
+      "holm": 0.1015625
+    },
+    {
+      "key": "byCategory algorithms terra vs flash_full",
+      "p": 0.0625,
+      "n": 250,
+      "firstOnly": 0,
+      "secondOnly": 5,
+      "both": 239,
+      "neither": 6,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory computer_vision sol vs terra",
+      "p": 7.62939453125e-06,
+      "n": 251,
+      "firstOnly": 18,
+      "secondOnly": 0,
+      "both": 204,
+      "neither": 29,
+      "holm": 0.00023651123046875
+    },
+    {
+      "key": "byCategory computer_vision sol vs flash_full",
+      "p": 3.1081526685738936e-08,
+      "n": 251,
+      "firstOnly": 39,
+      "secondOnly": 4,
+      "both": 183,
+      "neither": 25,
+      "holm": 1.0256903806293849e-06
+    },
+    {
+      "key": "byCategory computer_vision terra vs flash_full",
+      "p": 0.002315700054168701,
+      "n": 251,
+      "firstOnly": 23,
+      "secondOnly": 6,
+      "both": 181,
+      "neither": 41,
+      "holm": 0.06252390146255493
+    },
+    {
+      "key": "byCategory group_theory sol vs terra",
+      "p": 0.001953125,
+      "n": 251,
+      "firstOnly": 10,
+      "secondOnly": 0,
+      "both": 224,
+      "neither": 17,
+      "holm": 0.0546875
+    },
+    {
+      "key": "byCategory group_theory sol vs flash_full",
+      "p": 6.103515625e-05,
+      "n": 251,
+      "firstOnly": 15,
+      "secondOnly": 0,
+      "both": 219,
+      "neither": 17,
+      "holm": 0.0018310546875
+    },
+    {
+      "key": "byCategory group_theory terra vs flash_full",
+      "p": 0.266845703125,
+      "n": 251,
+      "firstOnly": 9,
+      "secondOnly": 4,
+      "both": 215,
+      "neither": 23,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory information_theory sol vs terra",
+      "p": 0.803619384765625,
+      "n": 252,
+      "firstOnly": 9,
+      "secondOnly": 7,
+      "both": 136,
+      "neither": 100,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory information_theory sol vs flash_full",
+      "p": 0.4513808323961257,
+      "n": 252,
+      "firstOnly": 25,
+      "secondOnly": 19,
+      "both": 120,
+      "neither": 88,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory information_theory terra vs flash_full",
+      "p": 0.5966148958541453,
+      "n": 252,
+      "firstOnly": 18,
+      "secondOnly": 14,
+      "both": 125,
+      "neither": 95,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory neural_evolutionary sol vs terra",
+      "p": 0.0009765625,
+      "n": 251,
+      "firstOnly": 1,
+      "secondOnly": 14,
+      "both": 196,
+      "neither": 40,
+      "holm": 0.0283203125
+    },
+    {
+      "key": "byCategory neural_evolutionary sol vs flash_full",
+      "p": 2.4299079086631536e-06,
+      "n": 251,
+      "firstOnly": 5,
+      "secondOnly": 34,
+      "both": 192,
+      "neither": 20,
+      "holm": 7.775705307722092e-05
+    },
+    {
+      "key": "byCategory neural_evolutionary terra vs flash_full",
+      "p": 0.005222879350185394,
+      "n": 251,
+      "firstOnly": 7,
+      "secondOnly": 23,
+      "both": 203,
+      "neither": 18,
+      "holm": 0.13057198375463486
+    },
+    {
+      "key": "byCategory programming_languages sol vs terra",
+      "p": 0.2890625,
+      "n": 247,
+      "firstOnly": 6,
+      "secondOnly": 2,
+      "both": 218,
+      "neither": 21,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory programming_languages sol vs flash_full",
+      "p": 0.008130058646202087,
+      "n": 247,
+      "firstOnly": 22,
+      "secondOnly": 7,
+      "both": 202,
+      "neither": 16,
+      "holm": 0.1951214075088501
+    },
+    {
+      "key": "byCategory programming_languages terra vs flash_full",
+      "p": 0.043285250663757324,
+      "n": 247,
+      "firstOnly": 18,
+      "secondOnly": 7,
+      "both": 202,
+      "neither": 20,
+      "holm": 0.9089902639389038
+    },
+    {
+      "key": "byCategory statistics_theory sol vs terra",
+      "p": 0.125,
+      "n": 252,
+      "firstOnly": 6,
+      "secondOnly": 1,
+      "both": 221,
+      "neither": 24,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory statistics_theory sol vs flash_full",
+      "p": 0.3876953125,
+      "n": 252,
+      "firstOnly": 4,
+      "secondOnly": 8,
+      "both": 223,
+      "neither": 17,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory statistics_theory terra vs flash_full",
+      "p": 0.0224609375,
+      "n": 252,
+      "firstOnly": 2,
+      "secondOnly": 11,
+      "both": 220,
+      "neither": 19,
+      "holm": 0.5166015625
+    },
+    {
+      "key": "byCategory systems_control sol vs terra",
+      "p": 0.359283447265625,
+      "n": 244,
+      "firstOnly": 7,
+      "secondOnly": 12,
+      "both": 168,
+      "neither": 57,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory systems_control sol vs flash_full",
+      "p": 1.0,
+      "n": 244,
+      "firstOnly": 18,
+      "secondOnly": 18,
+      "both": 157,
+      "neither": 51,
+      "holm": 1.0
+    },
+    {
+      "key": "byCategory systems_control terra vs flash_full",
+      "p": 0.45825831964612007,
+      "n": 244,
+      "firstOnly": 17,
+      "secondOnly": 12,
+      "both": 163,
+      "neither": 52,
+      "holm": 1.0
+    },
+    {
+      "key": "byFormat docx sol vs terra",
+      "p": 0.79052734375,
+      "n": 244,
+      "firstOnly": 6,
+      "secondOnly": 8,
+      "both": 192,
+      "neither": 38,
+      "holm": 1.0
+    },
+    {
+      "key": "byFormat docx sol vs flash_full",
+      "p": 0.361594608053565,
+      "n": 244,
+      "firstOnly": 12,
+      "secondOnly": 18,
+      "both": 186,
+      "neither": 28,
+      "holm": 1.0
+    },
+    {
+      "key": "byFormat docx terra vs flash_full",
+      "p": 0.480682373046875,
+      "n": 244,
+      "firstOnly": 7,
+      "secondOnly": 11,
+      "both": 193,
+      "neither": 33,
+      "holm": 1.0
+    },
+    {
+      "key": "byFormat pdf sol vs terra",
+      "p": 0.03299261842647618,
+      "n": 1635,
+      "firstOnly": 50,
+      "secondOnly": 30,
+      "both": 1309,
+      "neither": 246,
+      "holm": 0.725837605382476
+    },
+    {
+      "key": "byFormat pdf sol vs flash_full",
+      "p": 0.043871011453903486,
+      "n": 1635,
+      "firstOnly": 104,
+      "secondOnly": 76,
+      "both": 1255,
+      "neither": 200,
+      "holm": 0.9089902639389038
+    },
+    {
+      "key": "byFormat pdf terra vs flash_full",
+      "p": 0.5598211377107971,
+      "n": 1635,
+      "firstOnly": 76,
+      "secondOnly": 68,
+      "both": 1263,
+      "neither": 228,
+      "holm": 1.0
+    },
+    {
+      "key": "byFormat pptx sol vs terra",
+      "p": 1.0,
+      "n": 119,
+      "firstOnly": 2,
+      "secondOnly": 3,
+      "both": 100,
+      "neither": 14,
+      "holm": 1.0
+    },
+    {
+      "key": "byFormat pptx sol vs flash_full",
+      "p": 0.143463134765625,
+      "n": 119,
+      "firstOnly": 12,
+      "secondOnly": 5,
+      "both": 90,
+      "neither": 12,
+      "holm": 1.0
+    },
+    {
+      "key": "byFormat pptx terra vs flash_full",
+      "p": 0.057373046875,
+      "n": 119,
+      "firstOnly": 11,
+      "secondOnly": 3,
+      "both": 92,
+      "neither": 13,
+      "holm": 1.0
+    }
+  ],
+  "heterogeneity": [
+    {
+      "key": "byCategory sol vs terra",
+      "statistic": 47.55356119219411,
+      "discordant": 99,
+      "p": 4.9999750001249995e-06,
+      "extreme": 0,
+      "reps": 200000,
+      "holm": 2.9999850000749997e-05
+    },
+    {
+      "key": "byCategory sol vs flash_full",
+      "statistic": 81.58937729574458,
+      "discordant": 227,
+      "p": 4.9999750001249995e-06,
+      "extreme": 0,
+      "reps": 200000,
+      "holm": 2.9999850000749997e-05
+    },
+    {
+      "key": "byCategory terra vs flash_full",
+      "statistic": 37.20956221262647,
+      "discordant": 176,
+      "p": 9.999950000249999e-06,
+      "extreme": 1,
+      "reps": 200000,
+      "holm": 3.9999800000999996e-05
+    },
+    {
+      "key": "byFormat sol vs terra",
+      "statistic": 2.6445001802234787,
+      "discordant": 99,
+      "p": 0.29986350068249656,
+      "extreme": 59972,
+      "reps": 200000,
+      "holm": 0.29986350068249656
+    },
+    {
+      "key": "byFormat sol vs flash_full",
+      "statistic": 4.811592229484384,
+      "discordant": 227,
+      "p": 0.09819450902745486,
+      "extreme": 19638,
+      "reps": 200000,
+      "holm": 0.23378883105584475
+    },
+    {
+      "key": "byFormat terra vs flash_full",
+      "statistic": 5.1103368176538915,
+      "discordant": 176,
+      "p": 0.07792961035194824,
+      "extreme": 15585,
+      "reps": 200000,
+      "holm": 0.23378883105584475
+    }
+  ]
+}

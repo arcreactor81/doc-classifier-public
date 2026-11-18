@@ -1,0 +1,3116 @@
+{
+  "cross": [
+    {
+      "arm": "sol",
+      "matched": 1790,
+      "identical": 0,
+      "missingHash": 0,
+      "octOutcomes": 1797,
+      "novOutcomes": 2032,
+      "events": {
+        "correct": {
+          "n": 1790,
+          "both": 918,
+          "aOnly": 62,
+          "bOnly": 341,
+          "neither": 469
+        },
+        "wrong": {
+          "n": 1790,
+          "both": 13,
+          "aOnly": 10,
+          "bOnly": 14,
+          "neither": 1753
+        },
+        "filed": {
+          "n": 1790,
+          "both": 931,
+          "aOnly": 72,
+          "bOnly": 355,
+          "neither": 432
+        },
+        "review": {
+          "n": 1790,
+          "both": 321,
+          "aOnly": 29,
+          "bOnly": 180,
+          "neither": 1260
+        },
+        "failure": {
+          "n": 1790,
+          "both": 0,
+          "aOnly": 437,
+          "bOnly": 3,
+          "neither": 1350
+        },
+        "reader": {
+          "n": 1350,
+          "both": 1070,
+          "aOnly": 94,
+          "bOnly": 50,
+          "neither": 136
+        }
+      },
+      "octByPhase": {
+        "onego3": 1061,
+        "proof-egress": 1,
+        "run": 728
+      }
+    },
+    {
+      "arm": "terra",
+      "matched": 1781,
+      "identical": 0,
+      "missingHash": 0,
+      "octOutcomes": 1797,
+      "novOutcomes": 2020,
+      "events": {
+        "correct": {
+          "n": 1781,
+          "both": 918,
+          "aOnly": 57,
+          "bOnly": 342,
+          "neither": 464
+        },
+        "wrong": {
+          "n": 1781,
+          "both": 15,
+          "aOnly": 8,
+          "bOnly": 14,
+          "neither": 1744
+        },
+        "filed": {
+          "n": 1781,
+          "both": 933,
+          "aOnly": 65,
+          "bOnly": 356,
+          "neither": 427
+        },
+        "review": {
+          "n": 1781,
+          "both": 317,
+          "aOnly": 32,
+          "bOnly": 161,
+          "neither": 1271
+        },
+        "failure": {
+          "n": 1781,
+          "both": 9,
+          "aOnly": 425,
+          "bOnly": 5,
+          "neither": 1342
+        },
+        "reader": {
+          "n": 1342,
+          "both": 1057,
+          "aOnly": 99,
+          "bOnly": 40,
+          "neither": 146
+        }
+      },
+      "octByPhase": {
+        "onego3": 1056,
+        "proof-egress": 1,
+        "run": 724
+      }
+    },
+    {
+      "arm": "flash_full",
+      "matched": 1790,
+      "identical": 0,
+      "missingHash": 0,
+      "octOutcomes": 1797,
+      "novOutcomes": 2032,
+      "events": {
+        "correct": {
+          "n": 1790,
+          "both": 913,
+          "aOnly": 67,
+          "bOnly": 358,
+          "neither": 452
+        },
+        "wrong": {
+          "n": 1790,
+          "both": 13,
+          "aOnly": 10,
+          "bOnly": 15,
+          "neither": 1752
+        },
+        "filed": {
+          "n": 1790,
+          "both": 926,
+          "aOnly": 77,
+          "bOnly": 373,
+          "neither": 414
+        },
+        "review": {
+          "n": 1790,
+          "both": 313,
+          "aOnly": 37,
+          "bOnly": 173,
+          "neither": 1267
+        },
+        "failure": {
+          "n": 1790,
+          "both": 1,
+          "aOnly": 436,
+          "bOnly": 4,
+          "neither": 1349
+        },
+        "reader": {
+          "n": 1349,
+          "both": 1056,
+          "aOnly": 107,
+          "bOnly": 28,
+          "neither": 158
+        }
+      },
+      "octByPhase": {
+        "onego3": 1061,
+        "proof-egress": 1,
+        "run": 728
+      }
+    },
+    {
+      "arm": "luna",
+      "matched": 103,
+      "identical": 0,
+      "missingHash": 0,
+      "octOutcomes": 1797,
+      "novOutcomes": 117,
+      "events": {
+        "correct": {
+          "n": 103,
+          "both": 41,
+          "aOnly": 12,
+          "bOnly": 12,
+          "neither": 38
+        },
+        "wrong": {
+          "n": 103,
+          "both": 0,
+          "aOnly": 0,
+          "bOnly": 0,
+          "neither": 103
+        },
+        "filed": {
+          "n": 103,
+          "both": 41,
+          "aOnly": 12,
+          "bOnly": 12,
+          "neither": 38
+        },
+        "review": {
+          "n": 103,
+          "both": 18,
+          "aOnly": 5,
+          "bOnly": 15,
+          "neither": 65
+        },
+        "failure": {
+          "n": 103,
+          "both": 5,
+          "aOnly": 22,
+          "bOnly": 12,
+          "neither": 64
+        },
+        "reader": {
+          "n": 64,
+          "both": 48,
+          "aOnly": 7,
+          "bOnly": 2,
+          "neither": 7
+        }
+      },
+      "octByPhase": {
+        "onego3": 67,
+        "proof-egress": 0,
+        "run": 36
+      }
+    },
+    {
+      "arm": "flash",
+      "matched": 52,
+      "identical": 0,
+      "missingHash": 0,
+      "octOutcomes": 1797,
+      "novOutcomes": 60,
+      "events": {
+        "correct": {
+          "n": 52,
+          "both": 17,
+          "aOnly": 6,
+          "bOnly": 9,
+          "neither": 20
+        },
+        "wrong": {
+          "n": 52,
+          "both": 0,
+          "aOnly": 0,
+          "bOnly": 0,
+          "neither": 52
+        },
+        "filed": {
+          "n": 52,
+          "both": 17,
+          "aOnly": 6,
+          "bOnly": 9,
+          "neither": 20
+        },
+        "review": {
+          "n": 52,
+          "both": 15,
+          "aOnly": 1,
+          "bOnly": 7,
+          "neither": 29
+        },
+        "failure": {
+          "n": 52,
+          "both": 1,
+          "aOnly": 12,
+          "bOnly": 3,
+          "neither": 36
+        },
+        "reader": {
+          "n": 36,
+          "both": 26,
+          "aOnly": 4,
+          "bOnly": 1,
+          "neither": 5
+        }
+      },
+      "octByPhase": {
+        "onego3": 33,
+        "proof-egress": 0,
+        "run": 19
+      }
+    },
+    {
+      "arm": "flash_low_pilot",
+      "matched": 52,
+      "identical": 0,
+      "missingHash": 0,
+      "octOutcomes": 1797,
+      "novOutcomes": 60,
+      "events": {
+        "correct": {
+          "n": 52,
+          "both": 20,
+          "aOnly": 3,
+          "bOnly": 11,
+          "neither": 18
+        },
+        "wrong": {
+          "n": 52,
+          "both": 0,
+          "aOnly": 0,
+          "bOnly": 0,
+          "neither": 52
+        },
+        "filed": {
+          "n": 52,
+          "both": 20,
+          "aOnly": 3,
+          "bOnly": 11,
+          "neither": 18
+        },
+        "review": {
+          "n": 52,
+          "both": 14,
+          "aOnly": 2,
+          "bOnly": 6,
+          "neither": 30
+        },
+        "failure": {
+          "n": 52,
+          "both": 0,
+          "aOnly": 13,
+          "bOnly": 1,
+          "neither": 38
+        },
+        "reader": {
+          "n": 38,
+          "both": 28,
+          "aOnly": 3,
+          "bOnly": 1,
+          "neither": 6
+        }
+      },
+      "octByPhase": {
+        "onego3": 33,
+        "proof-egress": 0,
+        "run": 19
+      }
+    }
+  ],
+  "november": {
+    "full": {
+      "names": [
+        "sol",
+        "terra",
+        "flash_full"
+      ],
+      "all": 2020,
+      "n": 1998,
+      "correct": [
+        1659,
+        1642,
+        1630
+      ],
+      "paired": [
+        {
+          "a": "sol",
+          "b": "terra",
+          "n": 1998,
+          "both": 1601,
+          "aOnly": 58,
+          "bOnly": 41,
+          "neither": 298
+        },
+        {
+          "a": "sol",
+          "b": "flash_full",
+          "n": 1998,
+          "both": 1531,
+          "aOnly": 128,
+          "bOnly": 99,
+          "neither": 240
+        },
+        {
+          "a": "terra",
+          "b": "flash_full",
+          "n": 1998,
+          "both": 1548,
+          "aOnly": 94,
+          "bOnly": 82,
+          "neither": 274
+        }
+      ],
+      "masks": {
+        "100": 41,
+        "101": 17,
+        "110": 87,
+        "111": 1514,
+        "000": 233,
+        "001": 65,
+        "011": 34,
+        "010": 7
+      },
+      "byCategory": {
+        "algorithms": {
+          "all": 252,
+          "n": 250,
+          "correct": [
+            235,
+            239,
+            244
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 250,
+              "both": 234,
+              "aOnly": 1,
+              "bOnly": 5,
+              "neither": 10
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 250,
+              "both": 235,
+              "aOnly": 0,
+              "bOnly": 9,
+              "neither": 6
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 250,
+              "both": 239,
+              "aOnly": 0,
+              "bOnly": 5,
+              "neither": 6
+            }
+          ],
+          "masks": {
+            "101": 1,
+            "111": 234,
+            "001": 4,
+            "000": 6,
+            "011": 5
+          }
+        },
+        "computer_vision": {
+          "all": 253,
+          "n": 251,
+          "correct": [
+            222,
+            204,
+            187
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 251,
+              "both": 204,
+              "aOnly": 18,
+              "bOnly": 0,
+              "neither": 29
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 251,
+              "both": 183,
+              "aOnly": 39,
+              "bOnly": 4,
+              "neither": 25
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 251,
+              "both": 181,
+              "aOnly": 23,
+              "bOnly": 6,
+              "neither": 41
+            }
+          ],
+          "masks": {
+            "100": 16,
+            "101": 2,
+            "110": 23,
+            "111": 181,
+            "000": 25,
+            "001": 4
+          }
+        },
+        "group_theory": {
+          "all": 254,
+          "n": 251,
+          "correct": [
+            234,
+            224,
+            219
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 251,
+              "both": 224,
+              "aOnly": 10,
+              "bOnly": 0,
+              "neither": 17
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 251,
+              "both": 219,
+              "aOnly": 15,
+              "bOnly": 0,
+              "neither": 17
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 251,
+              "both": 215,
+              "aOnly": 9,
+              "bOnly": 4,
+              "neither": 23
+            }
+          ],
+          "masks": {
+            "100": 6,
+            "101": 4,
+            "110": 9,
+            "111": 215,
+            "000": 17
+          }
+        },
+        "information_theory": {
+          "all": 254,
+          "n": 252,
+          "correct": [
+            145,
+            143,
+            139
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 252,
+              "both": 136,
+              "aOnly": 9,
+              "bOnly": 7,
+              "neither": 100
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 252,
+              "both": 120,
+              "aOnly": 25,
+              "bOnly": 19,
+              "neither": 88
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 252,
+              "both": 125,
+              "aOnly": 18,
+              "bOnly": 14,
+              "neither": 95
+            }
+          ],
+          "masks": {
+            "100": 7,
+            "101": 2,
+            "110": 18,
+            "111": 118,
+            "000": 88,
+            "011": 7,
+            "001": 12
+          }
+        },
+        "neural_evolutionary": {
+          "all": 253,
+          "n": 251,
+          "correct": [
+            197,
+            210,
+            226
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 251,
+              "both": 196,
+              "aOnly": 1,
+              "bOnly": 14,
+              "neither": 40
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 251,
+              "both": 192,
+              "aOnly": 5,
+              "bOnly": 34,
+              "neither": 20
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 251,
+              "both": 203,
+              "aOnly": 7,
+              "bOnly": 23,
+              "neither": 18
+            }
+          ],
+          "masks": {
+            "100": 1,
+            "110": 4,
+            "111": 192,
+            "001": 23,
+            "011": 11,
+            "010": 3,
+            "000": 17
+          }
+        },
+        "programming_languages": {
+          "all": 251,
+          "n": 247,
+          "correct": [
+            224,
+            220,
+            209
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 247,
+              "both": 218,
+              "aOnly": 6,
+              "bOnly": 2,
+              "neither": 21
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 247,
+              "both": 202,
+              "aOnly": 22,
+              "bOnly": 7,
+              "neither": 16
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 247,
+              "both": 202,
+              "aOnly": 18,
+              "bOnly": 7,
+              "neither": 20
+            }
+          ],
+          "masks": {
+            "100": 4,
+            "101": 2,
+            "110": 18,
+            "111": 200,
+            "001": 5,
+            "000": 16,
+            "011": 2
+          }
+        },
+        "statistics_theory": {
+          "all": 253,
+          "n": 252,
+          "correct": [
+            227,
+            222,
+            231
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 252,
+              "both": 221,
+              "aOnly": 6,
+              "bOnly": 1,
+              "neither": 24
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 252,
+              "both": 223,
+              "aOnly": 4,
+              "bOnly": 8,
+              "neither": 17
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 252,
+              "both": 220,
+              "aOnly": 2,
+              "bOnly": 11,
+              "neither": 19
+            }
+          ],
+          "masks": {
+            "100": 2,
+            "101": 4,
+            "110": 2,
+            "111": 219,
+            "001": 7,
+            "000": 17,
+            "011": 1
+          }
+        },
+        "systems_control": {
+          "all": 250,
+          "n": 244,
+          "correct": [
+            175,
+            180,
+            175
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 244,
+              "both": 168,
+              "aOnly": 7,
+              "bOnly": 12,
+              "neither": 57
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 244,
+              "both": 157,
+              "aOnly": 18,
+              "bOnly": 18,
+              "neither": 51
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 244,
+              "both": 163,
+              "aOnly": 17,
+              "bOnly": 12,
+              "neither": 52
+            }
+          ],
+          "masks": {
+            "100": 5,
+            "101": 2,
+            "110": 13,
+            "111": 155,
+            "000": 47,
+            "011": 8,
+            "001": 10,
+            "010": 4
+          }
+        }
+      },
+      "byFormat": {
+        "docx": {
+          "all": 247,
+          "n": 244,
+          "correct": [
+            198,
+            200,
+            204
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 244,
+              "both": 192,
+              "aOnly": 6,
+              "bOnly": 8,
+              "neither": 38
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 244,
+              "both": 186,
+              "aOnly": 12,
+              "bOnly": 18,
+              "neither": 28
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 244,
+              "both": 193,
+              "aOnly": 7,
+              "bOnly": 11,
+              "neither": 33
+            }
+          ],
+          "masks": {
+            "100": 5,
+            "101": 1,
+            "110": 7,
+            "111": 185,
+            "000": 28,
+            "001": 10,
+            "011": 8
+          }
+        },
+        "pdf": {
+          "all": 1653,
+          "n": 1635,
+          "correct": [
+            1359,
+            1339,
+            1331
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 1635,
+              "both": 1309,
+              "aOnly": 50,
+              "bOnly": 30,
+              "neither": 246
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 1635,
+              "both": 1255,
+              "aOnly": 104,
+              "bOnly": 76,
+              "neither": 200
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 1635,
+              "both": 1263,
+              "aOnly": 76,
+              "bOnly": 68,
+              "neither": 228
+            }
+          ],
+          "masks": {
+            "100": 35,
+            "101": 15,
+            "110": 69,
+            "111": 1240,
+            "000": 193,
+            "001": 53,
+            "011": 23,
+            "010": 7
+          }
+        },
+        "pptx": {
+          "all": 120,
+          "n": 119,
+          "correct": [
+            102,
+            103,
+            95
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 119,
+              "both": 100,
+              "aOnly": 2,
+              "bOnly": 3,
+              "neither": 14
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 119,
+              "both": 90,
+              "aOnly": 12,
+              "bOnly": 5,
+              "neither": 12
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 119,
+              "both": 92,
+              "aOnly": 11,
+              "bOnly": 3,
+              "neither": 13
+            }
+          ],
+          "masks": {
+            "100": 1,
+            "101": 1,
+            "110": 11,
+            "111": 89,
+            "011": 3,
+            "001": 2,
+            "000": 12
+          }
+        }
+      }
+    },
+    "luna": {
+      "names": [
+        "sol",
+        "terra",
+        "luna",
+        "flash_full"
+      ],
+      "all": 117,
+      "n": 93,
+      "correct": [
+        78,
+        79,
+        68,
+        78
+      ],
+      "paired": [
+        {
+          "a": "sol",
+          "b": "terra",
+          "n": 93,
+          "both": 76,
+          "aOnly": 2,
+          "bOnly": 3,
+          "neither": 12
+        },
+        {
+          "a": "sol",
+          "b": "luna",
+          "n": 93,
+          "both": 65,
+          "aOnly": 13,
+          "bOnly": 3,
+          "neither": 12
+        },
+        {
+          "a": "sol",
+          "b": "flash_full",
+          "n": 93,
+          "both": 72,
+          "aOnly": 6,
+          "bOnly": 6,
+          "neither": 9
+        },
+        {
+          "a": "terra",
+          "b": "luna",
+          "n": 93,
+          "both": 65,
+          "aOnly": 14,
+          "bOnly": 3,
+          "neither": 11
+        },
+        {
+          "a": "terra",
+          "b": "flash_full",
+          "n": 93,
+          "both": 73,
+          "aOnly": 6,
+          "bOnly": 5,
+          "neither": 9
+        },
+        {
+          "a": "luna",
+          "b": "flash_full",
+          "n": 93,
+          "both": 67,
+          "aOnly": 1,
+          "bOnly": 11,
+          "neither": 14
+        }
+      ],
+      "masks": {
+        "1000": 1,
+        "1001": 1,
+        "1100": 4,
+        "1101": 7,
+        "1110": 1,
+        "1111": 64,
+        "0000": 8,
+        "0001": 1,
+        "0011": 3,
+        "0101": 2,
+        "0100": 1
+      },
+      "byCategory": {
+        "algorithms": {
+          "all": 15,
+          "n": 10,
+          "correct": [
+            9,
+            9,
+            10,
+            10
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 10,
+              "both": 10,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            }
+          ],
+          "masks": {
+            "1111": 9,
+            "0011": 1
+          }
+        },
+        "computer_vision": {
+          "all": 18,
+          "n": 15,
+          "correct": [
+            14,
+            14,
+            11,
+            12
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 15,
+              "both": 14,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 15,
+              "both": 11,
+              "aOnly": 3,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 15,
+              "both": 12,
+              "aOnly": 2,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 15,
+              "both": 11,
+              "aOnly": 3,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 15,
+              "both": 12,
+              "aOnly": 2,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 15,
+              "both": 11,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 3
+            }
+          ],
+          "masks": {
+            "1100": 2,
+            "1101": 1,
+            "1111": 11,
+            "0000": 1
+          }
+        },
+        "group_theory": {
+          "all": 16,
+          "n": 15,
+          "correct": [
+            15,
+            14,
+            12,
+            15
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 15,
+              "both": 14,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 15,
+              "both": 12,
+              "aOnly": 3,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 15,
+              "both": 15,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 15,
+              "both": 12,
+              "aOnly": 2,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 15,
+              "both": 14,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 15,
+              "both": 12,
+              "aOnly": 0,
+              "bOnly": 3,
+              "neither": 0
+            }
+          ],
+          "masks": {
+            "1001": 1,
+            "1101": 2,
+            "1111": 12
+          }
+        },
+        "information_theory": {
+          "all": 15,
+          "n": 12,
+          "correct": [
+            7,
+            7,
+            4,
+            6
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 12,
+              "both": 7,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 5
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 12,
+              "both": 4,
+              "aOnly": 3,
+              "bOnly": 0,
+              "neither": 5
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 12,
+              "both": 6,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 5
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 12,
+              "both": 4,
+              "aOnly": 3,
+              "bOnly": 0,
+              "neither": 5
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 12,
+              "both": 6,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 5
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 12,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 2,
+              "neither": 6
+            }
+          ],
+          "masks": {
+            "1100": 1,
+            "1101": 2,
+            "1111": 4,
+            "0000": 5
+          }
+        },
+        "neural_evolutionary": {
+          "all": 13,
+          "n": 9,
+          "correct": [
+            6,
+            8,
+            4,
+            7
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 9,
+              "both": 6,
+              "aOnly": 0,
+              "bOnly": 2,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 9,
+              "both": 4,
+              "aOnly": 2,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 9,
+              "both": 5,
+              "aOnly": 1,
+              "bOnly": 2,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 9,
+              "both": 4,
+              "aOnly": 4,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 9,
+              "both": 6,
+              "aOnly": 2,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 9,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 3,
+              "neither": 2
+            }
+          ],
+          "masks": {
+            "1100": 1,
+            "1101": 1,
+            "1111": 4,
+            "0001": 1,
+            "0101": 1,
+            "0100": 1
+          }
+        },
+        "programming_languages": {
+          "all": 12,
+          "n": 10,
+          "correct": [
+            9,
+            9,
+            10,
+            10
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 10,
+              "both": 10,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            }
+          ],
+          "masks": {
+            "1111": 9,
+            "0011": 1
+          }
+        },
+        "statistics_theory": {
+          "all": 14,
+          "n": 9,
+          "correct": [
+            8,
+            7,
+            7,
+            8
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 9,
+              "both": 7,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 9,
+              "both": 6,
+              "aOnly": 2,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 9,
+              "both": 7,
+              "aOnly": 1,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 9,
+              "both": 6,
+              "aOnly": 1,
+              "bOnly": 1,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 9,
+              "both": 7,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 1
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 9,
+              "both": 7,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 1
+            }
+          ],
+          "masks": {
+            "1000": 1,
+            "1101": 1,
+            "1111": 6,
+            "0011": 1
+          }
+        },
+        "systems_control": {
+          "all": 14,
+          "n": 13,
+          "correct": [
+            10,
+            11,
+            10,
+            10
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 13,
+              "both": 10,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 2
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 13,
+              "both": 10,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 13,
+              "both": 9,
+              "aOnly": 1,
+              "bOnly": 1,
+              "neither": 2
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 13,
+              "both": 10,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 2
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 13,
+              "both": 10,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 2
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 13,
+              "both": 9,
+              "aOnly": 1,
+              "bOnly": 1,
+              "neither": 2
+            }
+          ],
+          "masks": {
+            "1110": 1,
+            "1111": 9,
+            "0000": 2,
+            "0101": 1
+          }
+        }
+      },
+      "byFormat": {
+        "docx": {
+          "all": 12,
+          "n": 10,
+          "correct": [
+            9,
+            9,
+            8,
+            8
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 10,
+              "both": 9,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 10,
+              "both": 8,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 10,
+              "both": 8,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 10,
+              "both": 8,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 10,
+              "both": 8,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 10,
+              "both": 8,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 2
+            }
+          ],
+          "masks": {
+            "1100": 1,
+            "1111": 8,
+            "0000": 1
+          }
+        },
+        "pdf": {
+          "all": 99,
+          "n": 80,
+          "correct": [
+            67,
+            67,
+            58,
+            67
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 80,
+              "both": 65,
+              "aOnly": 2,
+              "bOnly": 2,
+              "neither": 11
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 80,
+              "both": 55,
+              "aOnly": 12,
+              "bOnly": 3,
+              "neither": 10
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 80,
+              "both": 62,
+              "aOnly": 5,
+              "bOnly": 5,
+              "neither": 8
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 80,
+              "both": 55,
+              "aOnly": 12,
+              "bOnly": 3,
+              "neither": 10
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 80,
+              "both": 62,
+              "aOnly": 5,
+              "bOnly": 5,
+              "neither": 8
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 80,
+              "both": 57,
+              "aOnly": 1,
+              "bOnly": 10,
+              "neither": 12
+            }
+          ],
+          "masks": {
+            "1000": 1,
+            "1001": 1,
+            "1100": 3,
+            "1101": 7,
+            "1110": 1,
+            "1111": 54,
+            "0000": 7,
+            "0001": 1,
+            "0011": 3,
+            "0101": 1,
+            "0100": 1
+          }
+        },
+        "pptx": {
+          "all": 6,
+          "n": 3,
+          "correct": [
+            2,
+            3,
+            2,
+            3
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 3,
+              "both": 2,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 3,
+              "both": 2,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "flash_full",
+              "n": 3,
+              "both": 2,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 3,
+              "both": 2,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash_full",
+              "n": 3,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash_full",
+              "n": 3,
+              "both": 2,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            }
+          ],
+          "masks": {
+            "1111": 2,
+            "0101": 1
+          }
+        }
+      }
+    },
+    "pilot": {
+      "names": [
+        "sol",
+        "terra",
+        "luna",
+        "flash",
+        "flash_low_pilot"
+      ],
+      "all": 60,
+      "n": 44,
+      "correct": [
+        35,
+        36,
+        29,
+        35,
+        32
+      ],
+      "paired": [
+        {
+          "a": "sol",
+          "b": "terra",
+          "n": 44,
+          "both": 34,
+          "aOnly": 1,
+          "bOnly": 2,
+          "neither": 7
+        },
+        {
+          "a": "sol",
+          "b": "luna",
+          "n": 44,
+          "both": 28,
+          "aOnly": 7,
+          "bOnly": 1,
+          "neither": 8
+        },
+        {
+          "a": "sol",
+          "b": "flash",
+          "n": 44,
+          "both": 33,
+          "aOnly": 2,
+          "bOnly": 2,
+          "neither": 7
+        },
+        {
+          "a": "sol",
+          "b": "flash_low_pilot",
+          "n": 44,
+          "both": 31,
+          "aOnly": 4,
+          "bOnly": 1,
+          "neither": 8
+        },
+        {
+          "a": "terra",
+          "b": "luna",
+          "n": 44,
+          "both": 28,
+          "aOnly": 8,
+          "bOnly": 1,
+          "neither": 7
+        },
+        {
+          "a": "terra",
+          "b": "flash",
+          "n": 44,
+          "both": 32,
+          "aOnly": 4,
+          "bOnly": 3,
+          "neither": 5
+        },
+        {
+          "a": "terra",
+          "b": "flash_low_pilot",
+          "n": 44,
+          "both": 30,
+          "aOnly": 6,
+          "bOnly": 2,
+          "neither": 6
+        },
+        {
+          "a": "luna",
+          "b": "flash",
+          "n": 44,
+          "both": 27,
+          "aOnly": 2,
+          "bOnly": 8,
+          "neither": 7
+        },
+        {
+          "a": "luna",
+          "b": "flash_low_pilot",
+          "n": 44,
+          "both": 28,
+          "aOnly": 1,
+          "bOnly": 4,
+          "neither": 11
+        },
+        {
+          "a": "flash",
+          "b": "flash_low_pilot",
+          "n": 44,
+          "both": 31,
+          "aOnly": 4,
+          "bOnly": 1,
+          "neither": 8
+        }
+      ],
+      "masks": {
+        "10011": 1,
+        "11010": 3,
+        "11011": 3,
+        "11100": 1,
+        "11101": 1,
+        "11111": 26,
+        "01000": 2,
+        "00000": 5,
+        "00111": 1,
+        "00010": 1
+      },
+      "byCategory": {
+        "algorithms": {
+          "all": 8,
+          "n": 4,
+          "correct": [
+            3,
+            3,
+            4,
+            4,
+            4
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 4,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            }
+          ],
+          "masks": {
+            "11111": 3,
+            "00111": 1
+          }
+        },
+        "computer_vision": {
+          "all": 8,
+          "n": 4,
+          "correct": [
+            4,
+            4,
+            3,
+            3,
+            2
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 4,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 4,
+              "both": 3,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 4,
+              "both": 3,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 2,
+              "aOnly": 2,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 4,
+              "both": 3,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 4,
+              "both": 3,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 2,
+              "aOnly": 2,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 4,
+              "both": 2,
+              "aOnly": 1,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 2,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 2,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 1
+            }
+          ],
+          "masks": {
+            "11010": 1,
+            "11100": 1,
+            "11111": 2
+          }
+        },
+        "group_theory": {
+          "all": 8,
+          "n": 8,
+          "correct": [
+            8,
+            8,
+            6,
+            8,
+            8
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 8,
+              "both": 8,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 8,
+              "both": 6,
+              "aOnly": 2,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 8,
+              "both": 8,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 8,
+              "both": 8,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 8,
+              "both": 6,
+              "aOnly": 2,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 8,
+              "both": 8,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 8,
+              "both": 8,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 8,
+              "both": 6,
+              "aOnly": 0,
+              "bOnly": 2,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 8,
+              "both": 6,
+              "aOnly": 0,
+              "bOnly": 2,
+              "neither": 0
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 8,
+              "both": 8,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            }
+          ],
+          "masks": {
+            "11011": 2,
+            "11111": 6
+          }
+        },
+        "information_theory": {
+          "all": 8,
+          "n": 6,
+          "correct": [
+            3,
+            3,
+            2,
+            3,
+            3
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 6,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 6,
+              "both": 2,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 6,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 6,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 6,
+              "both": 2,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 6,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 6,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 6,
+              "both": 2,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 3
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 6,
+              "both": 2,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 3
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 6,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            }
+          ],
+          "masks": {
+            "11011": 1,
+            "11111": 2,
+            "00000": 3
+          }
+        },
+        "neural_evolutionary": {
+          "all": 7,
+          "n": 6,
+          "correct": [
+            4,
+            5,
+            2,
+            4,
+            2
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 6,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 6,
+              "both": 2,
+              "aOnly": 2,
+              "bOnly": 0,
+              "neither": 2
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 6,
+              "both": 3,
+              "aOnly": 1,
+              "bOnly": 1,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 6,
+              "both": 2,
+              "aOnly": 2,
+              "bOnly": 0,
+              "neither": 2
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 6,
+              "both": 2,
+              "aOnly": 3,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 6,
+              "both": 3,
+              "aOnly": 2,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 6,
+              "both": 2,
+              "aOnly": 3,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 6,
+              "both": 1,
+              "aOnly": 1,
+              "bOnly": 3,
+              "neither": 1
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 6,
+              "both": 2,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 4
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 6,
+              "both": 1,
+              "aOnly": 3,
+              "bOnly": 1,
+              "neither": 1
+            }
+          ],
+          "masks": {
+            "11010": 2,
+            "11101": 1,
+            "11111": 1,
+            "01000": 1,
+            "00010": 1
+          }
+        },
+        "programming_languages": {
+          "all": 7,
+          "n": 5,
+          "correct": [
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 5,
+              "both": 5,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 5,
+              "both": 5,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 5,
+              "both": 5,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 5,
+              "both": 5,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 5,
+              "both": 5,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 5,
+              "both": 5,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 5,
+              "both": 5,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 5,
+              "both": 5,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 5,
+              "both": 5,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 5,
+              "both": 5,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            }
+          ],
+          "masks": {
+            "11111": 5
+          }
+        },
+        "statistics_theory": {
+          "all": 7,
+          "n": 4,
+          "correct": [
+            4,
+            3,
+            3,
+            4,
+            4
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 4,
+              "both": 3,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 4,
+              "both": 3,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 4,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 3,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 4,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 0
+            }
+          ],
+          "masks": {
+            "10011": 1,
+            "11111": 3
+          }
+        },
+        "systems_control": {
+          "all": 7,
+          "n": 7,
+          "correct": [
+            4,
+            5,
+            4,
+            4,
+            4
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 7,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 2
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 7,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 7,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 7,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 7,
+              "both": 4,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 2
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 7,
+              "both": 4,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 2
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 7,
+              "both": 4,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 2
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 7,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 7,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 7,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 3
+            }
+          ],
+          "masks": {
+            "11111": 4,
+            "01000": 1,
+            "00000": 2
+          }
+        }
+      },
+      "byFormat": {
+        "docx": {
+          "all": 7,
+          "n": 5,
+          "correct": [
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 5,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 5,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 5,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 5,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 5,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 5,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 5,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 5,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 5,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 5,
+              "both": 4,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            }
+          ],
+          "masks": {
+            "11111": 4,
+            "00000": 1
+          }
+        },
+        "pdf": {
+          "all": 52,
+          "n": 38,
+          "correct": [
+            31,
+            31,
+            25,
+            31,
+            28
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 38,
+              "both": 30,
+              "aOnly": 1,
+              "bOnly": 1,
+              "neither": 6
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 38,
+              "both": 24,
+              "aOnly": 7,
+              "bOnly": 1,
+              "neither": 6
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 38,
+              "both": 29,
+              "aOnly": 2,
+              "bOnly": 2,
+              "neither": 5
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 38,
+              "both": 27,
+              "aOnly": 4,
+              "bOnly": 1,
+              "neither": 6
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 38,
+              "both": 24,
+              "aOnly": 7,
+              "bOnly": 1,
+              "neither": 6
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 38,
+              "both": 28,
+              "aOnly": 3,
+              "bOnly": 3,
+              "neither": 4
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 38,
+              "both": 26,
+              "aOnly": 5,
+              "bOnly": 2,
+              "neither": 5
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 38,
+              "both": 23,
+              "aOnly": 2,
+              "bOnly": 8,
+              "neither": 5
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 38,
+              "both": 24,
+              "aOnly": 1,
+              "bOnly": 4,
+              "neither": 9
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 38,
+              "both": 27,
+              "aOnly": 4,
+              "bOnly": 1,
+              "neither": 6
+            }
+          ],
+          "masks": {
+            "10011": 1,
+            "11010": 3,
+            "11011": 3,
+            "11100": 1,
+            "11101": 1,
+            "11111": 22,
+            "01000": 1,
+            "00000": 4,
+            "00111": 1,
+            "00010": 1
+          }
+        },
+        "pptx": {
+          "all": 1,
+          "n": 1,
+          "correct": [
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "paired": [
+            {
+              "a": "sol",
+              "b": "terra",
+              "n": 1,
+              "both": 0,
+              "aOnly": 0,
+              "bOnly": 1,
+              "neither": 0
+            },
+            {
+              "a": "sol",
+              "b": "luna",
+              "n": 1,
+              "both": 0,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "flash",
+              "n": 1,
+              "both": 0,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "sol",
+              "b": "flash_low_pilot",
+              "n": 1,
+              "both": 0,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "terra",
+              "b": "luna",
+              "n": 1,
+              "both": 0,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash",
+              "n": 1,
+              "both": 0,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "terra",
+              "b": "flash_low_pilot",
+              "n": 1,
+              "both": 0,
+              "aOnly": 1,
+              "bOnly": 0,
+              "neither": 0
+            },
+            {
+              "a": "luna",
+              "b": "flash",
+              "n": 1,
+              "both": 0,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "luna",
+              "b": "flash_low_pilot",
+              "n": 1,
+              "both": 0,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            },
+            {
+              "a": "flash",
+              "b": "flash_low_pilot",
+              "n": 1,
+              "both": 0,
+              "aOnly": 0,
+              "bOnly": 0,
+              "neither": 1
+            }
+          ],
+          "masks": {
+            "01000": 1
+          }
+        }
+      }
+    }
+  }
+}
