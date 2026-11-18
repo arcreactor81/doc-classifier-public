@@ -29,3 +29,5 @@ On the news benchmark, the two judges agreed often enough to file 812 of 941 art
 - **What interrupted the first scaled Sol run?** The storage investigation traces the failure from the run to its spending queries. [Storage incident analysis](rca-scaled-storage-2026-11-06.md)
 - **How was the repair checked?** Load measurements explain how the site chose its start rate before further model runs. [Database load validation](d1-load-validation-2026-11-06.md)
 - **How much of the time was local reading?** The benchmark records browser extraction on the test machine and explains how to time your own. [Local reading measurements](local-reading-benchmark.md)
+
+[Download the document-level dataset and retrieve the benchmark sources](../datasets/reader-benchmarks/README.md)

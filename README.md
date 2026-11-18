@@ -14,7 +14,7 @@ Two unrelated AI systems judge every document. A fixed rule in code files a docu
 
 **Two ways to read this page.** The first half is for anyone with a pile of documents to sort: what it does, what happens to your files, and why it's built this way, in plain words. From [🧰 For engineers](#-for-engineers) on, the second half is for people who want to run, deploy or change it, and it's complete: follow it and it works.
 
-Give the system your folder definitions and it can start sorting before you have a labelled training collection. Two judges check each document. You get automatically filed copies, a queue for uncertain documents and a reason when processing fails. On the same 941 BBC articles, mini was the weaker standalone reader: it matched the benchmark on 810 articles versus Claude’s 880. With both judges checking, 747 of mini’s 753 automatic filings were correct (99.20%), compared with 801 of Claude’s 812 (98.65%). With mini, 30 more articles went to review and 29 more failed processing. [What changing the reader means for you](docs/reader-swap-evidence.md)
+Give the system your folder definitions and it can start sorting before you have a labelled training collection. Two judges check each document. You get automatically filed copies, a queue for uncertain documents and a reason when processing fails. On the same 941 BBC articles, mini was the weaker standalone reader: it matched the benchmark on 810 articles versus Claude’s 880. With both judges checking, 747 of mini’s 753 automatic filings were correct (99.20%), compared with 801 of Claude’s 812 (98.65%). With mini, 30 more articles went to review and 29 more failed processing. [What changing the reader means for you](docs/reader-swap-evidence.md) · [Benchmark dataset and source manifests](datasets/reader-benchmarks/README.md)
 
 **Who it's for.** People who'd rather check a short pile of uncertain documents than trust one AI's guess about all of them. It's also a kit: copy the repository, write your own categories in the browser, and adapt it with your own coding agent. That's why no real categories ship with it.
 
@@ -28,7 +28,7 @@ One row per claim, and a column that says what each row means if you aren't an e
 
 | | Where things stand | What that means for you |
 |---|---|---|
-| 🧩 The code | Release `0aba3da`, generated from the private source with a checked privacy transformation. The full check prints its unit total, builds the app and runs eight local acceptance suites. | The [test record](#-what-was-tested-and-what-was-not) distinguishes local mechanics, browser evidence and real-model results. |
+| 🧩 The code | Release `068961c`, generated from the private source with a checked privacy transformation. The full check prints its unit total, builds the app and runs eight local acceptance suites. | The [test record](#-what-was-tested-and-what-was-not) distinguishes local mechanics, browser evidence and real-model results. |
 | 🎨 The app | A new interface, "The Sorting Room", replaced the whole front end on 10 October ([a look at it](#-the-app-the-sorting-room)). | What you see on the site is what this repository builds. |
 | 📈 Scale | 10,000 synthetic documents all reached an outcome on a practice Cloudflare deployment. Pretend AI services answered, so no paid call was made. | The plumbing holds at the size the product is for. The AI's answers weren't real in that test ([the chart](#the-10000-document-hosted-test)). |
 | 🎯 How well it sorts | On BBC News, Claude and Jev misfiled 11 of 812 automatic filings. On the October research papers they misfiled 23 of 1,006. Longer inputs and overlapping subjects prompted the November comparisons. | Choose a test by its documents, reader and date. [Experiment history](docs/results.md) |
@@ -224,7 +224,7 @@ On 11 October 2026, 941 real news articles went through the owner's live site: t
 
 **What it doesn't prove.** It is news, in five broad categories, scored against the dataset's own labels, with one reader on one day. Real filing schemes are usually finer. The full write-up, with the method, every table, the statistics and how to repeat it, is in **[docs/accuracy-test-bbc-news.md](docs/accuracy-test-bbc-news.md)**.
 
-*Dataset: D. Greene and P. Cunningham, "Practical Solutions to the Problem of Diagonal Dominance in Kernel Document Clustering", Proc. ICML 2006, from the Machine Learning Group, University College Dublin, for non-commercial and research use; copyright in the articles is the BBC's. No article text is in this repository; only the scores are published.*
+*Dataset: D. Greene and P. Cunningham, "Practical Solutions to the Problem of Diagonal Dominance in Kernel Document Clustering", Proc. ICML 2006, from the Machine Learning Group, University College Dublin, for non-commercial and research use; copyright in the articles is the BBC's. The dataset release lists the selected source archive members and document-level outcomes.*
 
 ### A harder test: 1,797 long research papers
 
@@ -250,7 +250,7 @@ On 12 October 2026 a stress test sent 2,040 long research papers through the sam
 
 The full write-up, with every table, the statistics, what went wrong and what it does not prove, is in **[docs/accuracy-test-arxiv-papers.md](docs/accuracy-test-arxiv-papers.md)**.
 
-*Papers: arXiv e-prints whose authors chose CC BY 4.0, CC BY-SA 4.0 or CC0 1.0, labelled by their arXiv primary category; arXiv's metadata is CC0. arXiv's page-1 margin stamp, which prints the category, was removed first. No paper text, title or identifier is in this repository; only the scores are published.*
+*Papers: arXiv e-prints whose authors chose CC BY 4.0, CC BY-SA 4.0 or CC0 1.0, labelled by their arXiv primary category; arXiv's metadata is CC0. arXiv's page-1 margin stamp, which prints the category, was removed first. The dataset release lists versioned source links, recorded licenses and outcomes.*
 
 ## 🔒 What happens to your files
 

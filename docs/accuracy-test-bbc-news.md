@@ -260,3 +260,5 @@ Exactly as used; none of the examples is text from the dataset.
 Each category also had one generic example, in order: a large company's yearly profits and share price; the winners of a national film awards ceremony; a parliamentary vote on a proposed new law; a football match report with the score; a new mobile phone and its features.
 
 [All experiments](results.md) · [Earlier: Did the live journey work?](generated-document-check.md) · [Next: Same articles with a weaker standalone reader](bbc-mini-comparison.md)
+
+[Download the document-level dataset and retrieve the benchmark sources](../datasets/reader-benchmarks/README.md)

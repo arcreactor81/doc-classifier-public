@@ -129,3 +129,5 @@ The offline extraction checked reference agreement, unique document identities, 
 The [aggregate inputs](data/reader-strength-inputs.json) give the matched counts. The [94 statistical checks](data/reader-strength-tests.json) give raw and Holm-adjusted values. Exact paired McNemar tests condition on the number of discordant pairs, using equal probabilities and two tails. Other exploratory families are the 19 common-cohort reader contrasts and the 33 within-stratum reader contrasts. Conditional randomization uses 200,000 draws per comparison, seed 20261118 and the Monte Carlo plus-one correction. The smallest attainable p-value is about 0.000005. Families were grouped after data collection. The reference labels come from paper authors, the selected documents can be related, and complete-case selection can favor easy-to-process papers. No client labels, independent replication, equivalence margin or causal model-tier effect is supplied by these comparisons.
 
 [Browse all experiments](results.md)
+
+[Download the document-level dataset and retrieve the benchmark sources](../datasets/reader-benchmarks/README.md)
