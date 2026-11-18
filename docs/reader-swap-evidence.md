@@ -6,7 +6,7 @@ You can give the classifier your folder definitions and use it before you have a
 
 “Zero-shot” here means the benchmarks required no project-specific model training or tuning on their evaluation labels. The system still receives category descriptions, exclusions and examples. Public documents may have appeared in vendor pretraining. Performance on a new collection depends on its categories, documents and the two judges’ errors.
 
-## Was the smaller reader actually weaker?
+## How was reader strength measured?
 
 On the 941 matched BBC articles, Claude alone returned exactly the reference category 880 times and mini 810 times, counting a missing answer as a miss. Claude alone was right 83 times when mini was not, and mini alone was right 13 times. The two-sided exact paired p-value was 1.20 × 10⁻¹³. Restricting the comparison to the 910 articles with two usable reader answers gave the same direction, 57 versus 12 discordant articles (p = 3.74 × 10⁻⁸).
 

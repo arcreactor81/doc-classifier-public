@@ -14,7 +14,7 @@ Two unrelated AI systems judge every document. A fixed rule in code files a docu
 
 **Two ways to read this page.** The first half is for anyone with a pile of documents to sort: what it does, what happens to your files, and why it's built this way, in plain words. From [🧰 For engineers](#-for-engineers) on, the second half is for people who want to run, deploy or change it, and it's complete: follow it and it works.
 
-Give the system your folder definitions and it can start sorting before you have a labelled training collection. Two judges check each document. You get automatically filed copies, a queue for uncertain documents and a reason when processing fails. On the same 941 news articles, 99.20% of the smaller reader’s automatic filings matched the benchmark, with 59 fewer articles filed automatically than with the stronger reader. The trade-off includes both review work and processing failures. [What changing the reader means for you](docs/reader-swap-evidence.md)
+Give the system your folder definitions and it can start sorting before you have a labelled training collection. Two judges check each document. You get automatically filed copies, a queue for uncertain documents and a reason when processing fails. On the same 941 BBC articles, mini was the weaker standalone reader: it matched the benchmark on 810 articles versus Claude’s 880. With both judges checking, 747 of mini’s 753 automatic filings were correct (99.20%), compared with 801 of Claude’s 812 (98.65%). With mini, 30 more articles went to review and 29 more failed processing. [What changing the reader means for you](docs/reader-swap-evidence.md)
 
 **Who it's for.** People who'd rather check a short pile of uncertain documents than trust one AI's guess about all of them. It's also a kit: copy the repository, write your own categories in the browser, and adapt it with your own coding agent. That's why no real categories ship with it.
 
@@ -28,7 +28,7 @@ One row per claim, and a column that says what each row means if you aren't an e
 
 | | Where things stand | What that means for you |
 |---|---|---|
-| 🧩 The code | Release `31c9992`, generated from the private source with a checked privacy transformation. The full check prints its unit total, builds the app and runs eight local acceptance suites. | The [test record](#-what-was-tested-and-what-was-not) distinguishes local mechanics, browser evidence and real-model results. |
+| 🧩 The code | Release `47a8a87`, generated from the private source with a checked privacy transformation. The full check prints its unit total, builds the app and runs eight local acceptance suites. | The [test record](#-what-was-tested-and-what-was-not) distinguishes local mechanics, browser evidence and real-model results. |
 | 🎨 The app | A new interface, "The Sorting Room", replaced the whole front end on 10 October ([a look at it](#-the-app-the-sorting-room)). | What you see on the site is what this repository builds. |
 | 📈 Scale | 10,000 synthetic documents all reached an outcome on a practice Cloudflare deployment. Pretend AI services answered, so no paid call was made. | The plumbing holds at the size the product is for. The AI's answers weren't real in that test ([the chart](#the-10000-document-hosted-test)). |
 | 🎯 How well it sorts | On BBC News, Claude and Jev misfiled 11 of 812 automatic filings. On the October research papers they misfiled 23 of 1,006. Longer inputs and overlapping subjects prompted the November comparisons. | Choose a test by its documents, reader and date. [Experiment history](docs/results.md) |
@@ -187,7 +187,7 @@ Start with the question closest to yours. Each study records which documents rea
 | 6 Oct | [First Sol run](docs/sol-check-october.md) | No misfiles were recorded among 85 documents. The count of automatic filings is unspecified. |
 | 10 Oct | [Did the live journey work?](docs/generated-document-check.md) | 17 of 20 generated documents were correctly filed. Three went to review. |
 | 11 Oct | [BBC News with Claude](docs/accuracy-test-bbc-news.md) | 801 correct filings, 11 misfiles, 128 reviews and one processing failure among 941 scored articles. |
-| 11 Oct | [Same articles with a smaller reader](docs/bbc-mini-comparison.md) | Mini made six misfiles among 753 filings. More articles needed review or failed the quote check. |
+| 11 Oct | [Same articles with a weaker standalone reader](docs/bbc-mini-comparison.md) | Mini made six misfiles among 753 filings. More articles needed review or failed the quote check. |
 | 12 Oct | [Long papers in eight neighbouring fields](docs/accuracy-test-arxiv-papers.md) | 983 correct filings and 23 misfiles among 1,797 outcomes. Another 243 papers remained unfinished. |
 | 4 Nov | [Could Jev read the papers it previously refused?](docs/decision-bakeoff-results-2026-11-04.md) | Long context accepted all 16 selected size-stress cases. The Liquid pilot stopped after six attempts. |
 | 5 Nov | [Jev and Liquid across the corpus](docs/decision-bakeoff-full-results-2026-11-05.md) | Jev answered all 2,038 eligible papers and Liquid answered 1,645. These were single-judge predictions. |
@@ -220,7 +220,7 @@ On 11 October 2026, 941 real news articles went through the owner's live site: t
 
 **What it cost.** About USD 0.01 per article (USD 9.63 in all), and about two and a half minutes per batch of 59.
 
-**A cheaper second reader.** The same articles then went through with GPT-5.4 mini, OpenAI's smaller model, free on the owner's daily allowance. On its own it is clearly the weaker reader (86% right against Claude's 93.5%, p < 0.001). Behind the two-judge rule it misfiled 6 of the 753 it filed (0.8%) against Claude's 11; a difference that was not statistically conclusive. What the cheaper reader costs is review work: it sent 17% to a person instead of 14%, and 30 of its answers were refused because their quotes were not word for word. [Matched BBC reader comparison](docs/bbc-mini-comparison.md)
+**How the system performed with a weaker reader.** GPT-5.4 mini read the same articles. On its own it is clearly the weaker reader (86% right against Claude's 93.5%, p < 0.001). Behind the two-judge rule it misfiled 6 of the 753 it filed (0.8%) against Claude's 11; a difference that was not statistically conclusive. Mini sent 17% to a person instead of 14%, and 30 of its answers were refused because their quotes were not word for word. [Matched BBC reader comparison](docs/bbc-mini-comparison.md)
 
 **What it doesn't prove.** It is news, in five broad categories, scored against the dataset's own labels, with one reader on one day. Real filing schemes are usually finer. The full write-up, with the method, every table, the statistics and how to repeat it, is in **[docs/accuracy-test-bbc-news.md](docs/accuracy-test-bbc-news.md)**.
 

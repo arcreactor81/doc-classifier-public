@@ -2,7 +2,7 @@
 
 **The short answer.** We put 941 real news articles through the owner's live site, with no training and no tuning. It filed 812 of them (86%) on its own; 801 went to the right folder and 11 to the wrong one. It sent 128 (14%) to a person and could not process one. Statistically, that means **fewer than 2.24% of the documents it files on its own go to the wrong folder, with 95% confidence.** It cost about one US cent per article.
 
-The same evening the same articles went through again with a second, cheaper reader, **GPT-5.4 mini**, on OpenAI's free allowance. Mini is clearly the weaker reader on its own, yet behind the two-judge rule it misfiled no more (6 against 11). It sent more to a person instead, 17% against 14%. See [A second reader: GPT-5.4 mini](#a-second-reader-gpt-54-mini).
+The same evening the same articles went through again with a second reader, **GPT-5.4 mini**. Mini is clearly the weaker reader on its own, yet behind the two-judge rule it misfiled no more (6 against 11). It sent more to a person instead, 17% against 14%. See [A second reader: GPT-5.4 mini](#a-second-reader-gpt-54-mini).
 
 ![What happened to 941 BBC News articles: 801 filed in the right folder, 11 in the wrong one, 128 sent to a person, 1 could not be processed. Below, wrong answers among the articles each approach would file: the reader alone 6.4% (60 of 940), Jev alone at certainty 0.90 or more 2.3% (19 of 826), and the product's rule, both judges agreeing with certainty 0.90 or more, 1.35% (11 of 812), 95% range 0.67% to 2.42%.](images/bbc-accuracy.svg)
 
@@ -107,7 +107,7 @@ What it shows:
 
 - **As a reader on its own, Claude is clearly better.** On the same articles, Claude alone was right on 83 that mini got wrong, and mini on 13 the other way. That gap is not luck (see the tests below).
 - **Behind the two-judge rule, mini made fewer observed misfiles.** It misfiled 6 articles to Claude's 11; 6 were misfiled by both. The five discordant misfiles give a two-sided paired p-value of 0.0625. The study specified no margin for claiming comparable safety. Its mistakes were the same kind: 3 economy stories filed under Politics, 2 technology stories under Business, 1 under Politics.
-- **The price of the cheaper reader is review work.** Mini's weaker answers did not become misfiles; the rule sent them to a person. About one article in five waited for a person instead of one in seven. Most went because mini said an article fitted two categories (82, against Claude's 41).
+- **The weaker reader left more articles for review.** Mini sent 158 articles to review compared with Claude’s 128. About one article in five waited for a person instead of one in seven. Most went because mini said an article fitted two categories (82, against Claude's 41).
 - **The 30 it could not process.** In every one of the 30, mini's quotes from the article were not word for word, so the system refused the answer instead of trusting it, as designed. Claude had 1 such failure in 941. A person can include the 30 in a new run.
 - **It used the free allowance.** 1,000 articles took about 2.4 million tokens. To fit them into one evening, the site's daily cap for the small models was raised from 2.25 to 2.5 million for the last two batches, OpenAI's own free limit, then put back (DECISIONS 156, addenda of 11 and 12 October 2026).
 
@@ -259,4 +259,4 @@ Exactly as used; none of the examples is text from the dataset.
 
 Each category also had one generic example, in order: a large company's yearly profits and share price; the winners of a national film awards ceremony; a parliamentary vote on a proposed new law; a football match report with the score; a new mobile phone and its features.
 
-[All experiments](results.md) · [Earlier: Did the live journey work?](generated-document-check.md) · [Next: Same articles with a smaller reader](bbc-mini-comparison.md)
+[All experiments](results.md) · [Earlier: Did the live journey work?](generated-document-check.md) · [Next: Same articles with a weaker standalone reader](bbc-mini-comparison.md)
