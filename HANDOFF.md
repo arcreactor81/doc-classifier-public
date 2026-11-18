@@ -1,6 +1,6 @@
 # HANDOFF.md
 
-This is the public hand-off file: a short, hand-written summary of where the project stands, as of the source date 2026-11-17. The owner's full dated working log stays in their private repository; it holds account and deployment details that are not published. Every decision and its reason is published in full in `DECISIONS.md`.
+This is the public hand-off file: a short, hand-written summary of where the project stands, as of the source date 2026-11-18. The owner's full dated working log stays in their private repository; it holds account and deployment details that are not published. Every decision and its reason is published in full in `DECISIONS.md`.
 
 AGENTS.md asks agents to record what they learn here. Add your own dated entries below the line at the end; do not rewrite earlier entries.
 

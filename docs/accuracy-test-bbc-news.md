@@ -106,12 +106,12 @@ Across all 1,000 articles (mini's run also completed batch 9), mini filed 800 wi
 What it shows:
 
 - **As a reader on its own, Claude is clearly better.** On the same articles, Claude alone was right on 83 that mini got wrong, and mini on 13 the other way. That gap is not luck (see the tests below).
-- **Behind the two-judge rule, mini is at least as safe.** It misfiled 6 articles to Claude's 11; 6 were misfiled by both. Mini's lower rate is not proven better (p = 0.06), but it is certainly not worse. Its mistakes were the same kind: 3 economy stories filed under Politics, 2 technology stories under Business, 1 under Politics.
+- **Behind the two-judge rule, mini made fewer observed misfiles.** It misfiled 6 articles to Claude's 11; 6 were misfiled by both. The five discordant misfiles give a two-sided paired p-value of 0.0625. The study specified no margin for claiming comparable safety. Its mistakes were the same kind: 3 economy stories filed under Politics, 2 technology stories under Business, 1 under Politics.
 - **The price of the cheaper reader is review work.** Mini's weaker answers did not become misfiles; the rule sent them to a person. About one article in five waited for a person instead of one in seven. Most went because mini said an article fitted two categories (82, against Claude's 41).
 - **The 30 it could not process.** In every one of the 30, mini's quotes from the article were not word for word, so the system refused the answer instead of trusting it, as designed. Claude had 1 such failure in 941. A person can include the 30 in a new run.
 - **It used the free allowance.** 1,000 articles took about 2.4 million tokens. To fit them into one evening, the site's daily cap for the small models was raised from 2.25 to 2.5 million for the last two batches, OpenAI's own free limit, then put back (DECISIONS 156, addenda of 11 and 12 October 2026).
 
-In one line: the cheaper reader stays safe behind Jev, and what it costs is a bigger pile for a person, not more misfiled documents.
+Mini made 59 fewer automatic filings on the matched articles and sent 30 more articles to a person.
 
 **Why only these two readers.** The owner decided not to pay for more comparisons without a reason ("if someone wants to run comparisons they can pay for it"; DECISIONS 156, addendum of 11 October 2026). Claude was paid from a USD 100 credit Anthropic gave the owner, and mini ran free. Not run: the site's default reader, full GPT-5.4 (free, but about sixteen days at its daily allowance), and the GPT-6 and GPT-5.6 families (paid). Anyone can run another reader on the same articles with the tools under [Repeating it](#repeating-it), at their own cost; the scoring tool pairs the runs article by article.
 
@@ -215,7 +215,7 @@ A significance test asks: could this difference be luck? The *p-value* is the ch
 | Are Business articles misfiled more than Sport (6 of 149 against 0 of 190)? | Fisher's exact test | p = 0.007 | **Yes.** The errors sit where the categories overlap. |
 | Is Claude a better reader than GPT-5.4 mini on its own? Same 941 articles: Claude alone right on 83, mini alone on 13. | McNemar's exact test | p = 1 × 10⁻¹³ | **Yes, clearly.** |
 | Does the product file more articles right with Claude than with mini? Claude alone filed right 60, mini alone 6. | McNemar's exact test | p = 3 × 10⁻¹² | **Yes.** Mini sends more to a person. |
-| Does mini misfile less than Claude? Claude alone misfiled 5, mini alone 0 (6 by both). | McNemar's exact test | p = 0.06 | **Not shown.** Mini is at least as safe; "safer" is not proven. |
+| Does mini misfile less than Claude? Claude alone misfiled 5, mini alone 0 (6 by both). | McNemar's exact test | p = 0.06 | **Not shown.** Five discordant misfiles give limited evidence about a safety difference. |
 
 Read these with care:
 
@@ -258,3 +258,5 @@ Exactly as used; none of the examples is text from the dataset.
 | *None of these* | The document is not a news story about business, entertainment, politics, sport or technology. | |
 
 Each category also had one generic example, in order: a large company's yearly profits and share price; the winners of a national film awards ceremony; a parliamentary vote on a proposed new law; a football match report with the score; a new mobile phone and its features.
+
+[All experiments](results.md) · [Earlier: Did the live journey work?](generated-document-check.md) · [Next: Same articles with a smaller reader](bbc-mini-comparison.md)

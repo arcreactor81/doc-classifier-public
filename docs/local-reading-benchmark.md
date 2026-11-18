@@ -61,3 +61,5 @@ Measure your own rates as above, then:
 > N = number of documents; r = your measured reading seconds per document; u = documents sent per second; p = documents processed per second.
 
 With the rates measured here for long research papers (r = 0.7 to 1.5 s, u ≈ 0.8 a second, p ≈ 2 a second), 1,000 papers come to about 12 to 25 minutes of reading, about 21 minutes of sending and about 8 to 9 minutes of processing: roughly 45 minutes to an hour in all. Shorter documents read and send in less time. A slower computer, a slower connection, other work on the machine, or a run that has to be split into batches because of a per-run limit all add time. Re-measure if any of them change.
+
+[Return to the experiment history](results.md)

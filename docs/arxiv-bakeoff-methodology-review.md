@@ -64,3 +64,5 @@ The current production `extractDocument` ran locally for 87 candidates using the
 The screen checks full text and every outline string for declared benchmark subject codes, arXiv subject wrappers and explicit subject metadata lines. Its private provenance records code-only exclusion summaries and the exact expressions. This blocks the observed direct metadata hints; it is not a claim to remove legitimate semantic subject matter or every possible indirect clue. All eight original generic taxonomy examples passed a check for explicit source codes and complete corpus-title containment. No individual document examples were added.
 
 The 80 accepted extractions have no extraction-note codes. Six still carry `needsOutlineRecovery: true`; that flag and the original local outline are retained, and recovery was **not** called. Every text file contains the full extraction unchanged. No external requests, new LLM calls or decision-model calls occurred. The fragment is preparation for a separately authorized evaluation, not a classification result.
+
+[Return to the experiment history](results.md)

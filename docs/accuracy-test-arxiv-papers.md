@@ -319,3 +319,5 @@ Exactly as used; none of the examples is text from the dataset.
 | *None of these* | The document is not a research paper in computer vision, data structures and algorithms, information theory, neural and evolutionary computing, programming languages, systems and control, group theory or statistics theory. | |
 
 Each category also had one generic example, in order: a method that finds and outlines every object in a photograph; an improved shortest-path algorithm with a proof of its running time; the highest reliable data rate over a noisy multi-antenna wireless channel; a new genetic algorithm for scheduling; a type system that rules out memory errors, with a soundness proof; a controller that keeps a power network stable under sudden demand changes; a classification of finite groups whose subgroups share a property; and how quickly an estimate of an unknown distribution approaches the truth.
+
+[All experiments](results.md) · [Earlier: Same articles with a smaller reader](bbc-mini-comparison.md) · [Next: Could Jev read the papers it previously refused?](decision-bakeoff-results-2026-11-04.md)

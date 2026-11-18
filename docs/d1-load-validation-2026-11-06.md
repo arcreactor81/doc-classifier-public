@@ -64,3 +64,5 @@ Private root: `.local/scaled-two-system-20261105/`.
 - The private fixture source, exact inputs, configuration and deploy logs are in `native-load/`; its resources and prior records are retained.
 
 The query rewrite's join-order choice was checked against [SQLite's optimizer documentation](https://www.sqlite.org/optoverview.html#manual_control_of_query_plans_using_cross_join). The observed overload is described in [Cloudflare's D1 debugging reference](https://developers.cloudflare.com/d1/observability/debug-d1/). Both were consulted on 6 November 2026.
+
+[Return to the experiment history](results.md)

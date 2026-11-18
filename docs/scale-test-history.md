@@ -30,3 +30,5 @@ This page records every attempt to run 10,000 documents through the hosted syste
 - **r11 is the first attempt in which all 10,000 documents reached an outcome.** With its close finished on the fixed build, every step of the journey has run at 10,000 documents: upload, sorting, results, building the folders, saving and closing. r11 recorded exactly one call to each of the two checks for each of the 9,997 processed documents (19,994 in all). The owner decided against a further 10,000-document run after the close fix (8–9 October).
 - **No attempt sent an AI call twice for the same document.** Each fix keeps that rule: a request that may already have been paid for is never resent.
 - **What this does not prove:** the quality of the AI's answers, real-model speed or cost at this size, or the in-browser extraction of 10,000 files. Those are covered, within the free allowances, by the real-model test recorded in the README.
+
+[Return to the experiment history](results.md)

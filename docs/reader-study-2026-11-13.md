@@ -1,6 +1,6 @@
 # What changes when the document reader changes?
 
-> Follow-up: the [full 2,032-paper Flash low-reasoning study completed on 17 November](flash-reader-comparison-2026-11-17.md). This dated report preserves the earlier 60-paper Flash sample and original OpenAI-arm results; its Flash row is not the later full arm.
+> The next experiment changed the Flash reasoning setting and output cap on the same 60 papers. [Matched settings comparison](flash-settings-sample.md)
 
 Final operational readout with partial outcome coverage · 2026-11-13 05:04:48 UTC · planned work complete with missing outcomes
 
@@ -160,3 +160,5 @@ Measured elapsed time below runs from the browser’s batch-start event through 
 Runtime combines different rollout builds, machines’ local load, provider response times and admission pacing. It supports operational planning; it cannot isolate model latency. The convenience corpus, deterministic order, converted Office files and author-selected primary subjects limit inference beyond these documents.
 
 The analysis uses frozen source fingerprints, recorded decisions, vendor-reported usage, and browser timing receipts. The aggregate tables can be shared independently of the private evidence bundle.
+
+[All experiments](results.md) · [Earlier: Putting the two judges back together](scaled-two-system-results-2026-11-06.md) · [Next: Would more reasoning help Flash?](flash-settings-sample.md)

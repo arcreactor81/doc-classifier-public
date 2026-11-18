@@ -89,3 +89,5 @@ Private directory: `.local/scaled-two-system-20261105/`.
 - Earlier `workflow-statuses-20261105.json`, failed-workflow diagnostic, partial D1 decisions and immutable runner journals establish outcomes and the observed failure chain.
 
 Remaining uncertainty: the exact platform resource threshold; unobserved memory pressure; whether each model-pool SQL invocation belongs to the paid pool; and the unsettled Jev attempt's dispatch/charge status. The next repair should target the measured query cost while preserving these uncertainties honestly.
+
+[Return to the experiment history](results.md)

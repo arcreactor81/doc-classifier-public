@@ -29,6 +29,8 @@ Exploratory paired exact p-values for correct filings are 0.142 for Sol–Flash 
 
 On 2,024 common usable reader answers, Sol selected exactly the primary reference on 1,682 papers and Flash on 1,651. The exploratory, unadjusted paired p-value is 0.0472. Reader-only judgments and the final classifier's filings answer different questions. This does not establish performance on a client's documents.
 
+The discordant counts show how many individual papers changed the comparison. [Paired tests and multiple-comparison sensitivity](flash-paired-tests.md)
+
 ## Recorded model usage and time
 
 The new full Flash arm recorded **USD 24.466123114** of model usage:
@@ -68,3 +70,5 @@ Only the 352 never-submitted identities were then processed in six fresh groups.
 The [13 November study](reader-study-2026-11-13.md) preserves the earlier OpenAI arms and 60-paper Flash sample. The [methodology review](arxiv-bakeoff-methodology-review.md) explains the public-corpus limitations. Historical experiments keep their own denominators.
 
 Normal site configuration was restored. Sol remains default. The tested low/16,384 Flash configuration was study-only and has not been promoted to the ordinary reader menu. No category, threshold or saved result was changed from these findings. Whether to expose that option and how it performs on the intended collection remain product decisions.
+
+[All experiments](results.md) · [Earlier: Would more reasoning help Flash?](flash-settings-sample.md)

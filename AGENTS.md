@@ -93,3 +93,7 @@ The product runs in **Interactive mode only**. The kit's mechanical scope is 5,0
 ## Owner amendment, 30 September 2026
 
 The owner authorizes the versioned math-reading repair described in DESIGN.md and isolated Cloudflare deployment, with the current four active categories copied unchanged. Prior conversation authorization for Access activation via MCP applies only to the new Doc Classifier preview application; do not alter unrelated or existing application rules. Preserve necessary history before retiring obsolete project resources. UI refinement may proceed separately after the deployment/math checkpoint.
+
+## Writing project documentation
+
+Give readers the breadth of a topic at its entry point. Give each distinct experiment or decision a stable, descriptive file link. Preserve earlier results when adding a successor, and connect related pages where the evidence raises the next question. Keep populations, dates and limitations with the claims they qualify.

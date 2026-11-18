@@ -26,10 +26,10 @@ One row per claim, and a column that says what each row means if you aren't an e
 
 | | Where things stand | What that means for you |
 |---|---|---|
-| 🧩 The code | Release `fcd3e46`, generated from the private source with a checked privacy transformation. The full check prints its unit total, builds the app and runs eight local acceptance suites. | The [test record](#-what-was-tested-and-what-was-not) distinguishes local mechanics, browser evidence and real-model results. |
+| 🧩 The code | Release `56de301`, generated from the private source with a checked privacy transformation. The full check prints its unit total, builds the app and runs eight local acceptance suites. | The [test record](#-what-was-tested-and-what-was-not) distinguishes local mechanics, browser evidence and real-model results. |
 | 🎨 The app | A new interface, "The Sorting Room", replaced the whole front end on 10 October ([a look at it](#-the-app-the-sorting-room)). | What you see on the site is what this repository builds. |
 | 📈 Scale | 10,000 synthetic documents all reached an outcome on a practice Cloudflare deployment. Pretend AI services answered, so no paid call was made. | The plumbing holds at the size the product is for. The AI's answers weren't real in that test ([the chart](#the-10000-document-hosted-test)). |
-| 🎯 How well it sorts | The latest full comparison covered 2,032 long research papers. Flash low / 16,384 correctly filed 1,452, misfiled 32, sent 543 to review and could not process 5. Matched filing differences from Sol and Terra were inconclusive. | This is evidence on a public research-paper benchmark, not a promise for your documents. [Results, costs and limits](docs/flash-reader-comparison-2026-11-17.md). The earlier [news test](#-how-well-it-sorts-941-news-articles) remains a separate result. |
+| 🎯 How well it sorts | On BBC News, Claude and Jev misfiled 11 of 812 automatic filings. On the October research papers they misfiled 23 of 1,006. Longer inputs and overlapping subjects prompted the November comparisons. | Choose a test by its documents, reader and date. [Experiment history](docs/results.md) |
 | 🚀 Hosted demo | The ordinary menu defaults to GPT-6.1 Sol with Jev 1.14.0 long context. The study-only Flash low option is not on the ordinary menu. Sign-in remains by invitation. | Shared daily allowances apply; unlimited spending for one run does not remove the site-wide limits. Access is controlled by the owner. |
 | 📝 Licence | MIT ([LICENSE](LICENSE)). | Copy it, change it, use it, keeping the notice ([the licence section](#-licence)). |
 
@@ -175,6 +175,27 @@ Code applies these rules in order; the first that matches wins, and its id is re
 
 The threshold starts at 0.90. It changes only when a person applies a proposal backed by their own corrections.
 
+## Results by experiment
+
+Start with the question closest to yours. Each study records which documents reached a decision and what counted as a correct answer.
+
+| Date in 2026 | Experiment | What happened |
+| --- | --- | --- |
+| 23 Sep | [Would changing the reader change a decision?](docs/reader-check-september.md) | Both readers gave the same category sets on five retained documents. |
+| 6 Oct | [First Sol run](docs/sol-check-october.md) | No misfiles were recorded among 85 documents. The count of automatic filings is unspecified. |
+| 10 Oct | [Did the live journey work?](docs/generated-document-check.md) | 17 of 20 generated documents were correctly filed. Three went to review. |
+| 11 Oct | [BBC News with Claude](docs/accuracy-test-bbc-news.md) | 801 correct filings, 11 misfiles, 128 reviews and one processing failure among 941 scored articles. |
+| 11 Oct | [Same articles with a smaller reader](docs/bbc-mini-comparison.md) | Mini made six misfiles among 753 filings. More articles needed review or failed the quote check. |
+| 12 Oct | [Long papers in eight neighbouring fields](docs/accuracy-test-arxiv-papers.md) | 983 correct filings and 23 misfiles among 1,797 outcomes. Another 243 papers remained unfinished. |
+| 4 Nov | [Could Jev read the papers it previously refused?](docs/decision-bakeoff-results-2026-11-04.md) | Long context accepted all 16 selected size-stress cases. The Liquid pilot stopped after six attempts. |
+| 5 Nov | [Jev and Liquid across the corpus](docs/decision-bakeoff-full-results-2026-11-05.md) | Jev answered all 2,038 eligible papers and Liquid answered 1,645. These were single-judge predictions. |
+| 6 Nov | [Putting the two judges back together](docs/scaled-two-system-results-2026-11-06.md) | 596 correct filings, ten misfiles and 263 reviews before a storage interruption. Only 869 of 900 submissions had outcomes. |
+| 13 Nov | [Sol, Terra, Luna and the first Flash sample](docs/reader-study-2026-11-13.md) | Sol finished all 2,032 papers. Terra had 2,020 outcomes, Luna stopped at 117, and the original Flash sample covered 60. |
+| 13 Nov | [Would more reasoning help Flash?](docs/flash-settings-sample.md) | On the same 60 papers, correct filings rose from 32 to 37 and processing failures fell from five to one. |
+| 17 Nov | [Did the Flash sample hold up at full size?](docs/flash-reader-comparison-2026-11-17.md) | Flash recorded 1,452 correct filings and 32 misfiles across 2,032 eligible papers. Paired filing differences from Sol and Terra were inconclusive. |
+
+For questions about corpus selection, reader evidence, load testing or timing, follow the [guide to results and methods](docs/results.md).
+
 ## 📊 How well it sorts: 941 news articles
 
 On 11 October 2026, 941 real news articles went through the owner's live site: the public BBC News dataset, in its five categories (Business, Entertainment, Politics, Sport, Technology). The categories were written in plain words before the test and not changed during it. Nothing was trained on the articles, and no model saw the answers. The reader was Claude Sonnet 5.5 and the threshold was the starting value, 0.90.
@@ -197,7 +218,7 @@ On 11 October 2026, 941 real news articles went through the owner's live site: t
 
 **What it cost.** About USD 0.01 per article (USD 9.63 in all), and about two and a half minutes per batch of 59.
 
-**A cheaper second reader.** The same articles then went through with GPT-5.4 mini, OpenAI's smaller model, free on the owner's daily allowance. On its own it is clearly the weaker reader (86% right against Claude's 93.5%, p < 0.001). Behind the two-judge rule it misfiled 6 of the 753 it filed (0.8%) against Claude's 11; a difference that was not statistically conclusive. What the cheaper reader costs is review work: it sent 17% to a person instead of 14%, and 30 of its answers were refused because their quotes were not word for word. That October news test did not include the later GPT-6 readers. The [November follow-up](docs/flash-reader-comparison-2026-11-17.md) measures Sol, Terra and Flash on long research papers; it does not turn those results into news or client-document accuracy.
+**A cheaper second reader.** The same articles then went through with GPT-5.4 mini, OpenAI's smaller model, free on the owner's daily allowance. On its own it is clearly the weaker reader (86% right against Claude's 93.5%, p < 0.001). Behind the two-judge rule it misfiled 6 of the 753 it filed (0.8%) against Claude's 11; a difference that was not statistically conclusive. What the cheaper reader costs is review work: it sent 17% to a person instead of 14%, and 30 of its answers were refused because their quotes were not word for word. [Matched BBC reader comparison](docs/bbc-mini-comparison.md)
 
 **What it doesn't prove.** It is news, in five broad categories, scored against the dataset's own labels, with one reader on one day. Real filing schemes are usually finer. The full write-up, with the method, every table, the statistics and how to repeat it, is in **[docs/accuracy-test-bbc-news.md](docs/accuracy-test-bbc-news.md)**.
 
@@ -221,7 +242,7 @@ On 12 October 2026 a stress test sent 2,040 long research papers through the sam
 
 **Is it luck?** Significance tests, which ask whether a difference could be chance, say no for three findings. The rule's veto picks out Jev's confident mistakes (p = 4 × 10⁻¹¹). The misfiles crowd into those two fields (p = 1.5 × 10⁻¹¹). Quote failures fell after the new quote rule (p = 9 × 10⁻⁵, though on different papers). They show no difference from news in the misfile rate (p = 0.17), between the PDF and Office files, or between the two judges alone once the test count is allowed for ([the tests](docs/accuracy-test-arxiv-papers.md#significance-tests)).
 
-**What it found.** About one paper in five was too long for Jev, the certainty judge. Formulas cost more tokens (the units AI services count text in) per character than ordinary prose, so a size estimate from characters was far too low. Those papers are set aside with the reason, at no charge. A later side-by-side test will decide how to handle them. Two outside problems stopped runs during the test and were fixed: a changed error reply from TypeSafe, and Anthropic refusing calls that Cloudflare sent from Hong Kong (the calls to the reader models now leave through a small helper placed near Singapore, which is a request to Cloudflare rather than a guarantee; see [which country your text is processed in](#-which-country-your-text-is-processed-in)).
+**What it found.** About one paper in five was too long for Jev, the certainty judge. Formulas cost more tokens (the units AI services count text in) per character than ordinary prose, so a size estimate from characters was far too low. Those papers are set aside with the reason, at no charge. The [long-context pilot](docs/decision-bakeoff-results-2026-11-04.md) subsequently tested the size failures directly. Two outside problems stopped runs during the test and were fixed: a changed error reply from TypeSafe, and Anthropic refusing calls that Cloudflare sent from Hong Kong (the calls to the reader models now leave through a small helper placed near Singapore, which is a request to Cloudflare rather than a guarantee; see [which country your text is processed in](#-which-country-your-text-is-processed-in)).
 
 **What it cost.** USD 98.20 recorded at list prices for the whole test, about USD 0.055 per decided paper. The large run of 1,079 papers took about 48 minutes from reading to the last decision.
 
@@ -264,29 +285,12 @@ Said plainly here, so nobody finds out later.
 
 - ❌ **It doesn't read scanned pages.** Reading a scan needs OCR (optical character recognition, which turns a picture of text into text). Cloudflare's ready-made cloud conversion, Workers AI's `toMarkdown`, works on the original file, so the file itself would be uploaded. That breaks the promise that originals never leave your computer. So a scanned PDF is listed as *could not process*, with the reason: a scanned image with no text. Reading scans inside the browser is the option being weighed for later ([future direction](#-future-direction)).
 - ❌ **It doesn't read the old binary formats** `.doc` and `.ppt`, or PowerPoint speaker notes. Reading isn't yet shown to be lossless for every equation or graphic.
-- ❌ **It doesn't promise accuracy on your documents.** It was measured on news articles with two readers, Claude Sonnet 5.5 and GPT-5.4 mini ([the result](#-how-well-it-sorts-941-news-articles)), and on long research papers with Claude ([the stress test](#a-harder-test-1797-long-research-papers)), followed by [Sol, Terra, Luna and Flash comparisons](docs/flash-reader-comparison-2026-11-17.md). Other kinds of documents remain unmeasured. The tools to measure it on your own documents are built in ([what was tested](#-what-was-tested-and-what-was-not)).
+- ❌ **It doesn't promise accuracy on your documents.** It was measured on news articles with two readers, Claude Sonnet 5.5 and GPT-5.4 mini ([the result](#-how-well-it-sorts-941-news-articles)), and on long research papers with Claude ([the stress test](#a-harder-test-1797-long-research-papers)), followed by [reader comparisons on the same uploads](docs/reader-study-2026-11-13.md). Other kinds of documents remain unmeasured. The tools to measure it on your own documents are built in ([what was tested](#-what-was-tested-and-what-was-not)).
 - ❌ **It doesn't run in Firefox or Safari.** Building folders on your computer without uploading anything needs the browser's File System Access feature, which only Chrome and Edge offer.
 - ❌ **It doesn't learn by itself.** Every change to a category, an example or the threshold is proposed to a person and applied only by a person.
 - ❌ **It doesn't retry paid work by itself.** A document that failed stays failed until a person starts a new run for it.
 
 *Where this is written: [DESIGN.md §4](DESIGN.md#4-standing-rules) (rule 10), [§5.1](DESIGN.md#51-local-extraction-browser) and [§6](DESIGN.md#6-failure-policy).*
-
-## November follow-up: the same 2,032 papers
-
-The full Flash low-reasoning study is complete. The same saved inputs, eight category definitions, Jev check and filing rules were used. The reference is each paper's primary arXiv subject, not a human adjudication of a client's documents.
-
-| Reader | Outcomes | Correct filings | Misfiles | Review | Processing failures |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Sol | 2,032 | 1,435 | 31 | 563 | 3 |
-| Flash · low, 16,384 cap | 2,032 | 1,452 | 32 | 543 | 5 |
-
-On the 2,020 papers shared with Terra, Flash had 1,444 correct filings and 32 misfiles, versus Terra's 1,435 and 33. Terra's other 12 outcomes remain missing. These filing differences were not statistically conclusive; they do not prove equal safety. Sol was somewhat stronger on common usable reader-only answers.
-
-The new Flash arm recorded **USD 24.47** of model usage at the site's rates, including Jev, recovery and retries. DeepSeek is accounted at peak prices; this is not an invoice. Median completed-batch time was **4m 56s**, including the application workflow; median reader-attempt latency was **19.2s**. The recorded cost and timing histories are operational comparisons, not isolated model-price or inference-latency experiments.
-
-A local progress-monitor defect stopped the first pass before the next cloud run was created. It was fixed and regression-tested; only the remaining 352 never-submitted papers were processed afterward. The completed 1,680 were preserved. The normal menu and default were restored, without promoting the tested Flash option.
-
-Read the [full comparison and limitations](docs/flash-reader-comparison-2026-11-17.md), [aggregate data](docs/data/flash-reader-comparison-2026-11-17.json) and [earlier November study](docs/reader-study-2026-11-13.md).
 
 ## 🧱 Why it is built this way
 
@@ -460,7 +464,7 @@ The product's scope is runs of 5,000 to 10,000 documents ([DECISIONS 42](DECISIO
 
 #### Real AI models
 
-Real-model runs use explicitly approved allowances or the site's acknowledged unlimited-run facility, with shared vendor guards still in force. Historical October work used its own free allocations and Anthropic credit; the November study had separately recorded owner authorization. **The 10,000-document size was not run on real models, for cost reasons** (DECISIONS 137). The recorded real-model runs include the November [full reader comparison](docs/flash-reader-comparison-2026-11-17.md), alongside the historical results below:
+Real-model runs use explicitly approved allowances or the site's acknowledged unlimited-run facility, with shared vendor guards still in force. Historical October work used its own free allocations and Anthropic credit; the November study had separately recorded owner authorization. **The 10,000-document size was not run on real models, for cost reasons** (DECISIONS 137). The [experiment history](docs/results.md) connects the real-model runs below to their study reports.
 
 - **2,040 long arXiv research papers on 12 October, with the Claude Sonnet 5.5 reader, on the owner's live site (the stress test):** 1,797 decided, 1,006 filed, 983 right, 23 misfiled (2.29%; below 3.22% with 95% confidence), 351 sent to a person, 440 could not be processed (370 too long for Jev, 66 reader quotes not word for word, 4 refused by Anthropic's network); 243 left unfinished in stopped runs. USD 98.20 recorded at list prices, from the same Anthropic credit. It included one run of 1,079 papers, read in the browser in one go, which decided 1,065 before the site's daily Claude allowance stopped it. Fixed along the way: TypeSafe's changed "too large" reply, and Anthropic's refusals of calls sent from Hong Kong (the calls to the reader models now leave through a helper placed near Singapore) ([the write-up](docs/accuracy-test-arxiv-papers.md); reading speeds in [the benchmark note](docs/local-reading-benchmark.md)).
 
