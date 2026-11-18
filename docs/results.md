@@ -19,6 +19,8 @@ On the news benchmark, the two judges agreed often enough to file 812 of 941 art
 
 ## Follow a question
 
+- **Can a cheaper reader still file accurately?** The matched studies show how reader strength changes correct filings, review work and failures, and how often two judges share a mistake. [Reader choice and the statistical evidence](reader-swap-evidence.md)
+
 - **Why do the denominators change?** A paper can be excluded before inference, lack an outcome after interruption, reach review, fail processing or be automatically filed. The misfile rate among automatic filings counts only that last group. The research reports use authors’ primary subject labels as the reference. [Corpus selection and reference-label limits](arxiv-bakeoff-methodology-review.md)
 - **Did the full Flash comparison establish a difference?** See which papers contribute to each test, how the reader-only denominator changes, and how sensitive the result is to testing several outcomes. [Paired filing and reader tests](flash-paired-tests.md)
 - **How did the system handle 10,000 files?** The October practice deployment exercised real infrastructure with simulated vendor answers. Eleven numbered attempts show which changes finally let every document reach an outcome. [Scale-test history](scale-test-history.md)

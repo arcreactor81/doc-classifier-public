@@ -47,7 +47,7 @@ What each part would have done on its own, on the same articles:
 | Both agree, any certainty | 881 | 13 (1.5%) | |
 | **Both agree and certainty ≥ 0.90 (the product)** | **812** | **11 (1.35%)** | |
 
-So each judge alone was right about 94% of the time. Compare Jev alone at the same 0.90 threshold with the product's rule: the reader's agreement held back 14 more articles, and 8 of those 14 were Jev's confident mistakes. Of the 19 articles Jev was sure about and got wrong, 8 went to a person instead of the wrong folder. The price is the review pile: one article in seven waits for a person.
+So each judge alone was right about 94% of the time. Compare Jev alone at the same 0.90 threshold with the product's rule: the complete rule withheld 14 more articles and avoided eight disagreements with the benchmark. That historical baseline includes the no-category choice. On jointly observed, named choices that also passed Jev’s own yes/no check, five of the eight articles withheld had a wrong Jev choice. [Withholding analysis](reader-swap-evidence.md) The price is the review pile: one article in seven waits for a person.
 
 ## Where the mistakes were
 
@@ -207,7 +207,7 @@ A significance test asks: could this difference be luck? The *p-value* is the ch
 
 | Question | Test | Result | Verdict |
 |---|---|---|---|
-| Does the reader's veto pick out Jev's mistakes, or hold articles back at random? Of the 826 articles Jev was sure about, the reader held back 14, and 8 of those 14 were among Jev's 19 mistakes. | Hypergeometric test, one-sided | p = 4 × 10⁻¹¹ | **Not luck.** Picking 14 at random would almost never catch 8 of 19 mistakes. |
+| Does the full rule selectively withhold errors relative to the original high-certainty baseline? Of the 826 articles Jev was sure about, the full rule held back 14, and 8 of those 14 were among Jev's 19 mistakes. | Hypergeometric test, one-sided | p = 4 × 10⁻¹¹ | **Not luck.** Picking 14 at random would almost never catch 8 of 19 mistakes. |
 | Is Jev alone (892 of 941 right) better than the reader alone (880 of 940)? Same articles, paired. | McNemar's exact test: Jev alone right on 23, the reader alone on 12 | p = 0.09 | **Not shown.** The two judges are about equally good alone. |
 | Are our single judges better than the best published no-training result (89.5% of 2,225)? | Two-proportion z-test | Jev p = 2 × 10⁻⁶; reader p = 0.0003 | **Yes.** It is a clear gap, with the cautions above. |
 | Is the product's 98.65% on filed articles different from BERT's 98.2% (437 of 445)? | Fisher's exact test | p = 0.63 | **No difference shown.** It is the same range. |

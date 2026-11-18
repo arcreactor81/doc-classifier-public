@@ -1,0 +1,4956 @@
+{
+ "matrixOrder": [
+  "correct filing",
+  "wrong filing",
+  "review",
+  "failure"
+ ],
+ "pairs": [
+  {
+   "scope": "BBC",
+   "label": "Claude → Mini",
+   "n": 941,
+   "matrix": [
+    [
+     741,
+     0,
+     38,
+     22
+    ],
+    [
+     0,
+     6,
+     5,
+     0
+    ],
+    [
+     5,
+     0,
+     115,
+     8
+    ],
+    [
+     1,
+     0,
+     0,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 910,
+    "both": 797,
+    "aOnly": 57,
+    "bOnly": 12
+   }
+  },
+  {
+   "scope": "November large arms",
+   "label": "Sol → Terra",
+   "n": 2020,
+   "matrix": [
+    [
+     1398,
+     0,
+     18,
+     10
+    ],
+    [
+     0,
+     28,
+     3,
+     0
+    ],
+    [
+     36,
+     5,
+     514,
+     5
+    ],
+    [
+     1,
+     0,
+     2,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 2002,
+    "both": 1604,
+    "aOnly": 58,
+    "bOnly": 41
+   }
+  },
+  {
+   "scope": "November large arms",
+   "label": "Sol → Flash low (full)",
+   "n": 2032,
+   "matrix": [
+    [
+     1384,
+     0,
+     47,
+     4
+    ],
+    [
+     0,
+     27,
+     4,
+     0
+    ],
+    [
+     66,
+     5,
+     491,
+     1
+    ],
+    [
+     2,
+     0,
+     1,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 2024,
+    "both": 1552,
+    "aOnly": 130,
+    "bOnly": 99
+   }
+  },
+  {
+   "scope": "November large arms",
+   "label": "Terra → Flash low (full)",
+   "n": 2020,
+   "matrix": [
+    [
+     1393,
+     0,
+     39,
+     3
+    ],
+    [
+     0,
+     28,
+     5,
+     0
+    ],
+    [
+     42,
+     4,
+     490,
+     1
+    ],
+    [
+     9,
+     0,
+     6,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 2001,
+    "both": 1549,
+    "aOnly": 94,
+    "bOnly": 83
+   }
+  },
+  {
+   "scope": "Luna stopped subset",
+   "label": "Sol → Luna",
+   "n": 117,
+   "matrix": [
+    [
+     59,
+     0,
+     5,
+     15
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     30,
+     7
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 95,
+    "both": 67,
+    "aOnly": 13,
+    "bOnly": 3
+   }
+  },
+  {
+   "scope": "Luna stopped subset",
+   "label": "Terra → Luna",
+   "n": 117,
+   "matrix": [
+    [
+     57,
+     0,
+     8,
+     16
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     27,
+     6
+    ],
+    [
+     2,
+     0,
+     0,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 93,
+    "both": 65,
+    "aOnly": 14,
+    "bOnly": 3
+   }
+  },
+  {
+   "scope": "Luna stopped subset",
+   "label": "Luna → Flash low (full)",
+   "n": 117,
+   "matrix": [
+    [
+     58,
+     0,
+     2,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     8,
+     0,
+     27,
+     0
+    ],
+    [
+     16,
+     0,
+     6,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 95,
+    "both": 69,
+    "aOnly": 1,
+    "bOnly": 11
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "label": "Sol → Terra",
+   "n": 60,
+   "matrix": [
+    [
+     34,
+     0,
+     0,
+     2
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     3,
+     0,
+     21,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 58,
+    "both": 46,
+    "aOnly": 2,
+    "bOnly": 3
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "label": "Sol → Luna",
+   "n": 60,
+   "matrix": [
+    [
+     27,
+     0,
+     2,
+     7
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     20,
+     3
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 50,
+    "both": 34,
+    "aOnly": 7,
+    "bOnly": 1
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "label": "Sol → Flash off",
+   "n": 60,
+   "matrix": [
+    [
+     30,
+     0,
+     3,
+     3
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     2,
+     0,
+     20,
+     2
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 55,
+    "both": 40,
+    "aOnly": 5,
+    "bOnly": 3
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "label": "Sol → Flash low (pilot)",
+   "n": 60,
+   "matrix": [
+    [
+     36,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     22,
+     1
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 59,
+    "both": 43,
+    "aOnly": 6,
+    "bOnly": 2
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "label": "Terra → Luna",
+   "n": 60,
+   "matrix": [
+    [
+     25,
+     0,
+     4,
+     8
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     18,
+     2
+    ],
+    [
+     2,
+     0,
+     0,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 48,
+    "both": 32,
+    "aOnly": 8,
+    "bOnly": 1
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "label": "Terra → Flash off",
+   "n": 60,
+   "matrix": [
+    [
+     31,
+     0,
+     3,
+     3
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     18,
+     2
+    ],
+    [
+     0,
+     0,
+     2,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 53,
+    "both": 40,
+    "aOnly": 4,
+    "bOnly": 3
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "label": "Terra → Flash low (pilot)",
+   "n": 60,
+   "matrix": [
+    [
+     35,
+     0,
+     2,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     20,
+     1
+    ],
+    [
+     2,
+     0,
+     0,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 57,
+    "both": 41,
+    "aOnly": 7,
+    "bOnly": 2
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "label": "Luna → Flash off",
+   "n": 60,
+   "matrix": [
+    [
+     23,
+     0,
+     3,
+     2
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     3,
+     0,
+     18,
+     1
+    ],
+    [
+     6,
+     0,
+     2,
+     2
+    ]
+   ],
+   "reader": {
+    "n": 47,
+    "both": 28,
+    "aOnly": 4,
+    "bOnly": 8
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "label": "Luna → Flash low (pilot)",
+   "n": 60,
+   "matrix": [
+    [
+     27,
+     0,
+     1,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     2,
+     0,
+     19,
+     1
+    ],
+    [
+     8,
+     0,
+     2,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 49,
+    "both": 33,
+    "aOnly": 1,
+    "bOnly": 4
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "label": "Flash off → Flash low (pilot)",
+   "n": 60,
+   "matrix": [
+    [
+     31,
+     0,
+     1,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     3,
+     0,
+     19,
+     1
+    ],
+    [
+     3,
+     0,
+     2,
+     0
+    ]
+   ],
+   "reader": {
+    "n": 54,
+    "both": 38,
+    "aOnly": 4,
+    "bOnly": 3
+   }
+  }
+ ],
+ "otherPaired": [
+  {
+   "group": "BBC reader availability sensitivity",
+   "label": "Claude → Mini / missing counts as nonmatch",
+   "n": 941,
+   "both": 797,
+   "aOnly": 83,
+   "bOnly": 13
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv · jev13-standard → jev14-standard / valid",
+   "n": 64,
+   "both": 53,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv · jev13-standard → jev14-standard / correctOnCommonValid",
+   "n": 53,
+   "both": 45,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv · jev13-standard → jev14-standard / candidate",
+   "n": 64,
+   "both": 37,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv · jev13-standard → jev14-standard / correctCandidate",
+   "n": 64,
+   "both": 35,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv · jev13-standard → jev14-standard / wrongCandidate",
+   "n": 64,
+   "both": 2,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv_stress · jev13-standard → jev14-standard / valid",
+   "n": 16,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv_stress · jev13-standard → jev14-standard / correctOnCommonValid",
+   "n": 0,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv_stress · jev13-standard → jev14-standard / candidate",
+   "n": 16,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv_stress · jev13-standard → jev14-standard / correctCandidate",
+   "n": 16,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv_stress · jev13-standard → jev14-standard / wrongCandidate",
+   "n": 16,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "bbc · jev13-standard → jev14-standard / valid",
+   "n": 50,
+   "both": 50,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "bbc · jev13-standard → jev14-standard / correctOnCommonValid",
+   "n": 50,
+   "both": 48,
+   "aOnly": 1,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "bbc · jev13-standard → jev14-standard / candidate",
+   "n": 50,
+   "both": 42,
+   "aOnly": 2,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "bbc · jev13-standard → jev14-standard / correctCandidate",
+   "n": 50,
+   "both": 42,
+   "aOnly": 2,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "bbc · jev13-standard → jev14-standard / wrongCandidate",
+   "n": 50,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv · jev14-standard → jev14-long / valid",
+   "n": 64,
+   "both": 53,
+   "aOnly": 0,
+   "bOnly": 11
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv · jev14-standard → jev14-long / correctOnCommonValid",
+   "n": 53,
+   "both": 45,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv · jev14-standard → jev14-long / candidate",
+   "n": 64,
+   "both": 37,
+   "aOnly": 0,
+   "bOnly": 10
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv · jev14-standard → jev14-long / correctCandidate",
+   "n": 64,
+   "both": 35,
+   "aOnly": 0,
+   "bOnly": 10
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv · jev14-standard → jev14-long / wrongCandidate",
+   "n": 64,
+   "both": 2,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv_stress · jev14-standard → jev14-long / valid",
+   "n": 16,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 16
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv_stress · jev14-standard → jev14-long / correctOnCommonValid",
+   "n": 0,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv_stress · jev14-standard → jev14-long / candidate",
+   "n": 16,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 14
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv_stress · jev14-standard → jev14-long / correctCandidate",
+   "n": 16,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 14
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "arxiv_stress · jev14-standard → jev14-long / wrongCandidate",
+   "n": 16,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "bbc · jev14-standard → jev14-long / valid",
+   "n": 50,
+   "both": 50,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "bbc · jev14-standard → jev14-long / correctOnCommonValid",
+   "n": 50,
+   "both": 48,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "bbc · jev14-standard → jev14-long / candidate",
+   "n": 50,
+   "both": 42,
+   "aOnly": 0,
+   "bOnly": 1
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "bbc · jev14-standard → jev14-long / correctCandidate",
+   "n": 50,
+   "both": 42,
+   "aOnly": 0,
+   "bOnly": 1
+  },
+  {
+   "group": "Confidence models · pilot",
+   "label": "bbc · jev14-standard → jev14-long / wrongCandidate",
+   "n": 50,
+   "both": 0,
+   "aOnly": 0,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · full",
+   "label": "arxiv_full · jev14_long → liquid_ultra_native_v3 / valid",
+   "n": 2038,
+   "both": 1645,
+   "aOnly": 393,
+   "bOnly": 0
+  },
+  {
+   "group": "Confidence models · full",
+   "label": "arxiv_full · jev14_long → liquid_ultra_native_v3 / correctOnCommonValid",
+   "n": 1645,
+   "both": 1389,
+   "aOnly": 61,
+   "bOnly": 40
+  },
+  {
+   "group": "Confidence models · full",
+   "label": "arxiv_full · jev14_long → liquid_ultra_native_v3 / candidate",
+   "n": 2038,
+   "both": 783,
+   "aOnly": 758,
+   "bOnly": 21
+  },
+  {
+   "group": "Confidence models · full",
+   "label": "arxiv_full · jev14_long → liquid_ultra_native_v3 / correctCandidate",
+   "n": 2038,
+   "both": 776,
+   "aOnly": 727,
+   "bOnly": 19
+  },
+  {
+   "group": "Confidence models · full",
+   "label": "arxiv_full · jev14_long → liquid_ultra_native_v3 / wrongCandidate",
+   "n": 2038,
+   "both": 7,
+   "aOnly": 31,
+   "bOnly": 2
+  }
+ ],
+ "tables": [
+  {
+   "group": "Withholding · October",
+   "label": "bbcClaude / sureNamed",
+   "n": 823,
+   "wrong": 17,
+   "withheld": 11,
+   "hit": 6,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · October",
+   "label": "bbcClaude / afterNoul",
+   "n": 820,
+   "wrong": 16,
+   "withheld": 8,
+   "hit": 5,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · October",
+   "label": "bbcMini / sureNamed",
+   "n": 806,
+   "wrong": 16,
+   "withheld": 53,
+   "hit": 10,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · October",
+   "label": "bbcMini / afterNoul",
+   "n": 803,
+   "wrong": 15,
+   "withheld": 50,
+   "hit": 9,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · October",
+   "label": "arxivClaude / sureNamed",
+   "n": 1078,
+   "wrong": 40,
+   "withheld": 72,
+   "hit": 17,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · October",
+   "label": "arxivClaude / afterNoul",
+   "n": 1028,
+   "wrong": 30,
+   "withheld": 22,
+   "hit": 7,
+   "twoSided": false
+  },
+  {
+   "group": "Historical benchmark definition",
+   "label": "BBC Claude / all high-certainty choices",
+   "n": 826,
+   "wrong": 19,
+   "withheld": 14,
+   "hit": 8,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · November large arms",
+   "label": "Sol / reader",
+   "n": 1539,
+   "wrong": 39,
+   "withheld": 72,
+   "hit": 8,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · November large arms",
+   "label": "Sol / pipeline",
+   "n": 1542,
+   "wrong": 40,
+   "withheld": 76,
+   "hit": 9,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · November large arms",
+   "label": "Terra / reader",
+   "n": 1521,
+   "wrong": 36,
+   "withheld": 52,
+   "hit": 3,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · November large arms",
+   "label": "Terra / pipeline",
+   "n": 1531,
+   "wrong": 36,
+   "withheld": 63,
+   "hit": 3,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · November large arms",
+   "label": "Flash low (full) / reader",
+   "n": 1542,
+   "wrong": 36,
+   "withheld": 57,
+   "hit": 4,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · November large arms",
+   "label": "Flash low (full) / pipeline",
+   "n": 1546,
+   "wrong": 36,
+   "withheld": 62,
+   "hit": 4,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Luna stopped subset",
+   "label": "Sol / reader",
+   "n": 86,
+   "wrong": 0,
+   "withheld": 6,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Luna stopped subset",
+   "label": "Sol / pipeline",
+   "n": 86,
+   "wrong": 0,
+   "withheld": 7,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Luna stopped subset",
+   "label": "Terra / reader",
+   "n": 84,
+   "wrong": 0,
+   "withheld": 2,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Luna stopped subset",
+   "label": "Terra / pipeline",
+   "n": 86,
+   "wrong": 0,
+   "withheld": 5,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Luna stopped subset",
+   "label": "Luna / reader",
+   "n": 69,
+   "wrong": 0,
+   "withheld": 8,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Luna stopped subset",
+   "label": "Luna / pipeline",
+   "n": 76,
+   "wrong": 0,
+   "withheld": 16,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Luna stopped subset",
+   "label": "Flash low (full) / reader",
+   "n": 87,
+   "wrong": 0,
+   "withheld": 4,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Luna stopped subset",
+   "label": "Flash low (full) / pipeline",
+   "n": 87,
+   "wrong": 0,
+   "withheld": 5,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Matched 60-paper pilot",
+   "label": "Sol / reader",
+   "n": 41,
+   "wrong": 0,
+   "withheld": 4,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Matched 60-paper pilot",
+   "label": "Sol / pipeline",
+   "n": 41,
+   "wrong": 0,
+   "withheld": 5,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Matched 60-paper pilot",
+   "label": "Terra / reader",
+   "n": 39,
+   "wrong": 0,
+   "withheld": 1,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Matched 60-paper pilot",
+   "label": "Terra / pipeline",
+   "n": 41,
+   "wrong": 0,
+   "withheld": 4,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Matched 60-paper pilot",
+   "label": "Luna / reader",
+   "n": 35,
+   "wrong": 0,
+   "withheld": 6,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Matched 60-paper pilot",
+   "label": "Luna / pipeline",
+   "n": 42,
+   "wrong": 0,
+   "withheld": 14,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Matched 60-paper pilot",
+   "label": "Flash off / reader",
+   "n": 37,
+   "wrong": 0,
+   "withheld": 4,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Matched 60-paper pilot",
+   "label": "Flash off / pipeline",
+   "n": 40,
+   "wrong": 0,
+   "withheld": 8,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Matched 60-paper pilot",
+   "label": "Flash low (pilot) / reader",
+   "n": 41,
+   "wrong": 0,
+   "withheld": 3,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Withholding · Matched 60-paper pilot",
+   "label": "Flash low (pilot) / pipeline",
+   "n": 41,
+   "wrong": 0,
+   "withheld": 4,
+   "hit": 0,
+   "twoSided": false
+  },
+  {
+   "group": "Category concentration",
+   "label": "jev14_long / candidates",
+   "n": 1541,
+   "wrong": 38,
+   "withheld": 310,
+   "hit": 29,
+   "twoSided": true
+  },
+  {
+   "group": "Category concentration",
+   "label": "liquid_ultra_native_v3 / candidates",
+   "n": 804,
+   "wrong": 9,
+   "withheld": 146,
+   "hit": 6,
+   "twoSided": true
+  },
+  {
+   "group": "Category concentration",
+   "label": "October Claude / filings",
+   "n": 1006,
+   "wrong": 23,
+   "withheld": 213,
+   "hit": 20,
+   "twoSided": true
+  },
+  {
+   "group": "Category concentration",
+   "label": "Sol / filings",
+   "n": 1466,
+   "wrong": 31,
+   "withheld": 276,
+   "hit": 23,
+   "twoSided": true
+  },
+  {
+   "group": "Category concentration",
+   "label": "Terra / filings",
+   "n": 1468,
+   "wrong": 33,
+   "withheld": 285,
+   "hit": 26,
+   "twoSided": true
+  },
+  {
+   "group": "Category concentration",
+   "label": "Flash low (full) / filings",
+   "n": 1484,
+   "wrong": 32,
+   "withheld": 285,
+   "hit": 24,
+   "twoSided": true
+  },
+  {
+   "group": "Other historical associations",
+   "label": "BBC Business vs Sport / misfiles",
+   "n": 339,
+   "wrong": 6,
+   "withheld": 149,
+   "hit": 6,
+   "twoSided": true
+  },
+  {
+   "group": "Other historical associations",
+   "label": "October papers vs BBC / misfiles",
+   "n": 1818,
+   "wrong": 34,
+   "withheld": 1006,
+   "hit": 23,
+   "twoSided": true
+  },
+  {
+   "group": "Other historical associations",
+   "label": "October PDF vs converted Office / misfiles",
+   "n": 1006,
+   "wrong": 23,
+   "withheld": 813,
+   "hit": 17,
+   "twoSided": true
+  },
+  {
+   "group": "Other historical associations",
+   "label": "October PDF vs converted Office / failures",
+   "n": 1797,
+   "wrong": 440,
+   "withheld": 1476,
+   "hit": 369,
+   "twoSided": true
+  },
+  {
+   "group": "Other historical associations",
+   "label": "October old vs later phase / quote failure",
+   "n": 1422,
+   "wrong": 66,
+   "withheld": 570,
+   "hit": 42,
+   "twoSided": true
+  }
+ ],
+ "vetoStrata": {
+  "Sol": [
+   {
+    "n": 243,
+    "wrong": 1,
+    "withheld": 8,
+    "wrongWithheld": 1
+   },
+   {
+    "n": 161,
+    "wrong": 4,
+    "withheld": 2,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 217,
+    "wrong": 1,
+    "withheld": 0,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 148,
+    "wrong": 22,
+    "withheld": 21,
+    "wrongWithheld": 4
+   },
+   {
+    "n": 187,
+    "wrong": 2,
+    "withheld": 20,
+    "wrongWithheld": 1
+   },
+   {
+    "n": 203,
+    "wrong": 0,
+    "withheld": 3,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 217,
+    "wrong": 2,
+    "withheld": 5,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 163,
+    "wrong": 7,
+    "withheld": 13,
+    "wrongWithheld": 2
+   }
+  ],
+  "Terra": [
+   {
+    "n": 243,
+    "wrong": 1,
+    "withheld": 5,
+    "wrongWithheld": 1
+   },
+   {
+    "n": 156,
+    "wrong": 2,
+    "withheld": 3,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 214,
+    "wrong": 1,
+    "withheld": 2,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 145,
+    "wrong": 21,
+    "withheld": 12,
+    "wrongWithheld": 1
+   },
+   {
+    "n": 185,
+    "wrong": 2,
+    "withheld": 11,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 199,
+    "wrong": 0,
+    "withheld": 3,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 217,
+    "wrong": 2,
+    "withheld": 7,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 162,
+    "wrong": 7,
+    "withheld": 9,
+    "wrongWithheld": 1
+   }
+  ],
+  "Flash low (full)": [
+   {
+    "n": 242,
+    "wrong": 1,
+    "withheld": 2,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 162,
+    "wrong": 2,
+    "withheld": 10,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 217,
+    "wrong": 1,
+    "withheld": 7,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 146,
+    "wrong": 21,
+    "withheld": 15,
+    "wrongWithheld": 2
+   },
+   {
+    "n": 190,
+    "wrong": 2,
+    "withheld": 5,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 203,
+    "wrong": 0,
+    "withheld": 7,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 218,
+    "wrong": 2,
+    "withheld": 2,
+    "wrongWithheld": 0
+   },
+   {
+    "n": 164,
+    "wrong": 7,
+    "withheld": 9,
+    "wrongWithheld": 2
+   }
+  ]
+ },
+ "batches": {
+  "BBC Claude → Mini": [
+   {
+    "matrix": [
+     [
+      50,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      5,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      47,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      6,
+      2
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      50,
+      0,
+      1,
+      2
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      5,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      47,
+      0,
+      4,
+      1
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      6,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      40,
+      0,
+      4,
+      4
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      10,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      49,
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      8,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      50,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      5,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      1,
+      2
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      13,
+      2
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      4,
+      2
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      7,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      4,
+      2
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      7,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      47,
+      0,
+      1,
+      2
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      8,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      3,
+      2
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      9,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      4,
+      1
+     ],
+     [
+      0,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      0,
+      8,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      48,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      8,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      49,
+      0,
+      2,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      5,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      49,
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      5,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   }
+  ],
+  "Sol → Terra": [
+   {
+    "matrix": [
+     [
+      34,
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      21,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      38,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      20,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      46,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      11,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      17,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      33,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      26,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      3,
+      1,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      39,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      18,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      37,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      10,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      35,
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      4,
+      0,
+      0
+     ],
+     [
+      3,
+      1,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      38,
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      19,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      39,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      19,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      13,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      15,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      10,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      17,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      14,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      46,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      14,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      38,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      18,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      46,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      10,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      48,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      8,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      39,
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      16,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      46,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      11,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      39,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      17,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      30,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      20,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   }
+  ],
+  "Sol → Flash low (full)": [
+   {
+    "matrix": [
+     [
+      36,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      5,
+      0,
+      19,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      37,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      17,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      12,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      33,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      24,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      5,
+      0,
+      12,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      39,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      17,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      35,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      3,
+      1,
+      0
+     ],
+     [
+      4,
+      0,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      38,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      17,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      36,
+      0,
+      4,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      18,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      15,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      10,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      15,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      12,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      37,
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      46,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      10,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      17,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      5,
+      0,
+      11,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      3,
+      1
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      8,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      12,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      38,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      3,
+      1,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      2,
+      1
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      11,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      37,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      2,
+      1,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      29,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      17,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   }
+  ],
+  "Terra → Flash low (full)": [
+   {
+    "matrix": [
+     [
+      37,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      19,
+      0
+     ],
+     [
+      2,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      37,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      18,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      11,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      34,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      24,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      3,
+      0,
+      11,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      13,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      14,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      40,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      18,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      37,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      10,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      37,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      3,
+      2,
+      0
+     ],
+     [
+      1,
+      0,
+      15,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      38,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      18,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      37,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      19,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      12,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      11,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      41,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      1,
+      1,
+      0
+     ],
+     [
+      2,
+      0,
+      12,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      12,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      46,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      14,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      42,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      36,
+      0,
+      2,
+      1
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      4,
+      0,
+      15,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      47,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      11,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      12,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      2,
+      1
+     ],
+     [
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      10,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      44,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      15,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      43,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      13,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      37,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      2,
+      1,
+      14,
+      0
+     ],
+     [
+      2,
+      0,
+      1,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      45,
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      12,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      38,
+      0,
+      3,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      16,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   {
+    "matrix": [
+     [
+      29,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      3,
+      0,
+      18,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   }
+  ]
+ },
+ "omnibus": [
+  {
+   "scope": "November large arms",
+   "names": [
+    "Sol",
+    "Terra",
+    "Flash low (full)"
+   ],
+   "n": 2020,
+   "outcomePatterns": {
+    "111": 26,
+    "112": 2,
+    "121": 1,
+    "122": 2,
+    "200": 29,
+    "202": 7,
+    "211": 2,
+    "212": 3,
+    "220": 37,
+    "221": 3,
+    "222": 473,
+    "223": 1,
+    "232": 5,
+    "300": 1,
+    "320": 1,
+    "322": 1,
+    "000": 1363,
+    "030": 9,
+    "022": 14,
+    "002": 32,
+    "020": 4,
+    "032": 1,
+    "003": 3
+   },
+   "readerPatterns": {
+    "100": 41,
+    "101": 17,
+    "110": 87,
+    "111": 1514,
+    "000": 233,
+    "001": 65,
+    "011": 34,
+    "010": 7
+   }
+  },
+  {
+   "scope": "Luna stopped subset",
+   "names": [
+    "Sol",
+    "Terra",
+    "Luna",
+    "Flash low (full)"
+   ],
+   "n": 117,
+   "outcomePatterns": {
+    "2020": 2,
+    "2022": 1,
+    "2030": 1,
+    "2202": 1,
+    "2220": 2,
+    "2222": 25,
+    "2232": 6,
+    "0000": 56,
+    "0020": 4,
+    "0030": 15,
+    "0300": 2,
+    "0002": 1,
+    "0022": 1
+   },
+   "readerPatterns": {
+    "1000": 1,
+    "1001": 1,
+    "1100": 4,
+    "1101": 7,
+    "1110": 1,
+    "1111": 64,
+    "0000": 8,
+    "0001": 1,
+    "0011": 3,
+    "0101": 2,
+    "0100": 1
+   }
+  },
+  {
+   "scope": "Matched 60-paper pilot",
+   "names": [
+    "Sol",
+    "Terra",
+    "Luna",
+    "Flash off",
+    "Flash low (pilot)"
+   ],
+   "n": 60,
+   "outcomePatterns": {
+    "20222": 2,
+    "20300": 1,
+    "22022": 1,
+    "22202": 1,
+    "22222": 15,
+    "22223": 1,
+    "22232": 1,
+    "22322": 1,
+    "22332": 1,
+    "00000": 23,
+    "03020": 2,
+    "00030": 2,
+    "00300": 5,
+    "00320": 1,
+    "00200": 2,
+    "00330": 1
+   },
+   "readerPatterns": {
+    "10011": 1,
+    "11010": 3,
+    "11011": 3,
+    "11100": 1,
+    "11101": 1,
+    "11111": 26,
+    "01000": 2,
+    "00000": 5,
+    "00111": 1,
+    "00010": 1
+   }
+  }
+ ],
+ "operations": [
+  {
+   "label": "Sol to Terra / elapsed",
+   "unit": "seconds",
+   "n": 29,
+   "positive": 1,
+   "negative": 28,
+   "ties": 0,
+   "medianDelta": -40.224
+  },
+  {
+   "label": "Sol to Terra / cost",
+   "unit": "recorded USD",
+   "n": 29,
+   "positive": 0,
+   "negative": 29,
+   "ties": 0,
+   "medianDelta": -1.640288192
+  },
+  {
+   "label": "Sol to Flash / elapsed",
+   "unit": "seconds",
+   "n": 32,
+   "positive": 16,
+   "negative": 16,
+   "ties": 0,
+   "medianDelta": -5.5275
+  },
+  {
+   "label": "Sol to Flash / cost",
+   "unit": "recorded USD",
+   "n": 32,
+   "positive": 0,
+   "negative": 32,
+   "ties": 0,
+   "medianDelta": -2.576821383
+  },
+  {
+   "label": "Terra to Flash / elapsed",
+   "unit": "seconds",
+   "n": 30,
+   "positive": 29,
+   "negative": 1,
+   "ties": 0,
+   "medianDelta": 55.2535
+  },
+  {
+   "label": "Terra to Flash / cost",
+   "unit": "recorded USD",
+   "n": 30,
+   "positive": 0,
+   "negative": 30,
+   "ties": 0,
+   "medianDelta": -0.9359025
+  }
+ ]
+}
